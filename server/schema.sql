@@ -1,18 +1,22 @@
 -- Panoptic - schema d'audit multi-tenant pour Supabase (Postgres).
 -- Applique via le SQL editor Supabase, ou `supabase db push`.
 -- Le serveur bascule automatiquement sur Supabase si SUPABASE_URL + SUPABASE_SERVICE_KEY sont definis.
-
-create schema if not exists panoptic;
+--
+-- IMPORTANT: les tables vivent dans le schema `public`. PostgREST (l'API REST de
+-- Supabase utilisee par store.js) expose `public` par defaut; store.js interroge
+-- /rest/v1/audits sans prefixe de schema. Ne pas deplacer ces tables ailleurs sans
+-- exposer le schema correspondant et ajouter les en-tetes Accept-Profile/Content-Profile.
+-- Projet dedie: panoptic-audit (ref hbhtlyagsrrwyosuthjb, region eu-west-3).
 
 -- Tenants (une organisation cliente = un tenant, resolu depuis une cle d'API).
-create table if not exists panoptic.tenants (
+create table if not exists public.tenants (
   id          text primary key,               -- ex: t_ab12cd (hash de la cle API)
   name        text,
   created_at  timestamptz not null default now()
 );
 
 -- Audits.
-create table if not exists panoptic.audits (
+create table if not exists public.audits (
   id          text primary key,               -- ex: aud_xxxxx
   tenant      text not null,
   target      text not null,
@@ -25,12 +29,12 @@ create table if not exists panoptic.audits (
   error       text,
   created_at  timestamptz not null default now()
 );
-create index if not exists audits_tenant_idx on panoptic.audits (tenant, created_at desc);
+create index if not exists audits_tenant_idx on public.audits (tenant, created_at desc);
 
 -- Findings (un audit -> N findings, format canonique).
-create table if not exists panoptic.findings (
+create table if not exists public.findings (
   id          bigint generated always as identity primary key,
-  audit_id    text not null references panoptic.audits(id) on delete cascade,
+  audit_id    text not null references public.audits(id) on delete cascade,
   agent       text not null,
   family      text,
   rule        text,
@@ -45,30 +49,30 @@ create table if not exists panoptic.findings (
   evidence    jsonb,
   "check"     jsonb
 );
-create index if not exists findings_audit_idx on panoptic.findings (audit_id, priority desc);
-create index if not exists findings_sev_idx on panoptic.findings (audit_id, severity);
+create index if not exists findings_audit_idx on public.findings (audit_id, priority desc);
+create index if not exists findings_sev_idx on public.findings (audit_id, severity);
 
 -- ---------------------------------------------------------------------------
 -- Isolation multi-tenant par Row Level Security.
 -- Le service key du serveur bypass RLS; ces regles protegent les acces cote client
 -- (anon/authenticated) qui doivent porter le claim tenant.
 -- ---------------------------------------------------------------------------
-alter table panoptic.audits   enable row level security;
-alter table panoptic.findings enable row level security;
+alter table public.audits   enable row level security;
+alter table public.findings enable row level security;
 
 -- Le tenant courant est lu depuis un claim JWT 'tenant' (ou request header configure).
-create or replace function panoptic.current_tenant() returns text
+create or replace function public.current_tenant() returns text
   language sql stable as $$
   select coalesce(current_setting('request.jwt.claims', true)::jsonb ->> 'tenant', '')
 $$;
 
-drop policy if exists audits_tenant_isolation on panoptic.audits;
-create policy audits_tenant_isolation on panoptic.audits
-  using (tenant = panoptic.current_tenant());
+drop policy if exists audits_tenant_isolation on public.audits;
+create policy audits_tenant_isolation on public.audits
+  using (tenant = public.current_tenant());
 
-drop policy if exists findings_tenant_isolation on panoptic.findings;
-create policy findings_tenant_isolation on panoptic.findings
+drop policy if exists findings_tenant_isolation on public.findings;
+create policy findings_tenant_isolation on public.findings
   using (exists (
-    select 1 from panoptic.audits a
-    where a.id = findings.audit_id and a.tenant = panoptic.current_tenant()
+    select 1 from public.audits a
+    where a.id = findings.audit_id and a.tenant = public.current_tenant()
   ));
