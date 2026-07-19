@@ -6,6 +6,7 @@ import { createOrchestrator } from "../engine/orchestrator.js";
 import { recon } from "../engine/recon.js";
 import { runAgent } from "../engine/registry.js";
 import { store } from "./store.js";
+import { cloneRepo } from "./clone.js";
 
 const CONCURRENCY = 2;
 
@@ -45,7 +46,21 @@ export class AuditQueue {
     await store.update(id, { status: "running" });
     this.emit(id, "status", { status: "running" });
 
-    const scan = (t) => recon(t, { repoPath: audit.repoPath });
+    // Offre "code + prod": si une URL de depot est fournie, on la clone le temps de l'audit.
+    let repoPath = audit.repoPath || null;
+    let cleanup = null;
+    if (audit.repoUrl) {
+      try {
+        this.emit(id, "log", { msg: `clonage du depot ${audit.repoUrl}` });
+        const c = await cloneRepo(audit.repoUrl);
+        repoPath = c.dir; cleanup = c.cleanup;
+        this.emit(id, "log", { msg: "depot clone, audit code + prod" });
+      } catch (e) {
+        this.emit(id, "log", { msg: `clone impossible (${e.message}), audit prod seul` });
+      }
+    }
+
+    const scan = (t) => recon(t, { repoPath });
     const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
     const onProgress = (msg) => this.emit(id, "log", { msg });
 
@@ -60,6 +75,8 @@ export class AuditQueue {
     } catch (e) {
       await store.update(id, { status: "error", error: e.message });
       this.emit(id, "error", { message: e.message });
+    } finally {
+      if (cleanup) cleanup();   // supprime le clone ephemere
     }
   }
 }

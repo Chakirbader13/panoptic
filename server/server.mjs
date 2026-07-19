@@ -30,10 +30,15 @@ const server = http.createServer(async (req, res) => {
   try {
     // --- API ---
     if (p === "/api/audits" && req.method === "POST") {
-      const { target, repoPath } = await readBody(req);
+      const body = await readBody(req);
+      const target = body.target;
       if (!target) return send(res, 400, { error: "target requis" });
-      const rec = await store.create(tenant, { target, repoPath });
-      queue.enqueue({ id: rec.id, target, repoPath: repoPath || null });
+      // Le champ repo peut etre un chemin local OU une URL git a cloner.
+      const repoRaw = body.repoUrl || body.repoPath || null;
+      const repoUrl = repoRaw && /^https?:\/\//.test(repoRaw) ? repoRaw : null;
+      const repoPath = repoRaw && !repoUrl ? repoRaw : null;
+      const rec = await store.create(tenant, { target, repoPath, repoUrl });
+      queue.enqueue({ id: rec.id, target, repoPath, repoUrl });
       return send(res, 201, { id: rec.id, status: "queued" });
     }
 
