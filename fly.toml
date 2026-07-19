@@ -1,0 +1,22 @@
+# Panoptic - deploiement du serveur d'audit sur Fly.io.
+#   fly launch --no-deploy   (cree l'app)   puis   fly deploy
+app = "panoptic-audit"
+primary_region = "cdg"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 8787
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+
+[[http_service.checks]]
+  method = "GET"
+  path = "/api/audits"
+  interval = "30s"
+  timeout = "5s"
+
+# Secrets Supabase (optionnel): fly secrets set SUPABASE_URL=... SUPABASE_SERVICE_KEY=...

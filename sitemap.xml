@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://panoptic-audit.netlify.app/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://panoptic-audit.netlify.app/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://panoptic-audit.netlify.app/en/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://panoptic-audit.netlify.app/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://panoptic-audit.netlify.app/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://panoptic-audit.netlify.app/it/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://panoptic-audit.netlify.app/nl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://panoptic-audit.netlify.app/"/>
+  </url>
+  <url><loc>https://panoptic-audit.netlify.app/en/</loc></url>
+  <url><loc>https://panoptic-audit.netlify.app/de/</loc></url>
+  <url><loc>https://panoptic-audit.netlify.app/es/</loc></url>
+  <url><loc>https://panoptic-audit.netlify.app/it/</loc></url>
+  <url><loc>https://panoptic-audit.netlify.app/nl/</loc></url>
+</urlset>

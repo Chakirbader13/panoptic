@@ -1,0 +1,13 @@
+node_modules
+server/.data
+src
+build.mjs
+index.html
+en
+de
+es
+it
+nl
+*.md
+.git
+.gitignore

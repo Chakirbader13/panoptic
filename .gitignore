@@ -1,0 +1,8 @@
+node_modules/
+server/.data/
+*.log
+.DS_Store
+.env
+.env.local
+# fixtures de test avec secrets SYNTHETIQUES: hors du depot (evite le secret-scanning)
+engine/agents/security/__fixtures__/

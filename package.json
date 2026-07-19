@@ -1,0 +1,15 @@
+{
+  "name": "panoptic-audit",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "L'audit de site le plus complet: 15 agents sur le code et la production.",
+  "scripts": {
+    "start": "node server/server.mjs",
+    "audit": "node engine/run-audit.mjs",
+    "security": "node engine/run-security.mjs",
+    "build:site": "node build.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

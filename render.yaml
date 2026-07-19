@@ -1,0 +1,17 @@
+# Panoptic - deploiement du serveur d'audit sur Render (https://render.com).
+# Deploy en un clic: connecter le repo git a Render, il lit ce fichier.
+services:
+  - type: web
+    name: panoptic-audit
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    healthCheckPath: /api/audits
+    envVars:
+      - key: PORT
+        value: 8787
+      # Optionnel: persistance Supabase multi-tenant (sinon stockage local ephemere).
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false

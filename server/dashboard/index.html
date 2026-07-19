@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoptic - Console d'audit</title>
+<style>
+  :root{--bg:#0a0c0b;--bg2:#0e110f;--line:#1e2621;--ink:#eef2ee;--mut:#96a29a;--dim:#606b64;
+    --acc:#3ee89e;--acc-dim:#1f7a55;--acc-ghost:#3ee89e18;--crit:#ff5c5c;--high:#ff9d42;--med:#ffd84d;--low:#63b3ff;
+    --sans:-apple-system,BlinkMacSystemFont,system-ui,"Segoe UI",sans-serif;--mono:ui-monospace,"SF Mono",Menlo,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.5;-webkit-font-smoothing:antialiased}
+  a{color:var(--acc);text-decoration:none}
+  .top{display:flex;align-items:center;gap:12px;padding:16px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#0a0c0bee;backdrop-filter:blur(10px);z-index:5}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:650;font-size:17px}
+  .eye{width:20px;height:20px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center}
+  .eye::after{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+  .tag{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:20px;padding:3px 10px}
+  .wrap{max-width:1180px;margin:0 auto;padding:24px}
+  .bar{display:grid;grid-template-columns:1fr 220px 150px auto;gap:10px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px}
+  input{background:#0b0e0c;border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:11px 13px;font-size:14px;font-family:var(--sans);width:100%}
+  input::placeholder{color:var(--dim)}
+  input:focus{outline:none;border-color:var(--acc-dim)}
+  .btn{background:var(--acc);color:#04120b;border:none;border-radius:9px;font-weight:650;font-size:14px;padding:11px 20px;cursor:pointer;white-space:nowrap;transition:background .15s,transform .1s}
+  .btn:hover{background:#57f0ae}.btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .btn-g{background:transparent;border:1px solid var(--line);color:var(--ink)}
+  .btn-g:hover{border-color:var(--acc-dim);background:#ffffff06}
+  .grid2{display:grid;grid-template-columns:1fr 340px;gap:18px;margin-top:18px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}.bar{grid-template-columns:1fr}}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:14px;font-weight:600}
+  /* agents live */
+  .agents{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  @media(max-width:560px){.agents{grid-template-columns:repeat(2,1fr)}}
+  .ag{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:12.5px;color:var(--dim);transition:all .3s}
+  .ag .d{width:8px;height:8px;border-radius:50%;background:var(--line);flex:none;transition:background .3s}
+  .ag.run{color:var(--ink);border-color:var(--acc-dim);background:var(--acc-ghost)}
+  .ag.run .d{background:var(--acc);animation:pulse 1s infinite}
+  .ag.done{color:var(--ink)}.ag.done .d{background:var(--acc-dim)}
+  .ag .c{margin-left:auto;font-family:var(--mono);font-size:11px}
+  .ag.hit .c{color:var(--high)}.ag.clean .c{color:var(--acc)}
+  @keyframes pulse{50%{opacity:.4}}
+  /* score */
+  .scorebox{text-align:center;padding:8px 0 14px}
+  .scorebox .n{font-family:var(--mono);font-size:60px;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .scorebox .u{color:var(--dim);font-size:14px}
+  .sevrow{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:6px;font-size:12px}
+  .sevrow span{font-family:var(--mono)}
+  .kpis{display:flex;justify-content:space-around;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;text-align:center;color:var(--mut)}
+  .kpis b{display:block;font-size:16px;color:var(--ink);font-family:var(--mono)}
+  .actions{display:flex;gap:8px;margin-top:14px}
+  .actions a{flex:1;text-align:center;padding:10px;border-radius:9px;font-size:13px;font-weight:600}
+  /* log */
+  .log{font-family:var(--mono);font-size:12px;color:var(--dim);max-height:160px;overflow:auto;line-height:1.7}
+  .log b{color:var(--acc)}
+  /* findings */
+  .fin{display:grid;grid-template-columns:auto 1fr auto;gap:12px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+  .sev{font-family:var(--mono);font-size:10px;font-weight:700;text-transform:uppercase;padding:3px 7px;border-radius:5px;white-space:nowrap;height:fit-content}
+  .sev.critical{color:var(--crit);background:#ff5c5c1a;border:1px solid #ff5c5c40}
+  .sev.high{color:var(--high);background:#ff9d421a;border:1px solid #ff9d4240}
+  .sev.medium{color:var(--med);background:#ffd84d1a;border:1px solid #ffd84d40}
+  .sev.low{color:var(--low);background:#63b3ff1a;border:1px solid #63b3ff40}
+  .sev.info{color:var(--dim);background:#ffffff08;border:1px solid var(--line)}
+  .fin .t{font-size:13.5px;font-weight:560}
+  .fin .m{font-family:var(--mono);font-size:11px;color:var(--dim);margin-top:3px}
+  .fin .r{font-family:var(--mono);font-size:11px;color:var(--mut);text-align:right;white-space:nowrap}
+  .filters{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+  .filters button{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:20px;padding:4px 11px;font-size:11.5px;cursor:pointer;font-family:var(--mono)}
+  .filters button.on{border-color:var(--acc-dim);color:var(--acc);background:var(--acc-ghost)}
+  .recent{font-size:13px}
+  .recent a{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);color:var(--mut)}
+  .recent a:hover{color:var(--ink)}
+  .recent .s{font-family:var(--mono);font-size:12px}
+  .muted{color:var(--dim);font-size:13px}
+  .empty{text-align:center;color:var(--dim);padding:40px 0;font-size:14px}
+</style>
+</head>
+<body>
+<div class="top">
+  <span class="logo"><span class="eye"></span>Panoptic</span>
+  <span class="tag">Console d'audit</span>
+  <span class="tag" id="backend" style="margin-left:auto">...</span>
+</div>
+
+<div class="wrap">
+  <div class="bar">
+    <input id="url" placeholder="https://votre-site.fr" value="https://example.com">
+    <input id="repo" placeholder="chemin repo (optionnel), ex: .">
+    <input id="key" placeholder="cle API (optionnel)">
+    <button class="btn" id="go">Lancer l'audit</button>
+  </div>
+
+  <div class="grid2">
+    <div>
+      <div class="card" id="agentsCard" style="display:none">
+        <h3>Agents <span id="agProg" class="muted"></span></h3>
+        <div class="agents" id="agents"></div>
+        <div class="log" id="log" style="margin-top:14px"></div>
+      </div>
+
+      <div class="card" id="findCard" style="display:none;margin-top:18px">
+        <h3>Findings <span id="findCount" class="muted"></span></h3>
+        <div class="filters" id="filters"></div>
+        <div id="findings"></div>
+      </div>
+
+      <div class="empty" id="empty">Lancez un audit pour voir les 15 agents travailler en direct.</div>
+    </div>
+
+    <div>
+      <div class="card" id="scoreCard" style="display:none">
+        <h3>Synthese</h3>
+        <div class="scorebox"><div class="n" id="score">-</div><div class="u">/100 sante</div>
+          <div class="sevrow" id="sevrow"></div>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="actions" id="actions"></div>
+      </div>
+      <div class="card recent" style="margin-top:18px">
+        <h3>Audits recents</h3>
+        <div id="recent"><div class="muted">Chargement...</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const AGENTS = [
+  ["security","Securite"],["code-arch","Code/archi"],["infra","Infra"],["data","Donnees"],["deps","Dependances"],["perf","Perf"],
+  ["seo","SEO"],["geo","GEO"],["analytics","Analytics"],["email","Email"],
+  ["a11y","Accessibilite"],["ux","UX"],["content","Contenu"],["legal","RGPD"],["cro","CRO"],
+];
+const SEVS = ["critical","high","medium","low","info"];
+const $ = (id) => document.getElementById(id);
+const api = (path, opts={}) => fetch(path, { ...opts, headers: { "content-type":"application/json", ...(key()? {"x-api-key":key()}:{}) , ...(opts.headers||{}) } });
+const key = () => $("key").value.trim();
+let current = null, findings = [], filter = "all";
+
+fetch("/api/audits").then(r=>r.json()).then(d=>{ $("backend").textContent = "stockage: "+d.backend; renderRecent(d.audits); }).catch(()=>{});
+
+$("go").onclick = start;
+$("url").addEventListener("keydown", e=>{ if(e.key==="Enter") start(); });
+
+async function start(){
+  const target = $("url").value.trim(); if(!target) return;
+  const repoPath = $("repo").value.trim() || null;
+  $("go").disabled = true; $("go").textContent = "...";
+  $("empty").style.display = "none";
+  resetAgents();
+  $("agentsCard").style.display = ""; $("scoreCard").style.display="none"; $("findCard").style.display="none";
+  $("log").innerHTML = "";
+  const res = await api("/api/audits", { method:"POST", body: JSON.stringify({ target, repoPath }) });
+  const { id, error } = await res.json();
+  if(error){ addLog("erreur: "+error); $("go").disabled=false; $("go").textContent="Lancer l'audit"; return; }
+  current = id;
+  listen(id);
+}
+
+function resetAgents(){
+  $("agents").innerHTML = AGENTS.map(([id,l])=>`<div class="ag" data-id="${id}"><span class="d"></span>${l}<span class="c"></span></div>`).join("");
+  $("agProg").textContent = "";
+}
+function agEl(id){ return document.querySelector('.ag[data-id="'+id+'"]'); }
+
+function listen(id){
+  const es = new EventSource("/api/audits/"+id+"/events");
+  es.addEventListener("log", e=>{
+    const { msg } = JSON.parse(e.data); addLog(msg); parseAgent(msg);
+  });
+  es.addEventListener("status", e=>addLog("statut: "+JSON.parse(e.data).status));
+  es.addEventListener("done", e=>{ es.close(); finish(id); });
+  es.addEventListener("error", e=>{ es.close(); $("go").disabled=false; $("go").textContent="Lancer l'audit"; });
+}
+
+function parseAgent(msg){
+  let m = msg.match(/^agent:([\w-]+) demarre/); if(m){ const el=agEl(m[1]); if(el) el.classList.add("run"); return; }
+  m = msg.match(/^agent:([\w-]+) termine \((\d+)\)/);
+  if(m){ const el=agEl(m[1]); if(el){ el.classList.remove("run"); el.classList.add("done", +m[2]>0?"hit":"clean"); el.querySelector(".c").textContent = +m[2]>0? m[2] : "ok"; }
+    const done = document.querySelectorAll(".ag.done").length; $("agProg").textContent = done+"/"+AGENTS.length; }
+}
+function addLog(msg){ const l=$("log"); l.innerHTML += msg.replace(/(\d+)/g,"<b>$1</b>")+"<br>"; l.scrollTop=l.scrollHeight; }
+
+async function finish(id){
+  $("go").disabled=false; $("go").textContent="Lancer l'audit";
+  const rec = await (await api("/api/audits/"+id)).json();
+  findings = rec.findings || [];
+  renderScore(rec); renderFindings();
+  fetch("/api/audits").then(r=>r.json()).then(d=>renderRecent(d.audits));
+}
+
+function renderScore(rec){
+  $("scoreCard").style.display="";
+  const col = rec.score>=80?"var(--acc)":rec.score>=50?"var(--med)":"var(--crit)";
+  $("score").textContent = rec.score; $("score").style.color = col;
+  const by = rec.summary?.bySeverity || {};
+  const cols = {critical:"var(--crit)",high:"var(--high)",medium:"var(--med)",low:"var(--low)",info:"var(--dim)"};
+  $("sevrow").innerHTML = SEVS.map(s=>`<span style="color:${cols[s]}">${by[s]||0} ${s}</span>`).join("");
+  const su = rec.summary||{};
+  $("kpis").innerHTML = `<div><b>${findings.length}</b>findings</div><div><b>${(rec.agents||[]).length}</b>domaines</div><div><b>${su.effortDays??"-"}j</b>effort</div><div><b>${((su.riskEur||0)/1000).toFixed(0)}k</b>risque EUR</div>`;
+  $("actions").innerHTML = `<a class="btn" href="/api/audits/${rec.id}/report" target="_blank">Rapport PDF</a><a class="btn btn-g" href="/api/audits/${rec.id}/fixbundle?format=md" target="_blank">Correctifs PR</a>`;
+}
+
+function renderFindings(){
+  $("findCard").style.display="";
+  $("findCount").textContent = "("+findings.length+")";
+  const counts = {all:findings.length}; SEVS.forEach(s=>counts[s]=findings.filter(f=>f.severity===s).length);
+  $("filters").innerHTML = ["all",...SEVS].filter(s=>s==="all"||counts[s]).map(s=>`<button class="${s===filter?"on":""}" data-f="${s}">${s} ${counts[s]}</button>`).join("");
+  $("filters").querySelectorAll("button").forEach(b=>b.onclick=()=>{filter=b.dataset.f;renderFindings();});
+  const list = findings.filter(f=>filter==="all"||f.severity===filter);
+  $("findings").innerHTML = list.map(f=>{
+    const loc = f.location?.file ? f.location.file+":"+f.location.line : (f.location?.url||"");
+    const val = f.business?.gain_eur ? "+"+(f.business.gain_eur).toLocaleString("fr-FR")+" EUR" : ((f.business?.risk_eur||0).toLocaleString("fr-FR")+" EUR");
+    return `<div class="fin"><span class="sev ${f.severity}">${f.severity}</span>
+      <div><div class="t">${escapeHtml(f.title)}</div><div class="m">${f.agent}${f.cwe?" · "+f.cwe:""} · ${escapeHtml(loc)}</div></div>
+      <div class="r">${f.effort??""}j<br>${val}</div></div>`;
+  }).join("") || '<div class="muted">Aucun finding dans ce filtre.</div>';
+}
+
+function renderRecent(list){
+  if(!list || !list.length){ $("recent").innerHTML='<div class="muted">Aucun audit.</div>'; return; }
+  $("recent").innerHTML = list.map(a=>{
+    const col = a.score>=80?"var(--acc)":a.score>=50?"var(--med)":a.score==null?"var(--dim)":"var(--crit)";
+    return `<a href="#" data-id="${a.id}"><span>${escapeHtml(shorten(a.target))}</span><span class="s" style="color:${col}">${a.status==="done"?a.score+"/100":a.status}</span></a>`;
+  }).join("");
+  $("recent").querySelectorAll("a").forEach(el=>el.onclick=(e)=>{e.preventDefault();openAudit(el.dataset.id);});
+}
+async function openAudit(id){
+  const rec = await (await api("/api/audits/"+id)).json();
+  if(rec.status!=="done"){ current=id; $("empty").style.display="none"; $("agentsCard").style.display=""; resetAgents(); listen(id); return; }
+  current=id; findings=rec.findings||[]; $("empty").style.display="none"; $("agentsCard").style.display="none";
+  renderScore(rec); renderFindings();
+}
+
+function shorten(u){ return u.replace(/^https?:\/\//,"").slice(0,34); }
+function escapeHtml(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+</script>
+</body>
+</html>
