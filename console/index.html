@@ -126,7 +126,7 @@
         </div>
         <div class="kpis" id="kpis"></div>
         <div class="actions">
-          <button class="btn" onclick="window.print()">Rapport PDF</button>
+          <button class="btn" id="dlReport">Rapport PDF</button>
           <button class="btn btn-g" id="dlFix">Correctifs</button>
         </div>
         <button class="btn btn-g" id="openPr" style="width:100%;margin-top:8px">Preparer une pull request</button>
@@ -156,7 +156,19 @@ function fmtRange(b){
 $("go").onclick = start;
 $("url").addEventListener("keydown", e=>{ if(e.key==="Enter") start(); });
 $("dlFix").onclick = downloadFix;
+$("dlReport").onclick = openReport;
 $("openPr").onclick = openPr;
+
+async function openReport(){
+  if(!last) return;
+  const w = window.open("", "_blank");
+  if(w) w.document.write("<p style='font-family:sans-serif;padding:24px;color:#555'>Generation du rapport...</p>");
+  try{
+    const res = await fetch("/api/report", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ result: last }) });
+    const html = await res.text();
+    if(w){ w.document.open(); w.document.write(html); w.document.close(); }
+  }catch(e){ if(w) w.document.body.innerHTML = "Erreur: "+e.message; }
+}
 
 async function openPr(){
   if(!last) return;

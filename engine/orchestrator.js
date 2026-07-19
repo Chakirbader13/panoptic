@@ -10,7 +10,7 @@
 // orchestre, il ne connait pas les outils. Ca permet de tester le flux sans infra.
 
 import { activeAgents } from "./agents.js";
-import { priorityScore, dedupeKey, healthScore, SEVERITY } from "./schema.js";
+import { priorityScore, dedupeKey, healthScore, domainScore, SEVERITY } from "./schema.js";
 import { applyBusiness } from "./business.js";
 
 /**
@@ -116,8 +116,25 @@ function synthesize(findings, score, agents, totals = {}) {
 
   const totalEffort = findings.reduce((s, f) => s + (f.effort ?? 0), 0);
 
+  // Tableau de bord par domaine (score 0-100 + note) et score global pondere.
+  const byDomain = agents.map((a) => {
+    const fs = findings.filter((f) => f.agent === a.id);
+    const dScore = domainScore(fs);
+    const worst = fs.reduce((w, f) => Math.max(w, SEVERITY[f.severity]?.rank ?? 0), 0);
+    const worstLabel = Object.entries(SEVERITY).find(([, v]) => v.rank === worst)?.[1]?.label || "";
+    return {
+      id: a.id, label: a.name, family: a.family, weight: a.weight,
+      score: dScore, count: fs.length, worst: worstLabel,
+      note: fs.length === 0 ? "Aucun probleme detecte." : `${fs.length} finding(s), pire: ${worstLabel.toLowerCase()}.`,
+    };
+  }).sort((x, y) => y.score - x.score);
+  const wSum = agents.reduce((s, a) => s + a.weight, 0) || 1;
+  const weightedScore = Math.round(byDomain.reduce((s, d) => s + d.score * d.weight, 0) / wSum);
+
   return {
     score,
+    weightedScore,
+    byDomain,
     bySeverity,
     domainsCovered: agents.length,
     totalFindings: findings.length,

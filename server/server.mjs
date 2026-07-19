@@ -44,7 +44,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "biz-ranges-1", audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "rich-report-1", audits: await store.list(tenant) });
     }
 
     const mAudit = p.match(/^\/api\/audits\/([\w]+)$/);

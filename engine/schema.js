@@ -58,6 +58,14 @@ function normalizeRule(rule = "") {
   return rule.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
+// Score d'un domaine (0-100) a partir de ses seuls findings. Plus sensible que le global.
+export function domainScore(findings) {
+  const penalty = findings
+    .filter((f) => f.check?.verdict !== "rejected")
+    .reduce((s, f) => { const sev = SEVERITY[f.severity]?.rank ?? 1; return s + sev * sev; }, 0);
+  return Math.max(0, Math.round(100 - (100 * penalty) / (penalty + 40)));
+}
+
 // Score de sante global du site, 0-100, pondere par domaine.
 // Un finding critique non resolu plafonne le score de sa famille.
 export function healthScore(findings, agents) {
