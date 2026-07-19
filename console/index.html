@@ -147,19 +147,41 @@ let findings = [], filter = "all", last = null, scanTimer = null, progTimer = nu
 
 // Barre de progression: montee asymptotique pendant l'attente (requete synchrone),
 // puis 100% a la fin. Donne un sens de progression sans fausse completion des agents.
-function startProg(){
-  clearInterval(progTimer);
-  let pct = 0;
-  $("pbarFill").style.width = "0%";
-  progTimer = setInterval(()=>{
-    pct += (94 - pct) * 0.045;           // ralentit en approchant 94%
-    $("pbarFill").style.width = pct.toFixed(1)+"%";
-    $("agProg").textContent = "scan en cours... "+Math.round(pct)+"%";
-  }, 220);
+// Progression REELLE via le flux NDJSON de /api/audit (un evenement par agent).
+let scanTotal = 13, scanDone = 0;
+const agEl = (id) => document.querySelector('.ag[data-id="'+id+'"]');
+function onEvent(ev){
+  if(!ev) return;
+  if(ev.type === "log"){ handleLog(ev.msg); return; }
+  if(ev.type === "error"){ $("err").textContent = "Erreur: "+ev.error; $("agentsCard").style.display="none"; return; }
+  if(ev.type === "done"){
+    const res = ev.result;
+    if(!res || res.error){ $("err").textContent = "Erreur: "+((res&&res.error)||"?"); $("agentsCard").style.display="none"; return; }
+    if(res.reachable === false) $("err").textContent = "Site injoignable.";
+    last = res; findings = res.findings||[];
+    $("pbarFill").style.width = "100%";
+    finalizeAgents(res); renderScore(res); renderFindings();
+  }
 }
-function stopProg(){
-  clearInterval(progTimer); progTimer = null;
-  $("pbarFill").style.width = "100%";
+function handleLog(msg){
+  let m = msg.match(/(\d+) agents actifs/); if(m){ scanTotal = +m[1]; return; }
+  m = msg.match(/^agent:([\w-]+) demarre/); if(m){ const el=agEl(m[1]); if(el){ el.classList.remove("done","hit","clean"); el.classList.add("scan"); } return; }
+  m = msg.match(/^agent:([\w-]+) termine \((\d+)\)/);
+  if(m){ const el=agEl(m[1]); const c=+m[2];
+    if(el){ el.classList.remove("scan"); el.classList.add("done", c>0?"hit":"clean"); el.querySelector(".c").textContent = c>0? c : "ok"; }
+    scanDone++;
+    $("pbarFill").style.width = Math.min(98, Math.round(scanDone/scanTotal*100))+"%";
+    $("agProg").textContent = scanDone+" / "+scanTotal;
+  }
+}
+function finalizeAgents(res){
+  const counts = {}; (res.findings||[]).forEach(f=>counts[f.agent]=(counts[f.agent]||0)+1);
+  const active = new Set(res.agents||[]);
+  $("agProg").textContent = (res.agents||[]).length+" agents";
+  AGENTS.forEach(([id])=>{ const el = agEl(id); if(!el) return;
+    if(!active.has(id)){ el.classList.remove("scan"); el.querySelector(".c").textContent="—"; el.style.opacity=.4; return; }
+    if(el.classList.contains("scan")){ el.classList.remove("scan"); el.classList.add("done", counts[id]?"hit":"clean"); el.querySelector(".c").textContent = counts[id]? counts[id] : "ok"; }
+  });
 }
 
 function businessParams(){
@@ -207,46 +229,36 @@ async function openPr(){
   }catch(e){ $("prOut").innerHTML = '<span style="color:var(--crit)">Erreur: '+esc(e.message)+'</span>'; }
 }
 
-function start(){
+async function start(){
   let target = $("url").value.trim();
   if(!target){ $("err").textContent="Entrez une URL."; return; }
   if(!/^https?:\/\//.test(target)) target = "https://"+target;
   $("err").textContent=""; $("empty").style.display="none"; $("go").disabled=true; $("go").textContent="Scan...";
   $("agentsCard").style.display=""; $("scoreCard").style.display="none"; $("findCard").style.display="none";
   $("agents").innerHTML = AGENTS.map(([id,l])=>`<div class="ag scan" data-id="${id}"><span class="d"></span>${l}<span class="c"></span></div>`).join("");
-  startProg();
+  $("pbarFill").style.width="3%"; $("agProg").textContent="scan en cours..."; scanTotal=13; scanDone=0;
 
   const bp = businessParams();
-  fetch("/api/audit",{ method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ target, businessParams: bp }) })
-    .then(r=>r.json())
-    .then(res=>{
-      $("go").disabled=false; $("go").textContent="Scanner mon site";
-      if(res.error){ stopProg(); $("err").textContent="Erreur: "+res.error; $("agentsCard").style.display="none"; return; }
-      if(res.reachable===false){ $("err").textContent="Site injoignable."; }
-      last = res; findings = res.findings||[];
-      markAgents(res); renderScore(res); renderFindings();
-    })
-    .catch(e=>{ stopProg(); $("go").disabled=false; $("go").textContent="Scanner mon site"; $("err").textContent="Erreur reseau: "+e.message; });
+  try{
+    const res = await fetch("/api/audit",{ method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ target, businessParams: bp }) });
+    if(res.body && res.body.getReader){
+      // Flux NDJSON: un evenement par ligne, progression reelle par agent.
+      const reader = res.body.getReader(), dec = new TextDecoder(); let buf="";
+      for(;;){
+        const { done, value } = await reader.read();
+        if(done) break;
+        buf += dec.decode(value, { stream:true });
+        let i; while((i = buf.indexOf("\n")) >= 0){ const line = buf.slice(0,i).trim(); buf = buf.slice(i+1); if(line) onEvent(safeParse(line)); }
+      }
+      if(buf.trim()) onEvent(safeParse(buf));
+    } else {
+      // Fallback si le flux n'est pas disponible: reponse JSON complete.
+      onEvent({ type:"done", result: await res.json() });
+    }
+  }catch(e){ $("err").textContent="Erreur reseau: "+e.message; }
+  $("go").disabled=false; $("go").textContent="Scanner mon site";
 }
-
-function markAgents(res){
-  stopProg();
-  const counts = {}; (res.findings||[]).forEach(f=>counts[f.agent]=(counts[f.agent]||0)+1);
-  const active = new Set(res.agents||[]);
-  $("agProg").textContent = (res.agents||[]).length+" agents";
-  // Revelation en cascade: les agents terminent en sequence (feedback, pas fausse progression).
-  const reduce = matchMedia("(prefers-reduced-motion:reduce)").matches;
-  AGENTS.forEach(([id], i)=>{
-    const el = document.querySelector('.ag[data-id="'+id+'"]'); if(!el) return;
-    const apply = ()=>{
-      el.classList.remove("scan");
-      if(!active.has(id)){ el.querySelector(".c").textContent="—"; el.style.opacity=.4; return; }
-      el.classList.add("done", counts[id]?"hit":"clean");
-      el.querySelector(".c").textContent = counts[id]? counts[id] : "ok";
-    };
-    reduce ? apply() : setTimeout(apply, i*45);
-  });
-}
+function safeParse(s){ try{ return JSON.parse(s); }catch{ return null; } }
 
 function renderScore(res){
   $("scoreCard").style.display="";
