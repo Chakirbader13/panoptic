@@ -490,3 +490,61 @@ export const T = {
     footDomains: "Beveiliging &middot; Infra &middot; Data &middot; SEO &middot; GEO &middot; Prestaties &middot; Toegankelijkheid &middot; AVG &middot; CRO",
   },
 };
+
+// Chaines additionnelles pour la refonte premium (section probleme + preuve honnete).
+export const EXTRA = {
+  fr: {
+    proofLine: "Le site que vous lisez passe son propre audit : 15 domaines, findings verifies, code et production.",
+    problemH2: "Chaque outil couvre une case. Vous avez un site entier.",
+    problemLead: "SEMrush voit le SEO, Snyk les dependances, Lighthouse la perf, ZAP la securite. Aucun ne voit le tout, ni ne relie le symptome en prod a sa cause dans le code.",
+    seeReport: "Voir un rapport complet",
+    reportEye: "Le livrable",
+    reportH2: "Un rapport que le decideur lit.",
+    reportLead: "Score global pondere, tableau de bord par domaine, findings priorises, impact chiffre. Genere en HTML, telechargeable en PDF.",
+  },
+  en: {
+    proofLine: "The site you are reading passes its own audit: 15 domains, verified findings, code and production.",
+    problemH2: "Each tool covers one box. You run a whole site.",
+    problemLead: "SEMrush sees SEO, Snyk sees dependencies, Lighthouse sees perf, ZAP sees security. None sees the whole, nor links the symptom in production to its cause in the code.",
+    seeReport: "See a full report",
+    reportEye: "The deliverable",
+    reportH2: "A report the decision-maker reads.",
+    reportLead: "Weighted global score, per-domain dashboard, prioritised findings, quantified impact. Generated in HTML, downloadable as PDF.",
+  },
+  de: {
+    proofLine: "Die Seite, die Sie lesen, besteht ihr eigenes Audit: 15 Domanen, verifizierte Findings, Code und Produktion.",
+    problemH2: "Jedes Tool deckt ein Feld ab. Sie fuhren eine ganze Website.",
+    problemLead: "SEMrush sieht SEO, Snyk die Abhangigkeiten, Lighthouse die Performance, ZAP die Sicherheit. Keines sieht das Ganze oder verknupft das Symptom in der Produktion mit seiner Ursache im Code.",
+    seeReport: "Vollstandigen Bericht ansehen",
+    reportEye: "Das Ergebnis",
+    reportH2: "Ein Bericht, den der Entscheider liest.",
+    reportLead: "Gewichteter Gesamtwert, Dashboard je Domane, priorisierte Findings, bezifferter Impact. Als HTML generiert, als PDF ladbar.",
+  },
+  es: {
+    proofLine: "El sitio que lees pasa su propia auditoria: 15 dominios, findings verificados, codigo y produccion.",
+    problemH2: "Cada herramienta cubre una casilla. Tu tienes un sitio entero.",
+    problemLead: "SEMrush ve el SEO, Snyk las dependencias, Lighthouse el rendimiento, ZAP la seguridad. Ninguna ve el todo, ni enlaza el sintoma en produccion con su causa en el codigo.",
+    seeReport: "Ver un informe completo",
+    reportEye: "El entregable",
+    reportH2: "Un informe que quien decide lee.",
+    reportLead: "Puntuacion global ponderada, cuadro por dominio, findings priorizados, impacto cifrado. Generado en HTML, descargable en PDF.",
+  },
+  it: {
+    proofLine: "Il sito che stai leggendo supera il proprio audit: 15 domini, finding verificati, codice e produzione.",
+    problemH2: "Ogni strumento copre una casella. Tu hai un sito intero.",
+    problemLead: "SEMrush vede la SEO, Snyk le dipendenze, Lighthouse le prestazioni, ZAP la sicurezza. Nessuno vede il tutto, ne collega il sintomo in produzione alla sua causa nel codice.",
+    seeReport: "Vedi un report completo",
+    reportEye: "Il deliverable",
+    reportH2: "Un report che chi decide legge.",
+    reportLead: "Punteggio globale ponderato, cruscotto per dominio, finding prioritizzati, impatto quantificato. Generato in HTML, scaricabile in PDF.",
+  },
+  nl: {
+    proofLine: "De site die je leest doorstaat zijn eigen audit: 15 domeinen, geverifieerde findings, code en productie.",
+    problemH2: "Elke tool dekt een vakje. Jij runt een hele site.",
+    problemLead: "SEMrush ziet SEO, Snyk de dependencies, Lighthouse de prestaties, ZAP de beveiliging. Geen enkele ziet het geheel, of koppelt het symptoom in productie aan zijn oorzaak in de code.",
+    seeReport: "Bekijk een volledig rapport",
+    reportEye: "De oplevering",
+    reportH2: "Een rapport dat de beslisser leest.",
+    reportLead: "Gewogen totaalscore, dashboard per domein, geprioriteerde findings, becijferde impact. Gegenereerd in HTML, downloadbaar als PDF.",
+  },
+};

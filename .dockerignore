@@ -8,6 +8,11 @@ de
 es
 it
 nl
+fonts
+console
+netlify
+robots.txt
+sitemap.xml
 *.md
 .git
 .gitignore
