@@ -222,7 +222,8 @@ function render(lang) {
   const prices = t.prices.map((p, i) => {
     const feats = p[4].map((f) => `<li><span class="tk">&#10003;</span>${esc(f)}</li>`).join("");
     const hi = i === 1;
-    const href = i === 0 ? "/console/" : "#";
+    // Scan gratuit -> console serverless; Audit complet + Continu -> serveur Render (code+prod, SSE).
+    const href = i === 0 ? "/console/" : "https://panoptic-audit.onrender.com/";
     return `<div class="price${hi ? " hi" : ""}"${hi ? ` data-badge="${esc(t.priceBadge)}"` : ""}><div class="pn">${esc(p[0])}</div><div class="pp">${p[1]}${p[2] ? ` <small>${esc(p[2])}</small>` : ""}</div><div class="pd">${esc(p[3])}</div><ul>${feats}</ul><a class="btn ${hi ? "btn-p" : "btn-g"}" href="${href}">${esc(p[5])}</a></div>`;
   }).join("");
 

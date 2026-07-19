@@ -19,7 +19,7 @@ import { priorityScore, dedupeKey, healthScore, SEVERITY } from "./schema.js";
  * @param {(finding) => Promise<Finding>} deps.verify        - couche 3
  * @param {(msg: string) => void} [deps.onProgress]
  */
-export function createOrchestrator({ scan, runAgent, verify, onProgress = () => {} }) {
+export function createOrchestrator({ scan, runAgent, verify, onProgress = () => {}, concurrency = Infinity }) {
   return async function audit(target) {
     // Couche 1 - Scoping. Les agents recoivent un perimetre, ils ne le redecouvrent pas.
     onProgress("scoping");
@@ -27,17 +27,14 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
     const agents = activeAgents(scope);
     onProgress(`scope pret: ${scope.pages?.length ?? 0} pages, ${agents.length} agents actifs`);
 
-    // Couche 2 - Fan-out. Tous les agents actifs en parallele sur code + prod.
-    const raw = (
-      await Promise.all(
-        agents.map(async (agent) => {
-          onProgress(`agent:${agent.id} demarre`);
-          const findings = await runAgent(agent, scope);
-          onProgress(`agent:${agent.id} termine (${findings.length})`);
-          return findings.map((f) => ({ ...f, agent: agent.id, family: agent.family }));
-        })
-      )
-    ).flat();
+    // Couche 2 - Fan-out par lots (concurrence bornee pour maitriser le pic memoire).
+    const runOne = async (agent) => {
+      onProgress(`agent:${agent.id} demarre`);
+      const findings = await runAgent(agent, scope);
+      onProgress(`agent:${agent.id} termine (${findings.length})`);
+      return findings.map((f) => ({ ...f, agent: agent.id, family: agent.family }));
+    };
+    const raw = (await mapLimit(agents, concurrency, runOne)).flat();
 
     // Couche 3 - Verification adversariale. Un finding non reproductible est rejete.
     onProgress(`verification de ${raw.length} findings`);
@@ -69,6 +66,22 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
       generatedAt: null, // stampe par l'appelant (pas de Date.now ici)
     };
   };
+}
+
+// Applique fn a chaque item avec au plus `limit` executions simultanees.
+// Preserve l'ordre des resultats. limit=Infinity => tout en parallele.
+async function mapLimit(items, limit, fn) {
+  const cap = Number.isFinite(limit) ? Math.max(1, limit) : items.length;
+  const results = new Array(items.length);
+  let next = 0;
+  async function worker() {
+    while (next < items.length) {
+      const i = next++;
+      results[i] = await fn(items[i], i);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(cap, items.length) }, worker));
+  return results;
 }
 
 // Fusionne les findings qui pointent le meme endroit + meme regle normalisee.

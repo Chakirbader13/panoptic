@@ -64,7 +64,10 @@ export class AuditQueue {
     const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
     const onProgress = (msg) => this.emit(id, "log", { msg });
 
-    const orchestrate = createOrchestrator({ scan, runAgent, verify, onProgress });
+    // Concurrence bornee: sur un petit conteneur (512 Mo), lancer les 15 agents
+    // simultanement fait deborder la memoire. Reglable via AGENT_CONCURRENCY.
+    const concurrency = Number(process.env.AGENT_CONCURRENCY) || 3;
+    const orchestrate = createOrchestrator({ scan, runAgent, verify, onProgress, concurrency });
 
     try {
       const result = await orchestrate(audit.target);
