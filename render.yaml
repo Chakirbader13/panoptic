@@ -5,11 +5,14 @@ services:
     name: panoptic-audit
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: free
+    plan: standard          # 2 Go RAM, toujours chaud (offre payante code + prod)
     healthCheckPath: /api/audits
     envVars:
       - key: PORT
         value: 8787
+      # 2 Go permettent plus d'agents en parallele: audits plus rapides.
+      - key: AGENT_CONCURRENCY
+        value: 8
       # Optionnel: persistance Supabase multi-tenant (sinon stockage local ephemere).
       - key: SUPABASE_URL
         sync: false
