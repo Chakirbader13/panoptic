@@ -5,7 +5,7 @@ services:
     name: panoptic-audit
     runtime: docker
     dockerfilePath: ./Dockerfile
-    plan: starter
+    plan: free
     healthCheckPath: /api/audits
     envVars:
       - key: PORT
