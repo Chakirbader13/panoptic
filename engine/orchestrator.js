@@ -66,7 +66,7 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
       score,
       agents: agents.map((a) => a.id),
       findings: merged,
-      summary: synthesize(merged, score, agents, totals),
+      summary: synthesize(merged, score, agents, totals, Boolean(scope?.repo)),
       generatedAt: null, // stampe par l'appelant (pas de Date.now ici)
     };
   };
@@ -109,32 +109,45 @@ function dedupe(findings) {
 
 // Construit l'executive summary: comptes par severite, top risques, effort total,
 // et un decoupage roadmap par SLA de severite.
-function synthesize(findings, score, agents, totals = {}) {
+function synthesize(findings, score, agents, totals = {}, hasRepo = false) {
   const bySeverity = {};
   for (const s of Object.keys(SEVERITY)) bySeverity[s] = 0;
   for (const f of findings) bySeverity[f.severity] = (bySeverity[f.severity] ?? 0) + 1;
 
   const totalEffort = findings.reduce((s, f) => s + (f.effort ?? 0), 0);
 
-  // Tableau de bord par domaine (score 0-100 + note) et score global pondere.
+  // HONNETETE: en boite noire (sans depot), certains domaines ne sont PAS evaluables.
+  // On ne leur donne jamais 100/100: ils sont marques "non evalue" et exclus du score.
+  const BB_NONE = new Set(["deps", "code-arch", "data"]);   // rien sans le code
+  const BB_PARTIAL = new Set(["security"]);                 // surface externe seulement
   const byDomain = agents.map((a) => {
     const fs = findings.filter((f) => f.agent === a.id);
+    const bbNone = !hasRepo && BB_NONE.has(a.id);
+    const bbPartial = !hasRepo && BB_PARTIAL.has(a.id);
     const dScore = domainScore(fs);
     const worst = fs.reduce((w, f) => Math.max(w, SEVERITY[f.severity]?.rank ?? 0), 0);
     const worstLabel = Object.entries(SEVERITY).find(([, v]) => v.rank === worst)?.[1]?.label || "";
+    let note;
+    if (bbNone) note = "Non evalue en boite noire (audit complet code requis).";
+    else if (bbPartial) note = fs.length ? `${fs.length} finding(s) sur la surface externe. Code non evalue.` : "Surface externe propre. Code non evalue (audit complet).";
+    else note = fs.length === 0 ? "Aucun probleme detecte." : `${fs.length} finding(s), pire: ${worstLabel.toLowerCase()}.`;
     return {
       id: a.id, label: a.name, family: a.family, weight: a.weight,
-      score: dScore, count: fs.length, worst: worstLabel,
-      note: fs.length === 0 ? "Aucun probleme detecte." : `${fs.length} finding(s), pire: ${worstLabel.toLowerCase()}.`,
+      evaluated: !bbNone, partial: bbPartial,
+      score: bbNone ? null : dScore, count: fs.length, worst: worstLabel, note,
     };
-  }).sort((x, y) => y.score - x.score);
-  const wSum = agents.reduce((s, a) => s + a.weight, 0) || 1;
-  const weightedScore = Math.round(byDomain.reduce((s, d) => s + d.score * d.weight, 0) / wSum);
+  }).sort((x, y) => (x.evaluated === y.evaluated ? ((y.score ?? -1) - (x.score ?? -1)) : (x.evaluated ? -1 : 1)));
+  // Score global pondere: uniquement les domaines reellement evalues.
+  const evald = byDomain.filter((d) => d.evaluated);
+  const wSum = evald.reduce((s, d) => s + d.weight, 0) || 1;
+  const weightedScore = Math.round(evald.reduce((s, d) => s + d.score * d.weight, 0) / wSum);
 
   return {
     score,
     weightedScore,
     byDomain,
+    evaluatedCount: evald.length,
+    notEvaluatedCount: byDomain.length - evald.length,
     bySeverity,
     domainsCovered: agents.length,
     totalFindings: findings.length,

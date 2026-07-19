@@ -23,9 +23,16 @@ function verdict(score) {
 }
 
 function domainCard(d) {
+  if (d.evaluated === false) {
+    return `<div class="dcard dna">
+      <div class="dtop"><span class="dlabel">${esc(d.label)}</span><span class="dscore" style="color:#9aa39c;font-size:13px">non evalue</span></div>
+      <div class="dbar"><i style="width:0"></i></div>
+      <p class="dnote">${esc(d.note)}</p>
+    </div>`;
+  }
   const col = scoreColor(d.score);
   return `<div class="dcard">
-    <div class="dtop"><span class="dlabel">${esc(d.label)}</span><span class="dscore" style="color:${col}">${d.score}<small>/100</small></span></div>
+    <div class="dtop"><span class="dlabel">${esc(d.label)}${d.partial ? ' <span class="dpart">partiel</span>' : ""}</span><span class="dscore" style="color:${col}">${d.score}<small>/100</small></span></div>
     <div class="dbar"><i style="width:${d.score}%;background:${col}"></i></div>
     <p class="dnote">${esc(d.note)}</p>
   </div>`;
