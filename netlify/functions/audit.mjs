@@ -7,11 +7,11 @@ import { runAgent } from "../../engine/registry.js";
 
 export default async (req) => {
   if (req.method !== "POST") return new Response(JSON.stringify({ error: "POST requis" }), { status: 405, headers: { "content-type": "application/json" } });
-  let target;
-  try { ({ target } = await req.json()); } catch { return json({ error: "corps JSON invalide" }, 400); }
+  let target, businessParams;
+  try { ({ target, businessParams } = await req.json()); } catch { return json({ error: "corps JSON invalide" }, 400); }
   if (!target || !/^https?:\/\/|\./.test(target)) return json({ error: "url cible requise" }, 400);
 
-  const scan = (t) => recon(t);                 // pas de repoPath: boite noire
+  const scan = (t) => recon(t, { businessParams }); // pas de repoPath: boite noire
   const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
   const orchestrate = createOrchestrator({ scan, runAgent, verify });
 

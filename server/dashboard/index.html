@@ -90,6 +90,15 @@
     <input id="key" placeholder="cle API (optionnel)">
     <button class="btn" id="go">Lancer l'audit</button>
   </div>
+  <details style="margin-top:10px">
+    <summary style="cursor:pointer;font-size:12.5px;color:var(--mut)">Affiner l'estimation d'impact (optionnel)</summary>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px">
+      <input id="mv" type="number" min="0" placeholder="visites / mois">
+      <input id="cv" type="number" min="0" placeholder="valeur conversion (EUR)">
+      <input id="cr" type="number" min="0" max="100" step="0.1" placeholder="taux conversion (%)">
+    </div>
+    <div style="font-size:11.5px;color:var(--dim);margin-top:8px">Sans ces donnees, les montants sont une fourchette indicative par gravite. Avec, ils sont calibres sur votre CA.</div>
+  </details>
 
   <div class="grid2">
     <div>
@@ -135,6 +144,12 @@ const SEVS = ["critical","high","medium","low","info"];
 const $ = (id) => document.getElementById(id);
 const api = (path, opts={}) => fetch(path, { ...opts, headers: { "content-type":"application/json", ...(key()? {"x-api-key":key()}:{}) , ...(opts.headers||{}) } });
 const key = () => $("key").value.trim();
+const eur = (n) => Math.round(n||0).toLocaleString("fr-FR");
+function businessParams(){
+  const mv=parseFloat($("mv").value), cv=parseFloat($("cv").value), cr=parseFloat($("cr").value);
+  if(!(mv>0)||!(cv>0)) return null;
+  return { monthlyVisits:mv, conversionValue:cv, conversionRate: cr>0?cr/100:0 };
+}
 let current = null, findings = [], filter = "all";
 
 fetch("/api/audits").then(r=>r.json()).then(d=>{ $("backend").textContent = "stockage: "+d.backend; renderRecent(d.audits); }).catch(()=>{});
@@ -150,7 +165,7 @@ async function start(){
   resetAgents();
   $("agentsCard").style.display = ""; $("scoreCard").style.display="none"; $("findCard").style.display="none";
   $("log").innerHTML = "";
-  const res = await api("/api/audits", { method:"POST", body: JSON.stringify({ target, repoPath }) });
+  const res = await api("/api/audits", { method:"POST", body: JSON.stringify({ target, repoPath, businessParams: businessParams() }) });
   const { id, error } = await res.json();
   if(error){ addLog("erreur: "+error); $("go").disabled=false; $("go").textContent="Lancer l'audit"; return; }
   current = id;
@@ -197,7 +212,8 @@ function renderScore(rec){
   const cols = {critical:"var(--crit)",high:"var(--high)",medium:"var(--med)",low:"var(--low)",info:"var(--dim)"};
   $("sevrow").innerHTML = SEVS.map(s=>`<span style="color:${cols[s]}">${by[s]||0} ${s}</span>`).join("");
   const su = rec.summary||{};
-  $("kpis").innerHTML = `<div><b>${findings.length}</b>findings</div><div><b>${(rec.agents||[]).length}</b>domaines</div><div><b>${su.effortDays??"-"}j</b>effort</div><div><b>${((su.riskEur||0)/1000).toFixed(0)}k</b>risque EUR</div>`;
+  const kEur=(n)=>Math.round((n||0)/1000);
+  $("kpis").innerHTML = `<div><b>${findings.length}</b>findings</div><div><b>${(rec.agents||[]).length}</b>domaines</div><div><b>${su.effortDays??"-"}j</b>effort</div><div><b>${kEur(su.riskLow)}-${kEur(su.riskHigh)}k</b>risque EUR est.</div>`;
   $("actions").innerHTML = `<a class="btn" href="/api/audits/${rec.id}/report" target="_blank">Rapport PDF</a><a class="btn btn-g" href="/api/audits/${rec.id}/fixbundle?format=md" target="_blank">Correctifs PR</a>`;
 }
 
@@ -210,7 +226,7 @@ function renderFindings(){
   const list = findings.filter(f=>filter==="all"||f.severity===filter);
   $("findings").innerHTML = list.map(f=>{
     const loc = f.location?.file ? f.location.file+":"+f.location.line : (f.location?.url||"");
-    const val = f.business?.gain_eur ? "+"+(f.business.gain_eur).toLocaleString("fr-FR")+" EUR" : ((f.business?.risk_eur||0).toLocaleString("fr-FR")+" EUR");
+    const b=f.business||{}; const val = (b.kind==="gain"?"+":"")+eur(b.low)+"-"+eur(b.high)+" €";
     return `<div class="fin"><span class="sev ${f.severity}">${f.severity}</span>
       <div><div class="t">${escapeHtml(f.title)}</div><div class="m">${f.agent}${f.cwe?" · "+f.cwe:""} · ${escapeHtml(loc)}</div></div>
       <div class="r">${f.effort??""}j<br>${val}</div></div>`;

@@ -24,7 +24,7 @@ export function renderReport(rec) {
         <div class="fx"><b>Correctif:</b> ${esc(x.fix?.summary || "")}</div>
       </td>
       <td class="num">${x.effort ?? ""} j</td>
-      <td class="num">${x.business?.gain_eur ? "+" + eur(x.business.gain_eur) : eur(x.business?.risk_eur)} &euro;</td>
+      <td class="num">${x.business?.kind === "gain" ? "+" : ""}${eur(x.business?.low)} - ${eur(x.business?.high)} &euro;</td>
     </tr>`;
   }).join("");
 
@@ -80,10 +80,11 @@ export function renderReport(rec) {
     <div class="kpi"><b>${f.length}</b><span>findings</span></div>
     <div class="kpi"><b>${(rec.agents || []).length}</b><span>domaines</span></div>
     <div class="kpi"><b>${s.effortDays ?? "-"} j</b><span>effort total</span></div>
-    <div class="kpi"><b>${eur(s.riskEur)} &euro;</b><span>risque</span></div>
-    <div class="kpi"><b>+${eur(s.gainEur)} &euro;</b><span>gain potentiel</span></div>
+    <div class="kpi"><b>${eur(s.riskLow)} - ${eur(s.riskHigh)} &euro;</b><span>risque est.</span></div>
+    <div class="kpi"><b>+${eur(s.gainLow)} - ${eur(s.gainHigh)} &euro;</b><span>gain potentiel est.</span></div>
   </div>
 </div>
+<p style="font-size:11.5px;color:#6b7280;margin:-8px 0 18px">Les montants sont des estimations ${s.calibrated ? "calibrees sur les donnees fournies (trafic x conversion)" : "indicatives par gravite (fournir trafic et valeur de conversion pour calibrer)"}, pas des mesures.</p>
 <div class="chips">${sevChips}</div>
 
 <h2>Roadmap</h2>

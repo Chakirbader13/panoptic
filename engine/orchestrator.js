@@ -11,6 +11,7 @@
 
 import { activeAgents } from "./agents.js";
 import { priorityScore, dedupeKey, healthScore, SEVERITY } from "./schema.js";
+import { applyBusiness } from "./business.js";
 
 /**
  * @param {Object} deps
@@ -52,6 +53,9 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
       b.priority - a.priority
     );
 
+    // Estimation d'impact business (fourchette, calibree si params fournis).
+    const totals = applyBusiness(merged, scope.businessParams);
+
     // Couche 5 - Synthese.
     const score = healthScore(merged, agents);
     onProgress(`synthese: sante ${score}/100, ${merged.length} findings retenus`);
@@ -62,7 +66,7 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
       score,
       agents: agents.map((a) => a.id),
       findings: merged,
-      summary: synthesize(merged, score, agents),
+      summary: synthesize(merged, score, agents, totals),
       generatedAt: null, // stampe par l'appelant (pas de Date.now ici)
     };
   };
@@ -105,14 +109,12 @@ function dedupe(findings) {
 
 // Construit l'executive summary: comptes par severite, top risques, effort total,
 // et un decoupage roadmap par SLA de severite.
-function synthesize(findings, score, agents) {
+function synthesize(findings, score, agents, totals = {}) {
   const bySeverity = {};
   for (const s of Object.keys(SEVERITY)) bySeverity[s] = 0;
   for (const f of findings) bySeverity[f.severity] = (bySeverity[f.severity] ?? 0) + 1;
 
   const totalEffort = findings.reduce((s, f) => s + (f.effort ?? 0), 0);
-  const riskEur = findings.reduce((s, f) => s + (f.business?.risk_eur ?? 0), 0);
-  const gainEur = findings.reduce((s, f) => s + (f.business?.gain_eur ?? 0), 0);
 
   return {
     score,
@@ -120,8 +122,16 @@ function synthesize(findings, score, agents) {
     domainsCovered: agents.length,
     totalFindings: findings.length,
     effortDays: Math.round(totalEffort * 10) / 10,
-    riskEur,
-    gainEur,
+    // Impact business estime, en fourchette (calibre si des donnees ont ete fournies).
+    estimate: true,
+    calibrated: Boolean(totals.calibrated),
+    riskLow: totals.riskLow ?? 0,
+    riskHigh: totals.riskHigh ?? 0,
+    gainLow: totals.gainLow ?? 0,
+    gainHigh: totals.gainHigh ?? 0,
+    // compat: valeur unique = milieu de fourchette de risque
+    riskEur: Math.round(((totals.riskLow ?? 0) + (totals.riskHigh ?? 0)) / 2),
+    gainEur: Math.round(((totals.gainLow ?? 0) + (totals.gainHigh ?? 0)) / 2),
     quickWins: findings.filter((f) => (f.effort ?? 1) <= 0.25).slice(0, 10),
     top: findings.slice(0, 10),
     roadmap: {

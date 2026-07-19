@@ -60,7 +60,7 @@ export class AuditQueue {
       }
     }
 
-    const scan = (t) => recon(t, { repoPath });
+    const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams });
     const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
     const onProgress = (msg) => this.emit(id, "log", { msg });
 

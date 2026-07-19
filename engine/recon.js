@@ -60,7 +60,7 @@ function internalLinks(html, origin) {
   return [...out].slice(0, 100);
 }
 
-export async function recon(target, { repoPath } = {}) {
+export async function recon(target, { repoPath, businessParams } = {}) {
   const origin = originOf(target);
   const host = hostOf(target);
   const url = origin + "/";
@@ -90,6 +90,7 @@ export async function recon(target, { repoPath } = {}) {
     securityTxt: { present: Boolean(security.ok) },
     stack,
     pages: reachable ? internalLinks(html, origin) : [],
+    businessParams: businessParams || null,
     // drapeaux d'activation conditionnelle pour agents.js
     repo: Boolean(repoPath),
     ...repoSignals(repoPath),

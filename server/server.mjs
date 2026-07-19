@@ -37,13 +37,14 @@ const server = http.createServer(async (req, res) => {
       const repoRaw = body.repoUrl || body.repoPath || null;
       const repoUrl = repoRaw && /^https?:\/\//.test(repoRaw) ? repoRaw : null;
       const repoPath = repoRaw && !repoUrl ? repoRaw : null;
-      const rec = await store.create(tenant, { target, repoPath, repoUrl });
-      queue.enqueue({ id: rec.id, target, repoPath, repoUrl });
+      const businessParams = body.businessParams || null;
+      const rec = await store.create(tenant, { target, repoPath, repoUrl, businessParams });
+      queue.enqueue({ id: rec.id, target, repoPath, repoUrl, businessParams });
       return send(res, 201, { id: rec.id, status: "queued" });
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "standard-2gb", audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "biz-ranges-1", audits: await store.list(tenant) });
     }
 
     const mAudit = p.match(/^\/api\/audits\/([\w]+)$/);

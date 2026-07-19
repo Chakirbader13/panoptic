@@ -48,8 +48,8 @@ function ensure() { for (const d of [DIR, AUD]) if (!existsSync(d)) mkdirSync(d,
 function fpath(id) { return join(AUD, `${id}.json`); }
 
 export const store = {
-  async create(tenant, { target, repoPath, repoUrl }) {
-    const rec = { id: newId(), tenant, target, repoPath: repoPath || null, repoUrl: repoUrl || null, status: "queued", score: null, summary: null, findings: [], created_at: new Date().toISOString(), progress: [] };
+  async create(tenant, { target, repoPath, repoUrl, businessParams }) {
+    const rec = { id: newId(), tenant, target, repoPath: repoPath || null, repoUrl: repoUrl || null, businessParams: businessParams || null, status: "queued", score: null, summary: null, findings: [], created_at: new Date().toISOString(), progress: [] };
     if (SUPA) { await supa("audits", { method: "POST", body: JSON.stringify({ id: rec.id, tenant: rec.tenant, target, status: "queued", created_at: rec.created_at }) }); }
     else { ensure(); writeFileSync(fpath(rec.id), JSON.stringify(rec, null, 2)); }
     return rec;
