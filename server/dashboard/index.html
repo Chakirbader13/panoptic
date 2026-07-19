@@ -31,6 +31,8 @@
   .card{background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:18px}
   .card h3{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:14px;font-weight:600}
   /* agents live */
+  .pbar{height:6px;background:var(--line);border-radius:4px;overflow:hidden;margin:0 0 16px}
+  .pbar i{display:block;height:100%;width:0;border-radius:4px;background:linear-gradient(90deg,var(--acc-dim),var(--acc));transition:width .35s cubic-bezier(.16,1,.3,1)}
   .agents{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   @media(max-width:560px){.agents{grid-template-columns:repeat(2,1fr)}}
   .ag{display:flex;align-items:center;gap:8px;padding:9px 11px;border:1px solid var(--line);border-radius:9px;font-size:12.5px;color:var(--dim);transition:all .3s}
@@ -104,6 +106,7 @@
     <div>
       <div class="card" id="agentsCard" style="display:none">
         <h3>Agents <span id="agProg" class="muted"></span></h3>
+        <div class="pbar"><i id="pbarFill"></i></div>
         <div class="agents" id="agents"></div>
         <div class="log" id="log" style="margin-top:14px"></div>
       </div>
@@ -175,6 +178,7 @@ async function start(){
 function resetAgents(){
   $("agents").innerHTML = AGENTS.map(([id,l])=>`<div class="ag" data-id="${id}"><span class="d"></span>${l}<span class="c"></span></div>`).join("");
   $("agProg").textContent = "";
+  if($("pbarFill")) $("pbarFill").style.width = "0%";
 }
 function agEl(id){ return document.querySelector('.ag[data-id="'+id+'"]'); }
 
@@ -192,7 +196,8 @@ function parseAgent(msg){
   let m = msg.match(/^agent:([\w-]+) demarre/); if(m){ const el=agEl(m[1]); if(el) el.classList.add("run"); return; }
   m = msg.match(/^agent:([\w-]+) termine \((\d+)\)/);
   if(m){ const el=agEl(m[1]); if(el){ el.classList.remove("run"); el.classList.add("done", +m[2]>0?"hit":"clean"); el.querySelector(".c").textContent = +m[2]>0? m[2] : "ok"; }
-    const done = document.querySelectorAll(".ag.done").length; $("agProg").textContent = done+"/"+AGENTS.length; }
+    const done = document.querySelectorAll(".ag.done").length; $("agProg").textContent = done+"/"+AGENTS.length;
+    if($("pbarFill")) $("pbarFill").style.width = Math.round(done/AGENTS.length*100)+"%"; }
 }
 function addLog(msg){ const l=$("log"); l.innerHTML += msg.replace(/(\d+)/g,"<b>$1</b>")+"<br>"; l.scrollTop=l.scrollHeight; }
 
