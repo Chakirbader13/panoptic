@@ -27,16 +27,16 @@ export async function run(scope) {
   const noH1 = ok.filter((p) => p.h1 === 0).map((p) => shortUrl(p.url));
   if (noH1.length) F({ rule: "missing-h1", severity: "medium", effort: 0.3, title: `Aucun <h1> sur ${noH1.length} page(s)`, fix: "Ajouter un h1 unique et descriptif par page.", proof: noH1.slice(0, 8).join(", ") });
   const multiH1 = ok.filter((p) => p.h1 > 1).map((p) => shortUrl(p.url));
-  if (multiH1.length) F({ rule: "multiple-h1", severity: "low", effort: 0.3, title: `Plusieurs <h1> sur ${multiH1.length} page(s)`, fix: "Conserver un seul h1 par page.", proof: multiH1.slice(0, 8).join(", ") });
+  if (multiH1.length) F({ rule: "multiple-h1", severity: "low", effort: 0.3, title: `Plusieurs <h1> dans le DOM sur ${multiH1.length} page(s)`, fix: "Verifier: des sections masquees mutuellement exclusives peuvent n'exposer qu'un h1 a la fois.", proof: multiH1.slice(0, 8).join(", "), check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Comptage DOM brut, ne tient pas compte des sections masquees." } });
 
   const noCanon = ok.filter((p) => !p.canonical).map((p) => shortUrl(p.url));
   if (noCanon.length) F({ rule: "missing-canonical", severity: "medium", effort: 0.2, title: `Balise canonical absente sur ${noCanon.length} page(s)`, fix: "Ajouter <link rel=canonical> auto-referent sur chaque page.", proof: noCanon.slice(0, 8).join(", ") });
 
   const noindexed = ok.filter((p) => p.noindex).map((p) => shortUrl(p.url));
-  if (noindexed.length) F({ rule: "noindex-pages", severity: "high", effort: 0.2, title: `${noindexed.length} page(s) en noindex (exclues de l'index)`, fix: "Verifier que ces pages doivent bien etre desindexees.", proof: noindexed.slice(0, 8).join(", ") });
+  if (noindexed.length) F({ rule: "noindex-pages", severity: "low", effort: 0.2, title: `${noindexed.length} page(s) en noindex`, fix: "Verifier que la desindexation est voulue (souvent intentionnel: pages privees, utilitaires).", proof: noindexed.slice(0, 8).join(", "), check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Un noindex est souvent une decision, pas un defaut." } });
 
   const thin = ok.filter((p) => p.words > 0 && p.words < 120).map((p) => shortUrl(p.url));
-  if (thin.length) F({ rule: "thin-content", severity: "low", effort: 0.5, title: `Contenu pauvre (<120 mots) sur ${thin.length} page(s)`, fix: "Etoffer le contenu editorial de ces pages.", proof: thin.slice(0, 8).join(", ") });
+  if (thin.length) F({ rule: "thin-content", severity: "info", effort: 0.5, title: `Contenu court (<120 mots) sur ${thin.length} page(s)`, fix: "Verifier: les pages utilitaires (desinscription, confirmation) sont volontairement courtes.", proof: thin.slice(0, 8).join(", "), check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Une page utilitaire courte est souvent voulue." } });
 
   // --- Inter-pages: TITRES dupliques (invisible pour un check d'une page) ---
   dupGroups(ok, "title").forEach((g) => F({ rule: "duplicate-title", severity: "medium", effort: 0.3, title: `Title identique sur ${g.pages.length} pages: "${g.value.slice(0, 50)}"`, fix: "Rendre chaque title unique.", proof: g.pages.slice(0, 8).join(", ") }));

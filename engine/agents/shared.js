@@ -116,16 +116,26 @@ export function visibleText(html) {
     .trim();
 }
 
-// --- DNS (via resolveur DoH Cloudflare, sans dependance) --------------------------
+// --- DNS (DoH, deux resolveurs de secours) ----------------------------------------
+// IMPORTANT: distingue "requete echouee" (error) de "aucun enregistrement" (answers:[]).
+// Ne jamais traiter un echec de resolution comme une absence d'enregistrement.
+const DOH = [
+  (n, t) => `https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(n)}&type=${t}`,
+  (n, t) => `https://dns.google/resolve?name=${encodeURIComponent(n)}&type=${t}`,
+];
 export async function dnsQuery(name, type) {
-  const r = await httpGet(`https://cloudflare-dns.com/dns-query?name=${encodeURIComponent(name)}&type=${type}`, { timeout: 6000 });
-  if (r.error) return { error: r.error };
-  try {
-    const j = JSON.parse(r.body);
-    return { answers: (j.Answer || []).map((a) => a.data) };
-  } catch {
-    return { error: "reponse DNS illisible" };
+  let lastErr = "resolution DNS indisponible";
+  for (const build of DOH) {
+    const r = await httpGet(build(name, type), { timeout: 8000 });
+    if (r.error) { lastErr = r.error; continue; }
+    try {
+      const j = JSON.parse(r.body);
+      // Status: 0 = NOERROR (reponse valide, meme si vide). 3 = NXDOMAIN.
+      if (typeof j.Status === "number" && j.Status !== 0 && j.Status !== 3) { lastErr = "DNS status " + j.Status; continue; }
+      return { answers: (j.Answer || []).map((a) => String(a.data).replace(/^"|"$/g, "")), status: j.Status };
+    } catch { lastErr = "reponse DNS illisible"; continue; }
   }
+  return { error: lastErr };
 }
 
 export function hostOf(url) {

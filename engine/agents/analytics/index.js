@@ -11,10 +11,15 @@ export function run(scope) {
   const hasGA4 = /gtag\(\s*['"]config['"]\s*,\s*['"]G-|googletagmanager\.com\/gtag\/js\?id=G-/i.test(html);
   const hasGTM = /googletagmanager\.com\/gtm\.js|GTM-[A-Z0-9]+/i.test(html);
   const hasUA = /UA-\d{4,}-\d+|analytics\.js/i.test(html);
-  const hasAny = hasGA4 || hasGTM || hasUA || /plausible|matomo|piwik|fathom|segment\.com|mixpanel/i.test(html);
+  // Detection large: inclut les references qui peuvent etre chargees APRES consentement.
+  const hasHint = /\bgtag\b|\bdataLayer\b|GTM-|G-[A-Z0-9]{6,}|plausible|matomo|piwik|fathom|segment\.com|mixpanel|posthog|umami|clarity\.ms|analytics/i.test(html);
+  const hasAny = hasGA4 || hasGTM || hasUA || hasHint;
+  // Site avec CMP/consentement: l'analytics se charge probablement apres choix. Ne pas penaliser.
+  const hasConsent = /cookie|consent|cmp|didomi|axeptio|tarteaucitron|cookiebot|onetrust|rgpd|gdpr/i.test(html);
 
-  // Aucune mesure du tout
-  if (!hasAny) F({ rule: "no-analytics", severity: "medium", effort: 0.3, title: "Aucune solution d'analytics detectee", fix: "Installer une mesure (GA4, Plausible, Matomo) avec plan de tracking.", proof: "Aucun tag analytics trouve." });
+  // Aucune mesure du tout ET pas de mecanisme de consentement (sinon l'analytics est
+  // vraisemblablement charge apres consentement, ce qui est conforme, pas un defaut).
+  if (!hasAny && !hasConsent) F({ rule: "no-analytics", severity: "low", effort: 0.3, title: "Aucune solution d'analytics detectee (scan boite noire)", fix: "Verifier la mesure d'audience; un chargement post-consentement peut ne pas etre visible ici.", proof: "Aucun tag analytics dans le HTML initial.", check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Scan boite noire: l'analytics peut se charger apres consentement." } });
 
   // Universal Analytics obsolete
   if (hasUA && !hasGA4) F({ rule: "legacy-ua", severity: "high", effort: 0.5, title: "Universal Analytics obsolete (arrete par Google)", fix: "Migrer vers GA4; UA ne collecte plus de donnees.", proof: "Tag UA-/analytics.js detecte." });

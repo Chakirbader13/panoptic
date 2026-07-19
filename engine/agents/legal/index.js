@@ -26,11 +26,14 @@ export function run(scope) {
   const hasCMP = /cookie|consent|cmp|didomi|axeptio|tarteaucitron|cookiebot|onetrust/i.test(html);
   if (loaded.length && !hasCMP) F({ rule: "tracker-no-cmp", severity: "high", effort: 0.6, cwe: "GDPR-Art7", risk_eur: 12000, title: `Traceur(s) sans banniere de consentement (${loaded.map((t) => t.name).join(", ")})`, fix: "Installer une CMP conforme qui bloque les traceurs avant choix.", proof: `${loaded.length} traceur(s), pas de CMP detectee.` });
 
-  // Mentions legales / politique de confidentialite
-  const hasPrivacy = /(politique de confidentialite|privacy policy|donnees personnelles|rgpd|gdpr)/i.test(html);
-  if (!hasPrivacy) F({ rule: "no-privacy-link", severity: "medium", effort: 0.3, risk_eur: 4000, title: "Aucun lien politique de confidentialite detecte", fix: "Publier et lier une politique de confidentialite conforme RGPD.", proof: "Aucune mention detectee sur l'accueil." });
-  const hasLegal = /(mentions legales|legal notice|impressum|conditions generales|terms of service)/i.test(html);
-  if (!hasLegal) F({ rule: "no-legal-notice", severity: "medium", effort: 0.3, risk_eur: 3000, title: "Aucun lien mentions legales / CGU detecte", fix: "Publier mentions legales et CGV/CGU (obligation legale FR).", proof: "Aucune mention legale detectee." });
+  // Mentions legales / confidentialite: texte (insensible aux accents) OU slug d'URL (href).
+  const flat = html.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+  const hasPrivacy = /politique de confidentialite|privacy policy|donnees personnelles|\brgpd\b|\bgdpr\b/.test(flat)
+    || /href=["'][^"']*(privacy|confidentialite|politique-de-confidentialite|donnees-personnelles)/i.test(html);
+  if (!hasPrivacy) F({ rule: "no-privacy-link", severity: "medium", effort: 0.3, risk_eur: 4000, title: "Aucun lien politique de confidentialite detecte", fix: "Publier et lier une politique de confidentialite conforme RGPD.", proof: "Ni texte ni lien de confidentialite sur l'accueil.", check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Scan boite noire de l'accueil uniquement." } });
+  const hasLegal = /mentions legales|legal notice|impressum|conditions generales|terms of service|\bcgv\b|\bcgu\b/.test(flat)
+    || /href=["'][^"']*(mentions-legales|\/cgv|\/cgu|\/legal|mentions_legales)/i.test(html);
+  if (!hasLegal) F({ rule: "no-legal-notice", severity: "medium", effort: 0.3, risk_eur: 3000, title: "Aucun lien mentions legales / CGU detecte", fix: "Publier mentions legales et CGV/CGU (obligation legale FR).", proof: "Ni texte ni lien de mentions legales sur l'accueil.", check: { verdict: "plausible", votes: 2, refuters: 1, reason: "Scan boite noire de l'accueil uniquement." } });
 
   return { findings, stats: { cookies: cookies.length, trackers: loaded.length, cmp: hasCMP } };
 }

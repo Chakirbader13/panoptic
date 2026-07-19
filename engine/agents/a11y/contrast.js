@@ -155,7 +155,10 @@ export function analyzeContrast(html, cssTexts) {
           const size = fontSizePx(n, rules), weight = fontWeight(n, rules);
           const large = size >= 24 || (size >= 18.66 && weight >= 700);
           const threshold = large ? 3 : 4.5;
-          if (ratio < threshold && (bg.explicit || fg.from !== "default")) {
+          // Un ratio ~1:1 = texte et fond quasi identiques: signature d'une variable CSS non
+          // resolue ou d'un element masque (skip-link, honeypot), pas un vrai defaut de contraste.
+          const artifact = ratio < 1.25;
+          if (ratio < threshold && !artifact && (bg.explicit || fg.from !== "default")) {
             const key = `${hex(fgRgb)}|${hex(bg.rgb)}|${large}`;
             const conf = bg.explicit && fg.from !== "inherited" ? "high" : "medium";
             const rec = seen.get(key) || { fg: hex(fgRgb), bg: hex(bg.rgb), ratio: +ratio.toFixed(2), threshold, large, count: 0, example: null, conf };

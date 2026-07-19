@@ -181,13 +181,16 @@ $("openPr").onclick = openPr;
 
 async function openReport(){
   if(!last) return;
-  const w = window.open("", "_blank");
-  if(w) w.document.write("<p style='font-family:sans-serif;padding:24px;color:#555'>Generation du rapport...</p>");
+  const btn = $("dlReport"), orig = btn.textContent; btn.textContent = "Generation..."; btn.disabled = true;
   try{
     const res = await fetch("/api/report", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ result: last }) });
     const html = await res.text();
-    if(w){ w.document.open(); w.document.write(html); w.document.close(); }
-  }catch(e){ if(w) w.document.body.innerHTML = "Erreur: "+e.message; }
+    const name = "panoptic-rapport-" + (last.target||"site").replace(/^https?:\/\//,"").replace(/[^a-z0-9]+/gi,"-").slice(0,40) + ".html";
+    const blob = new Blob([html], { type:"text/html" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
+  }catch(e){ $("prOut").innerHTML = '<span style="color:var(--crit)">Erreur rapport: '+esc(e.message)+'</span>'; }
+  btn.textContent = orig; btn.disabled = false;
 }
 
 async function openPr(){
