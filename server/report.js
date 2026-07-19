@@ -61,16 +61,20 @@ export function renderReport(rec) {
   const gScore = s.weightedScore ?? rec.score ?? 0;
   const date = new Date(rec.generatedAt || rec.created_at || Date.now()).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
   const domains = s.byDomain || [];
-  const strengths = domains.filter((d) => d.score >= 85);
+  const evald = domains.filter((d) => d.evaluated !== false && d.score != null);
+  // Points forts: uniquement des domaines pleinement evalues (pas les "partiels").
+  const strengths = domains.filter((d) => d.evaluated !== false && !d.partial && d.score >= 85);
 
   // Bandeau eyebrow: familles couvertes.
   const fams = [...new Set(domains.map((d) => d.family))].map((x) => x.toUpperCase()).join(" &middot; ");
 
   // Synthese auto: domaine le plus faible / le plus fort.
-  const weakest = [...domains].sort((a, b) => a.score - b.score)[0];
-  const strongest = domains[0];
-  const summaryLine = domains.length
-    ? `Point fort : <b>${esc(strongest.label)}</b> (${strongest.score}/100). Point faible : <b>${esc(weakest.label)}</b> (${weakest.score}/100), a traiter en priorite.`
+  const weakest = [...evald].sort((a, b) => a.score - b.score)[0];
+  const strongest = [...evald].sort((a, b) => b.score - a.score)[0];
+  const naCount = domains.length - evald.length;
+  const naNote = naCount ? ` ${naCount} domaine(s) non evaluable(s) en boite noire (audit complet du code requis).` : "";
+  const summaryLine = evald.length
+    ? `Point fort : <b>${esc(strongest.label)}</b> (${strongest.score}/100). Point faible : <b>${esc(weakest.label)}</b> (${weakest.score}/100), a traiter en priorite.${naNote}`
     : "";
 
   const dashboard = domains.map(domainCard).join("");
