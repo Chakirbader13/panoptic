@@ -6,3 +6,5 @@ server/.data/
 .env.local
 # fixtures de test avec secrets SYNTHETIQUES: hors du depot (evite le secret-scanning)
 engine/agents/security/__fixtures__/
+.netlify/
+bun.lockb

@@ -4,12 +4,28 @@
 import { createOrchestrator } from "../../engine/orchestrator.js";
 import { recon } from "../../engine/recon.js";
 import { runAgent } from "../../engine/registry.js";
+import { rateLimit, validateTarget } from "./_guard.mjs";
 
 export default async (req) => {
   if (req.method !== "POST") return json({ error: "POST requis" }, 405);
+
+  // Anti-abus: chaque appel lance le moteur complet -> quota par IP + plafond global.
+  const rl = await rateLimit(req);
+  if (!rl.ok) {
+    return json(
+      { error: rl.scope === "global" ? "Service temporairement sature, reessayez dans quelques minutes." : "Trop d'audits depuis cette adresse. Reessayez plus tard." },
+      429,
+      { "retry-after": String(rl.retryAfter) },
+    );
+  }
+
   let target, businessParams;
   try { ({ target, businessParams } = await req.json()); } catch { return json({ error: "corps JSON invalide" }, 400); }
-  if (!target || !/^https?:\/\/|\./.test(target)) return json({ error: "url cible requise" }, 400);
+
+  // Garde SSRF + normalisation de la cible.
+  const check = validateTarget(target);
+  if (!check.ok) return json({ error: check.error }, 400);
+  target = check.url;
 
   const enc = new TextEncoder();
   const stream = new ReadableStream({
@@ -43,8 +59,8 @@ export default async (req) => {
   });
 };
 
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json", "access-control-allow-origin": "*" } });
+function json(obj, status = 200, extra = {}) {
+  return new Response(JSON.stringify(obj), { status, headers: { "content-type": "application/json", "access-control-allow-origin": "*", ...extra } });
 }
 
 export const config = { path: "/api/audit" };
