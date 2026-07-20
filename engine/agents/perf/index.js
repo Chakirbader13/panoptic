@@ -1,5 +1,7 @@
-// Panoptic - Agent Performance / Core Web Vitals (signaux mesurables sans navigateur).
+// Panoptic - Agent Performance / Core Web Vitals.
+// Signaux statiques (sans navigateur) + Lighthouse (Chromium reel) quand disponible.
 import { makeFinding, httpGet, elements, attr } from "../shared.js";
+import { runLighthouse } from "../../scanners/browser.js";
 
 export async function run(scope) {
   const findings = [];
@@ -45,5 +47,16 @@ export async function run(scope) {
   const ttfb = Math.round(performance.now() - t0);
   if (!probe.error && ttfb > 800) F({ rule: "high-ttfb", severity: "medium", effort: 0.5, gain_eur: 1500, title: `TTFB eleve (~${ttfb} ms)`, fix: "Ajouter un CDN, du cache serveur, reduire le temps de generation.", proof: `Temps de reponse ~${ttfb} ms.`, impact: "LCP" });
 
-  return { findings, stats: { htmlKo: Math.round(bytes / 1024), imgs: imgs.length, ttfb } };
+  // Lighthouse (Chromium reel) si disponible: Core Web Vitals mesures en laboratoire.
+  // Complementaire des heuristiques statiques ci-dessus. Repli propre si pas de navigateur.
+  const lh = await runLighthouse(url).catch(() => ({ available: false, findings: [], metrics: null }));
+  if (lh.available) for (const f of lh.findings) F(f);
+
+  return {
+    findings,
+    stats: {
+      htmlKo: Math.round(bytes / 1024), imgs: imgs.length, ttfb,
+      lighthouse: lh.available ? (lh.metrics || { error: lh.error }) : "indisponible",
+    },
+  };
 }

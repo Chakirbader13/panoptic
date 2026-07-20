@@ -1,19 +1,26 @@
-# Panoptic - serveur d'audit. Image Node + git + semgrep (SAST reel code+prod).
+# Panoptic - serveur d'audit code+prod. Node + git + semgrep (SAST) + Chromium (axe/Lighthouse).
 FROM node:20-slim
 
-# git: clone ephemere du depot a auditer (offre code+prod).
-# python3 + semgrep: scanner SAST structurel reel (engine/scanners/semgrep.js).
-# semgrep tourne hors-ligne sur le jeu de regles bundle (--config, --metrics=off).
-RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates python3 python3-pip \
-    && pip3 install --break-system-packages --no-cache-dir semgrep \
-    && rm -rf /var/lib/apt/lists/* /root/.cache
+# Toutes les images du navigateur Playwright dans un chemin stable.
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
 
-# Verifie que semgrep est bien sur le PATH a la construction (echoue tot sinon).
+# git: clone ephemere du depot a auditer.
+# python3 + semgrep: scanner SAST structurel reel (engine/scanners/semgrep.js), hors-ligne.
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates python3 python3-pip \
+    && pip3 install --break-system-packages --no-cache-dir semgrep
 RUN semgrep --version
 
 WORKDIR /app
-# Le moteur et le serveur n'ont aucune dependance npm: on copie le code tel quel.
+
+# Dependances Node (playwright, axe-core, lighthouse, chrome-launcher, @netlify/blobs).
 COPY package.json ./
+RUN npm install --omit=dev --no-audit --no-fund
+
+# Chromium headless + librairies systeme pour les scanners navigateur (axe-core, Lighthouse).
+# `--with-deps` fait son propre apt-get update+install; on nettoie apres.
+RUN npx playwright install --with-deps chromium \
+    && rm -rf /var/lib/apt/lists/* /root/.npm
+
 COPY engine ./engine
 COPY server ./server
 

@@ -1,6 +1,8 @@
-// Panoptic - Agent Accessibilite (WCAG). Controles HTML + contraste CSS reel (1.4.3).
+// Panoptic - Agent Accessibilite (WCAG). Scanner navigateur axe-core (moteur WCAG reel)
+// si un Chromium est disponible (serveur Render); sinon repli heuristique HTML + contraste CSS.
 import { makeFinding, elements, attr, tagAll, countTag, httpGet } from "../shared.js";
 import { analyzeContrast } from "./contrast.js";
+import { runAxe } from "../../scanners/browser.js";
 
 export async function run(scope) {
   const findings = [];
@@ -8,6 +10,15 @@ export async function run(scope) {
   const url = scope.url;
   const html = scope.home.body;
   const F = (r) => findings.push(makeFinding("a11y", "humain", { ...r, url }));
+
+  // Scanner REEL axe-core (rendu Chromium) quand disponible: supplante les heuristiques
+  // ci-dessous (couverture WCAG complete, moins de faux positifs/negatifs). Repli propre
+  // sur les heuristiques si aucun navigateur (ex. fonction serverless).
+  const ax = await runAxe(url).catch(() => ({ available: false, findings: [] }));
+  if (ax.available && !ax.error) {
+    for (const a of ax.findings) F(a);
+    return { findings, stats: { source: "axe-core", violations: ax.findings.length } };
+  }
 
   // Langue du document (WCAG 3.1.1)
   if (!/<html[^>]*\blang\s*=/i.test(html)) F({ rule: "no-lang", severity: "medium", effort: 0.1, cwe: "WCAG-3.1.1", title: "Attribut lang absent sur <html>", fix: "Ajouter lang='fr' (ou la langue reelle) sur la balise html.", proof: "Pas de lang sur <html>." });
@@ -58,7 +69,7 @@ export async function run(scope) {
     });
   }
 
-  return { findings, stats: { imgs: imgs.length, inputs: inputs.length, links: links.length, contrast: contrast.stats, checks: 9 } };
+  return { findings, stats: { source: "heuristic", imgs: imgs.length, inputs: inputs.length, links: links.length, contrast: contrast.stats, checks: 9 } };
 }
 
 // Recupere le CSS (blocs <style> + feuilles liees) et analyse le contraste.

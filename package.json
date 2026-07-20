@@ -13,6 +13,10 @@
     "node": ">=18"
   },
   "dependencies": {
-    "@netlify/blobs": "^10.7.9"
+    "@netlify/blobs": "^10.7.9",
+    "axe-core": "^4.12.1",
+    "chrome-launcher": "^1.2.1",
+    "lighthouse": "^13.4.0",
+    "playwright": "^1.61.1"
   }
 }
