@@ -10,6 +10,18 @@
 // PARESSEUSEMENT et seulement si un navigateur est disponible (serveur Render).
 // -> la fonction serverless Netlify ne les embarque ni ne les charge jamais.
 
+// GARDE-FOU COUT: le navigateur (axe/Lighthouse) est LOURD (~1 Go RAM/Chromium).
+// C'est une capacite PREMIUM, reservee au payant. Regle de decision par audit:
+//   1. PANOPTIC_BROWSER=off  -> coupe-circuit global (tout desactive).
+//   2. scope.browserScan (bool) -> surcharge explicite par audit si fournie.
+//   3. sinon defaut: uniquement si code+prod (repo present). Un scan gratuit
+//      boite-noire (sans repo) ne lance donc JAMAIS Chromium, meme sur Render.
+export function browserAllowed(scope = {}) {
+  if (process.env.PANOPTIC_BROWSER === "off") return false;
+  if (typeof scope.browserScan === "boolean") return scope.browserScan;
+  return Boolean(scope.repo || scope.repoPath);
+}
+
 let _pw; // undefined = pas encore essaye, null = indisponible, objet = module Playwright
 async function getPlaywright() {
   if (_pw !== undefined) return _pw;

@@ -2,7 +2,7 @@
 // si un Chromium est disponible (serveur Render); sinon repli heuristique HTML + contraste CSS.
 import { makeFinding, elements, attr, tagAll, countTag, httpGet } from "../shared.js";
 import { analyzeContrast } from "./contrast.js";
-import { runAxe } from "../../scanners/browser.js";
+import { runAxe, browserAllowed } from "../../scanners/browser.js";
 
 export async function run(scope) {
   const findings = [];
@@ -14,10 +14,12 @@ export async function run(scope) {
   // Scanner REEL axe-core (rendu Chromium) quand disponible: supplante les heuristiques
   // ci-dessous (couverture WCAG complete, moins de faux positifs/negatifs). Repli propre
   // sur les heuristiques si aucun navigateur (ex. fonction serverless).
-  const ax = await runAxe(url).catch(() => ({ available: false, findings: [] }));
-  if (ax.available && !ax.error) {
-    for (const a of ax.findings) F(a);
-    return { findings, stats: { source: "axe-core", violations: ax.findings.length } };
+  if (browserAllowed(scope)) {
+    const ax = await runAxe(url).catch(() => ({ available: false, findings: [] }));
+    if (ax.available && !ax.error) {
+      for (const a of ax.findings) F(a);
+      return { findings, stats: { source: "axe-core", violations: ax.findings.length } };
+    }
   }
 
   // Langue du document (WCAG 3.1.1)
