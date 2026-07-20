@@ -5,6 +5,7 @@
 import { scanCode } from "./scan.js";
 import { scanProd } from "./prod.js";
 import { verifyFinding } from "./verify.js";
+import { runSemgrep } from "../../scanners/semgrep.js";
 import { dedupeKey } from "../../schema.js";
 
 // Risque business indicatif (euros) par severite. Heuristique assumee, pas une mesure.
@@ -38,6 +39,10 @@ export async function runSecurity({ repoPath, url } = {}) {
     raw.push(...r.findings);
     stats.files = r.stats.files;
     stats.lines = r.stats.lines;
+    // Scanner REEL semgrep en complement des heuristiques (degradation gracieuse).
+    const sg = await runSemgrep(repoPath);
+    raw.push(...sg.findings);
+    stats.semgrep = sg.available ? { results: sg.stats?.results ?? sg.findings.length } : { unavailable: sg.error };
   }
   if (url) {
     const p = await scanProd(url);

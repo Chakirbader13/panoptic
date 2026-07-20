@@ -1,0 +1,98 @@
+# Panoptic - jeu de regles semgrep CURATE (haute signal, offline, deterministe).
+# Volontairement compact et redistribuable (regles ecrites ici, pas le registre
+# semgrep sous licence). Couvre les sinks a fort signal en JS/TS et Python.
+# Execute par engine/scanners/semgrep.js via `semgrep --config <ce fichier>`.
+# NB: les valeurs `pattern` sont entre quotes (elles contiennent : et { } que YAML
+# interpreterait sinon comme des mappings).
+rules:
+  - id: js-eval-call
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: "Appel a eval() - execution de code arbitraire (CWE-95)."
+    metadata: { cwe: "CWE-95", owasp: "A03:2021", fix: "Supprimer eval; utiliser JSON.parse ou une logique explicite." }
+    pattern: "eval(...)"
+
+  - id: js-child-process-injection
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: "Commande shell construite dynamiquement (injection de commande, CWE-78)."
+    metadata: { cwe: "CWE-78", owasp: "A03:2021", fix: "Utiliser execFile/spawn avec un tableau d'arguments, sans shell." }
+    patterns:
+      - pattern-either:
+          - pattern: "child_process.exec(`...${...}...`, ...)"
+          - pattern: "child_process.execSync(`...${...}...`, ...)"
+          - pattern: "exec(`...${...}...`, ...)"
+          - pattern: "execSync(`...${...}...`, ...)"
+          - pattern: "child_process.exec($A + $B, ...)"
+          - pattern: "exec($A + $B, ...)"
+
+  - id: js-react-dangerously-set-inner-html
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: "dangerouslySetInnerHTML - risque de XSS si la source n'est pas assainie (CWE-79)."
+    metadata: { cwe: "CWE-79", owasp: "A03:2021", fix: "Assainir le HTML (DOMPurify) ou eviter l'injection brute." }
+    pattern: "<$EL dangerouslySetInnerHTML={...} />"
+
+  - id: js-weak-hash
+    languages: [javascript, typescript]
+    severity: WARNING
+    message: "Algorithme de hachage faible (MD5/SHA1) (CWE-327)."
+    metadata: { cwe: "CWE-327", owasp: "A02:2021", fix: "Utiliser SHA-256+ ; pour les mots de passe, bcrypt/scrypt/argon2." }
+    patterns:
+      - pattern-either:
+          - pattern: 'crypto.createHash("md5")'
+          - pattern: 'crypto.createHash("sha1")'
+
+  - id: js-jwt-none-algorithm
+    languages: [javascript, typescript]
+    severity: ERROR
+    message: "JWT signe avec l'algorithme 'none' - jetons falsifiables (CWE-347)."
+    metadata: { cwe: "CWE-347", owasp: "A02:2021", fix: "Imposer un algorithme fort (RS256/HS256) et le verifier." }
+    pattern: 'jwt.sign(..., { ..., algorithm: "none", ... })'
+
+  - id: py-subprocess-shell-true
+    languages: [python]
+    severity: ERROR
+    message: "subprocess avec shell=True - injection de commande possible (CWE-78)."
+    metadata: { cwe: "CWE-78", owasp: "A03:2021", fix: "Passer une liste d'arguments et shell=False." }
+    patterns:
+      - pattern-either:
+          - pattern: "subprocess.run(..., shell=True, ...)"
+          - pattern: "subprocess.call(..., shell=True, ...)"
+          - pattern: "subprocess.Popen(..., shell=True, ...)"
+          - pattern: "os.system(...)"
+
+  - id: py-yaml-unsafe-load
+    languages: [python]
+    severity: ERROR
+    message: "yaml.load sans Loader securise - deserialisation dangereuse (CWE-502)."
+    metadata: { cwe: "CWE-502", owasp: "A08:2021", fix: "Utiliser yaml.safe_load()." }
+    patterns:
+      - pattern: "yaml.load($X)"
+      - pattern-not: "yaml.load($X, Loader=...)"
+
+  - id: py-eval-exec
+    languages: [python]
+    severity: ERROR
+    message: "eval()/exec() - execution de code arbitraire (CWE-95)."
+    metadata: { cwe: "CWE-95", owasp: "A03:2021", fix: "Eviter eval/exec; parser explicitement l'entree." }
+    pattern-either:
+      - pattern: "eval(...)"
+      - pattern: "exec(...)"
+
+  - id: py-flask-debug-true
+    languages: [python]
+    severity: WARNING
+    message: "Flask lance avec debug=True - console interactive exposee en prod (CWE-489)."
+    metadata: { cwe: "CWE-489", owasp: "A05:2021", fix: "Desactiver debug en production." }
+    pattern: "$APP.run(..., debug=True, ...)"
+
+  - id: py-weak-hash
+    languages: [python]
+    severity: WARNING
+    message: "Hachage faible (MD5/SHA1) (CWE-327)."
+    metadata: { cwe: "CWE-327", owasp: "A02:2021", fix: "Utiliser hashlib.sha256+ ; mots de passe: argon2/bcrypt." }
+    patterns:
+      - pattern-either:
+          - pattern: "hashlib.md5(...)"
+          - pattern: "hashlib.sha1(...)"
