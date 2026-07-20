@@ -6,6 +6,7 @@
 import { createOrchestrator } from "./orchestrator.js";
 import { recon } from "./recon.js";
 import { runAgent } from "./registry.js";
+import { verifyFinding } from "./verify.js";
 
 const args = process.argv.slice(2);
 let target = null, repoPath = null;
@@ -19,8 +20,7 @@ const c = { r: "\x1b[0m", d: "\x1b[2m", b: "\x1b[1m", red: "\x1b[31m", org: "\x1
 const SEV = { critical: c.red, high: c.org, medium: c.yel, low: c.blue, info: c.gry };
 
 const scan = (t) => recon(t, { repoPath });
-const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
-const audit = createOrchestrator({ scan, runAgent, verify, onProgress: (m) => process.stdout.write(`${c.gry}.${c.r} ${m}\n`) });
+const audit = createOrchestrator({ scan, runAgent, verify: verifyFinding, onProgress: (m) => process.stdout.write(`${c.gry}.${c.r} ${m}\n`) });
 
 console.log(`\n${c.b}Panoptic - audit complet${c.r}  ${c.d}${target}${repoPath ? " + repo " + repoPath : ""}${c.r}\n`);
 const t0 = performance.now();

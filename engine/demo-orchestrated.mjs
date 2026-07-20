@@ -5,6 +5,7 @@
 //   node demo-orchestrated.mjs [--url https://site]
 import { createOrchestrator } from "./orchestrator.js";
 import { runSecurity } from "./agents/security/index.js";
+import { verifyFinding } from "./verify.js";
 import { AGENTS } from "./agents.js";
 
 const urlArg = (() => { const i = process.argv.indexOf("--url"); return i >= 0 ? process.argv[i + 1] : "https://example.com"; })();
@@ -25,11 +26,9 @@ const runAgent = async (agent, scope) => {
   return []; // agents restants: a implementer (option A / runners reels)
 };
 
-// Couche 3 - verification. L'agent securite verifie deja: on preserve son verdict.
-const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
-
+// Couche 3 - verification adversariale reelle (preserve les verdicts de l'agent securite).
 const log = (m) => console.log("  .", m);
-const audit = createOrchestrator({ scan, runAgent, verify, onProgress: log });
+const audit = createOrchestrator({ scan, runAgent, verify: verifyFinding, onProgress: log });
 
 console.log("\nPanoptic - pipeline complet (agent securite reel)\n");
 const r = await audit(urlArg);

@@ -38,8 +38,9 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
     const raw = (await mapLimit(agents, concurrency, runOne)).flat();
 
     // Couche 3 - Verification adversariale. Un finding non reproductible est rejete.
+    // Le verificateur recoit le scope pour re-deriver la claim independamment de l'agent.
     onProgress(`verification de ${raw.length} findings`);
-    const verified = await Promise.all(raw.map(verify));
+    const verified = await Promise.all(raw.map((f) => verify(f, scope)));
     const survivors = verified.filter((f) => f.check?.verdict !== "rejected");
 
     // Couche 4 - Dedup inter-domaines puis scoring impact/effort.

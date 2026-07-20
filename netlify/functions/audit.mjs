@@ -4,6 +4,7 @@
 import { createOrchestrator } from "../../engine/orchestrator.js";
 import { recon } from "../../engine/recon.js";
 import { runAgent } from "../../engine/registry.js";
+import { verifyFinding } from "../../engine/verify.js";
 import { rateLimit, validateTarget } from "./_guard.mjs";
 
 export default async (req) => {
@@ -32,7 +33,7 @@ export default async (req) => {
     async start(controller) {
       const send = (obj) => { try { controller.enqueue(enc.encode(JSON.stringify(obj) + "\n")); } catch { /* stream ferme */ } };
       const scan = (t) => recon(t, { businessParams });                 // boite noire
-      const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
+      const verify = verifyFinding;                                     // vraie verif adversariale
       const onProgress = (msg) => send({ type: "log", msg });
       const orchestrate = createOrchestrator({ scan, runAgent, verify, onProgress, concurrency: 6 });
       try {

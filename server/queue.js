@@ -5,6 +5,7 @@ import { EventEmitter } from "node:events";
 import { createOrchestrator } from "../engine/orchestrator.js";
 import { recon } from "../engine/recon.js";
 import { runAgent } from "../engine/registry.js";
+import { verifyFinding } from "../engine/verify.js";
 import { store } from "./store.js";
 import { cloneRepo } from "./clone.js";
 
@@ -61,7 +62,7 @@ export class AuditQueue {
     }
 
     const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams });
-    const verify = async (f) => (f.check ? f : { ...f, check: { verdict: "confirmed", votes: 3, refuters: 0 } });
+    const verify = verifyFinding; // vraie verification adversariale (couche 3)
     const onProgress = (msg) => this.emit(id, "log", { msg });
 
     // Concurrence bornee: sur un petit conteneur (512 Mo), lancer les 15 agents
