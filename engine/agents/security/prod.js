@@ -18,6 +18,19 @@ const HEADER_RULES = [
   { id: "missing-referrer", header: "referrer-policy", severity: "info", effort: 0.1,
     title: "En-tete Referrer-Policy absent",
     fix: "Ajouter Referrer-Policy: strict-origin-when-cross-origin." },
+  { id: "missing-permissions-policy", header: "permissions-policy", severity: "info", effort: 0.2,
+    title: "En-tete Permissions-Policy absent",
+    fix: "Restreindre les API sensibles (camera, microphone, geolocation) via Permissions-Policy." },
+];
+
+// Directives CSP dangereuses (analysees seulement si la CSP est presente).
+const CSP_WEAK = [
+  { re: /'unsafe-inline'/, id: "csp-unsafe-inline", severity: "medium", what: "'unsafe-inline'",
+    why: "autorise les scripts/styles inline, annulant l'essentiel de la protection XSS" },
+  { re: /'unsafe-eval'/, id: "csp-unsafe-eval", severity: "medium", what: "'unsafe-eval'",
+    why: "autorise eval(), vecteur d'injection de code" },
+  { re: /(script-src[^;]*\*(?!\.)|default-src[^;]*\s\*(?:\s|;|$))/, id: "csp-wildcard", severity: "medium", what: "source * (joker)",
+    why: "autorise le chargement de scripts depuis n'importe quelle origine" },
 ];
 
 const DISCLOSURE_HEADERS = [
@@ -31,10 +44,15 @@ const DISCLOSURE_HEADERS = [
 
 const EXPOSED_PATHS = [
   { path: "/.env", severity: "critical", title: "Fichier .env expose publiquement", must: /[A-Z_]+=/ },
+  { path: "/.env.local", severity: "critical", title: "Fichier .env.local expose", must: /[A-Z_]+=/ },
+  { path: "/.env.production", severity: "critical", title: "Fichier .env.production expose", must: /[A-Z_]+=/ },
   { path: "/.git/config", severity: "high", title: "Depot .git expose", must: /\[core\]|repositoryformatversion/ },
+  { path: "/.git/HEAD", severity: "high", title: "Depot .git expose (HEAD)", must: /ref:\s*refs\// },
   { path: "/.aws/credentials", severity: "critical", title: "Identifiants AWS exposes", must: /aws_access_key_id/i },
   { path: "/config.json", severity: "medium", title: "Fichier de config JSON expose", must: /[{]/ },
-  { path: "/.env.local", severity: "critical", title: "Fichier .env.local expose", must: /[A-Z_]+=/ },
+  { path: "/.DS_Store", severity: "low", title: "Fichier .DS_Store expose (structure de dossiers)", must: /Bud1|\x00\x00\x00/ },
+  { path: "/backup.sql", severity: "high", title: "Dump SQL de sauvegarde expose", must: /(CREATE TABLE|INSERT INTO|DROP TABLE)/i },
+  { path: "/server-status", severity: "medium", title: "Apache server-status expose", must: /Apache Server Status|Server uptime/i },
 ];
 
 async function fetchSafe(url, opts = {}) {
@@ -60,6 +78,7 @@ export async function scanProd(rawUrl) {
 
   const H = {};
   res.headers.forEach((v, k) => { H[k.toLowerCase()] = v; });
+  const homeBody = (await res.text().catch(() => "")) || "";
 
   // 1. En-tetes de securite manquants
   for (const r of HEADER_RULES) {
@@ -105,6 +124,63 @@ export async function scanProd(rawUrl) {
       title: "Site servi en HTTP clair (pas de TLS)",
       fix: "Forcer HTTPS et rediriger tout le trafic HTTP en 301.",
       url, proof: `Reponse ${res.status} sur ${url}`, confidence: "high",
+    });
+  }
+
+  // 4b. Faiblesses de la CSP (analysee seulement si presente: preuve directe dans l'en-tete)
+  const csp = H["content-security-policy"] || "";
+  if (csp) {
+    for (const w of CSP_WEAK) {
+      if (w.re.test(csp)) findings.push({
+        ruleId: w.id, cwe: "CWE-693", kind: "prod", severity: w.severity, effort: 0.4,
+        title: `CSP affaiblie par ${w.what}`,
+        fix: `Retirer ${w.what} de la CSP: ${w.why}.`,
+        url, proof: `CSP contient ${w.what}.`, confidence: "high",
+      });
+    }
+  }
+
+  // 4c. HSTS present mais faible (max-age court ou sans includeSubDomains)
+  const hsts = H["strict-transport-security"];
+  if (isHttps && hsts) {
+    const maxAge = Number((/max-age=(\d+)/i.exec(hsts) || [])[1] || 0);
+    if (maxAge > 0 && maxAge < 15768000) findings.push({
+      ruleId: "hsts-short-maxage", cwe: "CWE-319", kind: "prod", severity: "low", effort: 0.1,
+      title: `HSTS max-age trop court (${Math.round(maxAge / 86400)} j)`,
+      fix: "Porter max-age a au moins 15768000 (6 mois), idealement 31536000 (1 an).",
+      url, proof: hsts.slice(0, 120), confidence: "high",
+    });
+    else if (!/includesubdomains/i.test(hsts)) findings.push({
+      ruleId: "hsts-no-subdomains", cwe: "CWE-319", kind: "prod", severity: "info", effort: 0.1,
+      title: "HSTS sans includeSubDomains",
+      fix: "Ajouter includeSubDomains pour couvrir tous les sous-domaines.",
+      url, proof: hsts.slice(0, 120), confidence: "medium",
+    });
+  }
+
+  // 4d. CORS reflechi (une requete GET avec un Origin sonde: reflexion = preuve directe)
+  const probeOrigin = "https://panoptic-cors-probe.example";
+  const cors = await fetchSafe(url, { headers: { origin: probeOrigin } });
+  if (!cors.error) {
+    const acao = cors.headers.get("access-control-allow-origin");
+    const acac = (cors.headers.get("access-control-allow-credentials") || "").toLowerCase() === "true";
+    if (acao === probeOrigin || (acao === "*" && acac)) findings.push({
+      ruleId: "cors-reflected-origin", cwe: "CWE-942", kind: "prod",
+      severity: acac ? "high" : "medium", effort: 0.3,
+      title: acac ? "CORS reflechi avec credentials (fuite de donnees possible)" : "CORS reflechit toute origine",
+      fix: "Verifier l'Origin contre une liste blanche; ne jamais reflechir + Allow-Credentials.",
+      url, proof: `ACAO: ${acao}${acac ? ", Allow-Credentials: true" : ""}`, confidence: "high",
+    });
+  }
+
+  // 4e. Contenu mixte: sous-ressources chargees en HTTP clair sur une page HTTPS
+  if (isHttps && homeBody) {
+    const mixed = homeBody.match(/<(?:script|img|iframe|link|source|video|audio)\b[^>]*\b(?:src|href)=["']http:\/\/[^"']+/gi) || [];
+    if (mixed.length) findings.push({
+      ruleId: "mixed-content", cwe: "CWE-311", kind: "prod", severity: "medium", effort: 0.3,
+      title: `${mixed.length} sous-ressource(s) chargee(s) en HTTP clair (contenu mixte)`,
+      fix: "Servir toutes les ressources en HTTPS (scripts, images, styles, iframes).",
+      url, proof: mixed[0].slice(0, 120), confidence: "high",
     });
   }
 
