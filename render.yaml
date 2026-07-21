@@ -13,15 +13,15 @@ services:
       # 2 Go permettent plus d'agents en parallele: audits plus rapides.
       - key: AGENT_CONCURRENCY
         value: 8
-      # Coupe-circuit navigateur (axe-core / Lighthouse). "off" = aucun Chromium lance,
-      # quel que soit l'audit (max securite RAM, zero risque OOM). Pour activer les
-      # scanners navigateur sur l'offre payante code+prod: mettre "on" (ou supprimer
-      # cette variable). Le garde-fou par-audit (browserAllowed) reserve de toute facon
-      # le navigateur au code+prod: un scan gratuit boite-noire ne le lance jamais.
+      # Navigateur (axe-core / Lighthouse). "on" = actif sur l'offre payante code+prod
+      # (le garde-fou par-audit browserAllowed reserve de toute facon le navigateur au
+      # code+prod: un scan gratuit boite-noire ne le lance jamais). "off" = coupe-circuit
+      # global (aucun Chromium). Chromium ~1 Go RAM: surveiller l'OOM sous volume.
       - key: PANOPTIC_BROWSER
-        value: "off"
-      # Optionnel: persistance Supabase multi-tenant (sinon stockage local ephemere).
+        value: "on"
+      # Persistance Supabase multi-tenant (projet dedie panoptic-audit, eu-west-3).
+      # URL non secrete (declaree ici); la cle service_role est un SECRET -> dashboard.
       - key: SUPABASE_URL
-        sync: false
+        value: "https://hbhtlyagsrrwyosuthjb.supabase.co"
       - key: SUPABASE_SERVICE_KEY
-        sync: false
+        sync: false   # SECRET: a poser dans le dashboard Render (Environment)
