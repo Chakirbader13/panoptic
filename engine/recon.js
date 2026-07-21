@@ -60,7 +60,7 @@ function internalLinks(html, origin) {
   return [...out].slice(0, 100);
 }
 
-export async function recon(target, { repoPath, businessParams } = {}) {
+export async function recon(target, { repoPath, businessParams, browserScan } = {}) {
   const origin = originOf(target);
   const host = hostOf(target);
   const url = origin + "/";
@@ -93,6 +93,8 @@ export async function recon(target, { repoPath, businessParams } = {}) {
     businessParams: businessParams || null,
     // drapeaux d'activation conditionnelle pour agents.js
     repo: Boolean(repoPath),
+    // surcharge navigateur par audit (undefined = defaut code+prod dans browserAllowed)
+    ...(typeof browserScan === "boolean" ? { browserScan } : {}),
     ...repoSignals(repoPath),
   };
 }

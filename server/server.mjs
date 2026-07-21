@@ -38,13 +38,16 @@ const server = http.createServer(async (req, res) => {
       const repoUrl = repoRaw && /^https?:\/\//.test(repoRaw) ? repoRaw : null;
       const repoPath = repoRaw && !repoUrl ? repoRaw : null;
       const businessParams = body.businessParams || null;
+      // Surcharge navigateur par audit (axe/Lighthouse): true force ON meme en prod-only
+      // (offre premium boite-noire / benchmark), false force OFF. Sinon defaut = code+prod.
+      const browserScan = typeof body.browserScan === "boolean" ? body.browserScan : undefined;
       const rec = await store.create(tenant, { target, repoPath, repoUrl, businessParams });
-      queue.enqueue({ id: rec.id, target, repoPath, repoUrl, businessParams });
+      queue.enqueue({ id: rec.id, target, repoPath, repoUrl, businessParams, browserScan });
       return send(res, 201, { id: rec.id, status: "queued" });
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "browser-2", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "browser-3", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", audits: await store.list(tenant) });
     }
 
     const mAudit = p.match(/^\/api\/audits\/([\w]+)$/);

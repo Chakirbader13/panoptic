@@ -61,7 +61,7 @@ export class AuditQueue {
       }
     }
 
-    const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams });
+    const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams, browserScan: audit.browserScan });
     const verify = verifyFinding; // vraie verification adversariale (couche 3)
     const onProgress = (msg) => this.emit(id, "log", { msg });
 
