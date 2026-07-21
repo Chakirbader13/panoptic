@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Benchmark Panoptic : 10 sites réels, 15 domaines, 3 moteurs</title>
+<meta name="description" content="Panoptic a audité 10 sites publics sur 15 domaines avec semgrep, axe-core et Lighthouse en direct. Chiffres réels, comparaison de couverture face aux scanners spécialisés.">
+<link rel="canonical" href="https://panoptic-audit.netlify.app/benchmark/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Un seul rapport voit ce que dix outils voient séparément">
+<meta property="og:description" content="10 sites réels audités sur 15 domaines. semgrep + axe-core + Lighthouse en direct. Chiffres à l'appui.">
+<meta property="og:url" content="https://panoptic-audit.netlify.app/benchmark/">
+<meta property="og:image" content="https://panoptic-audit.netlify.app/benchmark/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Benchmark Panoptic : 10 sites, 15 domaines, 3 moteurs réels">
+<meta name="twitter:description" content="Ce qu'un seul rapport voit quand dix outils spécialisés ne voient qu'une case.">
+<meta name="twitter:image" content="https://panoptic-audit.netlify.app/benchmark/og.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a120f'/%3E%3Ccircle cx='16' cy='16' r='6' fill='none' stroke='%233ee89e' stroke-width='2.4'/%3E%3Ccircle cx='16' cy='16' r='2' fill='%233ee89e'/%3E%3C/svg%3E">
+<style>
+  @font-face{font-family:"Geist";src:url("/fonts/Geist-Variable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  @font-face{font-family:"Geist Mono";src:url("/fonts/GeistMono-Variable.woff2") format("woff2");font-weight:100 900;font-display:swap}
+  :root{
+    --bg:#0a120f; --bg2:#0f1a16; --panel:#111d18; --line:#1e2f28;
+    --ink:#e9f1ec; --mut:#93a89d; --dim:#5f746b;
+    --acc:#3ee89e; --pass:#3ee89e; --warn:#e0b154; --fail:#e2685f; --r:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.6 "Geist",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"Geist Mono",ui-monospace,monospace}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+  a{color:var(--acc);text-decoration:none}
+  /* NAV */
+  nav{position:sticky;top:0;z-index:20;background:rgba(10,18,15,.82);
+    backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+  .nav-in{max-width:1080px;margin:0 auto;padding:0 24px;height:62px;
+    display:flex;align-items:center;justify-content:space-between}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:640;letter-spacing:-.01em;color:var(--ink)}
+  .brand .dot{width:20px;height:20px;border-radius:50%;border:2.4px solid var(--acc);position:relative}
+  .brand .dot::after{content:"";position:absolute;inset:5.5px;border-radius:50%;background:var(--acc)}
+  .cta{background:var(--acc);color:#06120c;font-weight:640;font-size:13.5px;
+    padding:9px 16px;border-radius:100px;transition:transform .15s ease,background .15s ease}
+  .cta:hover{background:#5cf0af}
+  .cta:active{transform:translateY(1px)}
+  /* HERO */
+  header.hero{border-bottom:1px solid var(--line);
+    background:radial-gradient(120% 140% at 88% -10%,rgba(62,232,158,.10),transparent 55%)}
+  .hero-in{max-width:1080px;margin:0 auto;padding:60px 24px 46px}
+  .eyebrow{font-family:"Geist Mono",monospace;font-size:11.5px;letter-spacing:.24em;
+    color:var(--acc);text-transform:uppercase;margin-bottom:20px}
+  h1{font-size:clamp(32px,5vw,52px);line-height:1.04;letter-spacing:-.02em;
+    margin:0 0 18px;font-weight:680;max-width:16ch}
+  h1 i{font-style:italic;color:var(--acc)}
+  .thesis{font-size:18px;color:var(--mut);max-width:60ch;line-height:1.5}
+  .thesis b{color:var(--ink);font-weight:600}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+    background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;margin-top:40px}
+  .stat{background:var(--bg2);padding:20px 22px}
+  .stat .n{font-family:"Geist Mono",monospace;font-size:34px;font-weight:700;letter-spacing:-.03em;line-height:1;color:var(--acc)}
+  .stat .l{font-size:12.5px;color:var(--mut);margin-top:8px;line-height:1.35}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}h1{font-size:33px}}
+  /* SECTIONS */
+  section{padding:56px 0}
+  section+section{border-top:1px solid var(--line)}
+  h2{font-size:26px;letter-spacing:-.01em;margin:0 0 8px;font-weight:640}
+  .lead{color:var(--mut);max-width:70ch;margin:0 0 28px}
+  .matrix{width:100%;border-collapse:collapse;font-size:14px}
+  .matrix thead th{font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--dim);text-align:left;padding:0 12px 12px;font-weight:600;white-space:nowrap}
+  .matrix thead th.num,.matrix td.num{text-align:right}
+  .matrix tbody tr{border-top:1px solid var(--line)}
+  .matrix td{padding:14px 12px;vertical-align:middle}
+  .site{font-weight:600}
+  .scorecell{display:flex;align-items:center;gap:11px;justify-content:flex-end}
+  .scorenum{font-family:"Geist Mono",monospace;font-weight:700;font-size:16px;min-width:2.4ch;text-align:right}
+  .bar{width:66px;height:6px;border-radius:3px;background:#16241d;overflow:hidden;flex:none}
+  .bar i{display:block;height:100%;border-radius:3px}
+  .sev{font-family:"Geist Mono",monospace;font-size:13px;white-space:nowrap}
+  .sev .h{color:var(--fail)}.sev .m{color:var(--warn)}.sev .l{color:var(--mut)}
+  .eng{font-family:"Geist Mono",monospace;font-size:13px;text-align:center;color:var(--mut)}
+  .eng b{color:var(--acc)}
+  .weak{color:var(--mut);font-size:12.5px;line-height:1.4}
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--bg2);padding:8px 14px 14px}
+  .foot-note{font-size:12.5px;color:var(--dim);margin-top:14px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:720px){.cards{grid-template-columns:1fr}}
+  .card{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px}
+  .card h3{margin:0 0 4px;font-size:16px;font-family:"Geist Mono",monospace;color:var(--ink)}
+  .card .sub{color:var(--dim);font-size:12px;margin-bottom:16px;font-family:"Geist Mono",monospace}
+  .find{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-top:1px solid var(--line);font-size:13.5px}
+  .find:first-of-type{border-top:none}
+  .tag{font-family:"Geist Mono",monospace;font-size:10.5px;padding:2px 7px;border-radius:5px;white-space:nowrap;flex:none;border:1px solid var(--line)}
+  .tag.axe{color:#8fd0ff;border-color:#243b4a}
+  .tag.lh{color:var(--warn);border-color:#3d3218}
+  .tag.seo{color:var(--mut)}
+  .find .txt{color:var(--mut)}.find .txt b{color:var(--ink);font-weight:600}
+  .verdict{margin-top:18px;font-size:14px;color:var(--ink);border-left:2px solid var(--acc);padding-left:14px;line-height:1.5}
+  .cov{width:100%;border-collapse:collapse;font-size:13.5px}
+  .cov th,.cov td{padding:12px 12px;text-align:left;border-top:1px solid var(--line)}
+  .cov thead th{border-top:none;font-family:"Geist Mono",monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .cov td.tool{font-weight:600;white-space:nowrap}
+  .cov td.tool.us{color:var(--acc)}
+  .cov .yes{color:var(--pass)}.cov .no{color:var(--dim)}
+  .cov tr.us{background:rgba(62,232,158,.05)}
+  .note{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r);padding:22px 24px;color:var(--mut);font-size:13.5px;line-height:1.6}
+  .note b{color:var(--ink)}
+  /* CTA BAND */
+  .band{text-align:center;background:radial-gradient(120% 160% at 50% 0%,rgba(62,232,158,.10),transparent 60%)}
+  .band h2{font-size:clamp(26px,4vw,38px);max-width:20ch;margin:0 auto 14px}
+  .band p{color:var(--mut);max-width:52ch;margin:0 auto 26px}
+  .cta-lg{display:inline-block;background:var(--acc);color:#06120c;font-weight:680;font-size:16px;
+    padding:15px 30px;border-radius:100px;transition:transform .15s ease,background .15s ease}
+  .cta-lg:hover{background:#5cf0af}.cta-lg:active{transform:translateY(1px)}
+  footer{border-top:1px solid var(--line);padding:28px 0 46px;color:var(--dim);font-family:"Geist Mono",monospace;font-size:12px;
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer b{color:var(--acc)}
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .6s ease,transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<nav><div class="nav-in">
+  <a class="brand" href="/"><span class="dot"></span>Panoptic</a>
+  <a class="cta" href="/console/">Auditer un site</a>
+</div></nav>
+
+<header class="hero">
+  <div class="hero-in">
+    <div class="eyebrow">Benchmark de preuve</div>
+    <h1>Un seul rapport voit ce que <i>dix outils</i> voient séparément.</h1>
+    <p class="thesis">Panoptic a audité <b>10 sites publics réels</b> sur ses <b>15 domaines</b>, en faisant tourner trois moteurs standards de l'industrie en direct : <b>semgrep</b> (sécurité), <b>axe-core</b> (accessibilité WCAG) et <b>Lighthouse</b> (Core Web Vitals). Voici les chiffres bruts.</p>
+    <div class="stats">
+      <div class="stat"><div class="n">10</div><div class="l">sites audités en direct</div></div>
+      <div class="stat"><div class="n">15</div><div class="l">domaines par site, un rapport</div></div>
+      <div class="stat"><div class="n">225</div><div class="l">findings réels, vérifiés</div></div>
+      <div class="stat"><div class="n">42</div><div class="l">issus des vrais moteurs axe + Lighthouse</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="reveal">
+    <h2>Les 10 sites, mesurés</h2>
+    <p class="lead">Score global pondéré sur les seuls domaines évaluables en boîte noire. Classés du plus faible au plus solide. Chiffres 100 pour 100 réels, produits par les audits Panoptic en production.</p>
+    <div class="tblwrap">
+      <table class="matrix">
+        <thead><tr>
+          <th>Site</th><th class="num">Score pondéré</th><th class="num">Findings</th>
+          <th>Sévérité H / M / F</th><th class="num">axe</th><th class="num">Lighthouse</th><th>Domaines les plus faibles</th>
+        </tr></thead>
+        <tbody id="mbody"></tbody>
+      </table>
+    </div>
+    <p class="foot-note mono">Score moyen du panel : 78 / 100. Aucun site n'est parfait. Même les plus soignés cachent des dettes d'accessibilité et de performance mesurables.</p>
+  </section>
+
+  <section class="reveal">
+    <h2>Ce que Panoptic voit, seul</h2>
+    <p class="lead">Un scanner spécialisé ne voit qu'une case. Panoptic croise les moteurs sur la même page : les mêmes deux sites, vus par les vrais axe-core et Lighthouse, dans le même rapport que le SEO, la sécurité et le RGPD.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>python.org</h3>
+        <div class="sub">accessibilité 28/100 &nbsp;·&nbsp; performance 41/100</div>
+        <div class="find"><span class="tag axe">axe-core</span><span class="txt"><b>aria-required-children</b> et <b>color-contrast</b> : structure ARIA cassée, texte illisible</span></div>
+        <div class="find"><span class="tag lh">Lighthouse</span><span class="txt"><b>LCP 4,3 s</b>, <b>TBT 1 260 ms</b> : chargement et interactivité lents (mesuré, pas estimé)</span></div>
+        <div class="find"><span class="tag seo">+ 13 autres</span><span class="txt">SEO, email, GEO, infra dans le même passage</span></div>
+        <p class="verdict">Lighthouse seul rate l'ARIA. axe seul rate les Core Web Vitals. SEMrush rate les deux. Panoptic remonte tout, une fois.</p>
+      </div>
+      <div class="card">
+        <h3>news.ycombinator.com</h3>
+        <div class="sub">accessibilité 31/100 &nbsp;·&nbsp; 7 violations WCAG</div>
+        <div class="find"><span class="tag axe">axe-core</span><span class="txt"><b>image-alt</b>, <b>label</b>, <b>link-name</b> : images, champs et liens sans nom accessible</span></div>
+        <div class="find"><span class="tag lh">Lighthouse</span><span class="txt"><b>TBT 330 ms</b> : blocage du thread principal mesuré</span></div>
+        <div class="find"><span class="tag seo">+ SEO 35</span><span class="txt">titres et métadonnées faibles remontés en parallèle</span></div>
+        <p class="verdict">Sept vraies violations d'accessibilité sur un site que tout le monde croit minimal et propre. Le vrai axe-core ne pardonne pas.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>Couverture : Panoptic contre les spécialistes</h2>
+    <p class="lead">Chaque concurrent excelle sur son axe. Aucun ne couvre les autres. Cette matrice n'invente aucun chiffre : elle liste ce que chaque catégorie d'outil traite réellement.</p>
+    <div class="tblwrap">
+      <table class="cov">
+        <thead><tr><th class="tool">Outil</th><th>Sécurité (code + prod)</th><th>Accessibilité</th><th>Performance / CWV</th><th>SEO / GEO</th><th>RGPD · Email · CRO</th></tr></thead>
+        <tbody>
+          <tr class="us"><td class="tool us">Panoptic</td><td class="yes">semgrep + DAST</td><td class="yes">axe-core</td><td class="yes">Lighthouse</td><td class="yes">oui</td><td class="yes">oui</td></tr>
+          <tr><td class="tool">SEMrush / Ahrefs</td><td class="no">non</td><td class="no">non</td><td class="no">partiel</td><td class="yes">oui</td><td class="no">non</td></tr>
+          <tr><td class="tool">Snyk</td><td class="yes">code</td><td class="no">non</td><td class="no">non</td><td class="no">non</td><td class="no">non</td></tr>
+          <tr><td class="tool">Lighthouse</td><td class="no">non</td><td class="yes">partiel</td><td class="yes">oui</td><td class="no">basique</td><td class="no">non</td></tr>
+          <tr><td class="tool">axe / WAVE</td><td class="no">non</td><td class="yes">oui</td><td class="no">non</td><td class="no">non</td><td class="no">non</td></tr>
+          <tr><td class="tool">OWASP ZAP</td><td class="yes">prod</td><td class="no">non</td><td class="no">non</td><td class="no">non</td><td class="no">non</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <div class="note">
+      <b>Note d'honnêteté.</b> Tous les chiffres de ce document proviennent d'audits Panoptic réels, exécutés en production le 21 juillet 2026. Nous n'avons <b>pas</b> fait tourner SEMrush, Snyk ni Ahrefs (outils payants, comptes requis) : aucun de leurs chiffres n'est fabriqué. La comparaison porte sur la <b>couverture documentée</b> de chaque catégorie d'outil, pas sur une note inventée. Les moteurs axe-core et Lighthouse tournent réellement dans un Chromium headless sur l'offre code + prod. Le score pondéré exclut les domaines qu'un scan boîte noire ne peut pas juger honnêtement (dépendances, code source), affichés « non évalué » plutôt que faussement parfaits.
+    </div>
+  </section>
+
+</div>
+
+<section class="band reveal">
+  <div class="wrap">
+    <h2>Votre site, audité comme ces dix.</h2>
+    <p>Le même moteur, les mêmes 15 domaines, le même rapport honnête. Lancez un audit gratuit en boîte noire, ou l'audit complet code + prod.</p>
+    <a class="cta-lg" href="/console/">Auditer mon site</a>
+  </div>
+</section>
+
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding:0">
+  <span><b>Panoptic</b> · 15 auditeurs · 3 moteurs réels · 1 rapport</span>
+  <span><a href="/">panoptic-audit.netlify.app</a> · benchmark du 21 juillet 2026</span>
+</div></footer>
+
+<script>
+  const DATA=[
+    {s:"info.cern.ch",w:68,f:31,h:7,m:12,l:8,axe:3,lh:0,weak:"SEO 42 · Sécurité 51 · Email 53"},
+    {s:"getbootstrap.com",w:70,f:30,h:6,m:12,l:9,axe:4,lh:2,weak:"Accessibilité 41 · SEO 43 · Performance 51"},
+    {s:"example.com",w:73,f:26,h:3,m:12,l:8,axe:2,lh:0,weak:"SEO 50 · Sécurité 51 · Infra 66"},
+    {s:"gnu.org",w:73,f:27,h:3,m:12,l:9,axe:3,lh:0,weak:"SEO 43 · Accessibilité 60 · Infra 66"},
+    {s:"python.org",w:74,f:28,h:9,m:8,l:9,axe:7,lh:2,weak:"Accessibilité 28 · Performance 41 · SEO 61"},
+    {s:"news.ycombinator.com",w:76,f:28,h:7,m:13,l:7,axe:7,lh:1,weak:"Accessibilité 31 · SEO 35 · Email 56"},
+    {s:"iana.org",w:78,f:23,h:5,m:10,l:7,axe:6,lh:1,weak:"Accessibilité 36 · SEO 44 · GEO 65"},
+    {s:"wikipedia.org",w:84,f:18,h:1,m:8,l:8,axe:0,lh:0,weak:"Sécurité 48 · GEO 61 · SEO 65"},
+    {s:"lebonprompt.com",w:88,f:10,h:2,m:3,l:4,axe:2,lh:2,weak:"Performance 62 · Accessibilité 62 · SEO 69"},
+    {s:"neverssl.com",w:97,f:4,h:2,m:0,l:1,axe:0,lh:0,weak:"Email 56 · Infra 89 · Sécurité 100"},
+  ];
+  const col=w=>w>=80?"var(--pass)":w>=60?"var(--warn)":"var(--fail)";
+  document.getElementById("mbody").innerHTML=DATA.map(d=>`
+    <tr>
+      <td class="site">${d.s}</td>
+      <td class="num"><div class="scorecell"><span class="scorenum mono" style="color:${col(d.w)}">${d.w}</span><span class="bar"><i style="width:${d.w}%;background:${col(d.w)}"></i></span></div></td>
+      <td class="num mono">${d.f}</td>
+      <td class="sev"><span class="h">${d.h}</span> / <span class="m">${d.m}</span> / <span class="l">${d.l}</span></td>
+      <td class="num eng">${d.axe?`<b>${d.axe}</b>`:"0"}</td>
+      <td class="num eng">${d.lh?`<b>${d.lh}</b>`:"0"}</td>
+      <td class="weak">${d.weak}</td>
+    </tr>`).join("");
+  const io=new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.1});
+  document.querySelectorAll(".reveal").forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
