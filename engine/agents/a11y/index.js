@@ -31,8 +31,13 @@ export async function run(scope) {
   if (noAlt.length) F({ rule: "img-no-alt", severity: "high", effort: 0.3, cwe: "WCAG-1.1.1", title: `${noAlt.length}/${imgs.length} images sans alternative textuelle`, fix: "Ajouter alt descriptif (ou alt='' si decoratif).", proof: `${noAlt.length} img sans alt.` });
 
   // Champs de formulaire sans label (WCAG 1.3.1 / 4.1.2)
+  // Un input est considere etiquete s'il porte aria-label/aria-labelledby/title/id/
+  // placeholder OU s'il est ENVELOPPE dans un <label> (cas frequent, ex. honeypots).
+  const labelBlocks = (html.match(/<label\b[^>]*>[\s\S]*?<\/label>/gi) || []).join("\n");
   const inputs = elements(html, "input").filter((i) => !/type=["'](hidden|submit|button|image)["']/i.test(i));
-  const unlabeled = inputs.filter((i) => attr(i, "aria-label") === null && attr(i, "id") === null && attr(i, "placeholder") === null);
+  const unlabeled = inputs.filter((i) =>
+    attr(i, "aria-label") === null && attr(i, "aria-labelledby") === null && attr(i, "title") === null &&
+    attr(i, "id") === null && attr(i, "placeholder") === null && !labelBlocks.includes(i));
   if (unlabeled.length) F({ rule: "input-no-label", severity: "high", effort: 0.4, cwe: "WCAG-1.3.1", title: `${unlabeled.length} champ(s) de formulaire sans label`, fix: "Associer chaque input a un <label for> ou aria-label.", proof: `${unlabeled.length} input sans label.` });
 
   // Ordre des titres (WCAG 1.3.1): h1 present avant h2
