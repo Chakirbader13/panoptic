@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panoptic - La auditoria completa que lee tu codigo y tu produccion</title>
-<meta name="description" content="Panoptic lanza quince auditores especializados sobre tu codigo fuente y tu produccion real, verifica cada problema y lo prioriza. Seguridad, infra, datos, SEO, GEO, rendimiento, accesibilidad, RGPD, CRO. Un solo informe.">
+<title>Panoptic - Auditoría de sitios completa: 15 expertos sobre tu código y tu producción</title>
+<meta name="description" content="Quince auditores especializados analizan tu código fuente y tu sitio en producción: seguridad, SEO, rendimiento, accesibilidad, RGPD, conversión. Cada hallazgo se verifica, se cifra en euros y se prioriza en un solo informe.">
 <link rel="canonical" href="https://panoptic-audit.netlify.app/es/">
 <link rel="alternate" hreflang="fr" href="https://panoptic-audit.netlify.app/">
 <link rel="alternate" hreflang="en" href="https://panoptic-audit.netlify.app/en/">
@@ -13,31 +13,37 @@
 <link rel="alternate" hreflang="it" href="https://panoptic-audit.netlify.app/it/">
 <link rel="alternate" hreflang="nl" href="https://panoptic-audit.netlify.app/nl/">
 <link rel="alternate" hreflang="x-default" href="https://panoptic-audit.netlify.app/">
-<meta property="og:title" content="Panoptic - La auditoria de sitios mas completa del mercado">
-<meta property="og:description" content="Quince expertos. Un informe. Cada problema verificado, cuantificado, priorizado.">
+<meta property="og:title" content="Panoptic - La auditoría de sitios más completa del mercado">
+<meta property="og:description" content="Quince expertos. Un informe. Cada hallazgo verificado, cuantificado, priorizado.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="es">
 <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Panoptic","applicationCategory":"DeveloperApplication","operatingSystem":"Web","url":"https://panoptic-audit.netlify.app/es/","description":"Quince auditores especializados analizan tu código fuente y tu sitio en producción: seguridad, SEO, rendimiento, accesibilidad, RGPD, conversión. Cada hallazgo se verifica, se cifra en euros y se prioriza en un solo informe.","inLanguage":"es","offers":[{"@type":"Offer","price":"0","priceCurrency":"EUR","name":"Scan"},{"@type":"Offer","price":"490","priceCurrency":"EUR","name":"Auditoría completa"},{"@type":"Offer","price":"190","priceCurrency":"EUR","name":"Continuo"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"¿Tengo que dar acceso a mi código?","acceptedAnswer":{"@type":"Answer","text":"No para el escaneo gratis: observa tu sitio desde fuera, como un visitante. La auditoría completa lee un repositorio Git en modo solo lectura, clonado durante el análisis y luego eliminado."}},{"@type":"Question","name":"¿Cómo evitáis los falsos positivos?","acceptedAnswer":{"@type":"Answer","text":"Cada hallazgo pasa por una capa de contraverificación independiente que intenta refutarlo antes del informe. El veredicto (confirmado o plausible) se muestra en cada hallazgo, con su evidencia."}},{"@type":"Question","name":"¿Cuánto dura una auditoría?","acceptedAnswer":{"@type":"Answer","text":"El escaneo gratis tarda menos de un minuto. La auditoría completa código + producción tarda unos minutos, y el informe está disponible de inmediato."}},{"@type":"Question","name":"¿Los importes en euros son reales?","acceptedAnswer":{"@type":"Answer","text":"Son estimaciones, siempre etiquetadas como tales. Si aportas tus cifras (visitas, valor de una conversión), se calibran a tu negocio; si no, obtienes horquillas por gravedad."}},{"@type":"Question","name":"¿Para quién está escrito el informe?","acceptedAnswer":{"@type":"Answer","text":"Para ambos lectores a la vez: síntesis, puntuación y prioridades para el directivo; evidencias, archivos, líneas y correcciones para el equipo técnico."}}]}</script>
 <style>
   @font-face{font-family:Geist;src:url(/fonts/Geist-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
   @font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
   :root{
-    --bg:#080a09;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#252e28;
-    --ink:#f1f4f1;--mut:#98a29b;--dim:#5c665f;
+    --bg:#070a08;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#27302a;
+    --ink:#f2f5f2;--mut:#a4aea7;--dim:#7e8a81;
     --acc:#4ff0a3;--acc2:#2fd88a;--acc-dim:#1e6b47;--acc-ghost:rgba(79,240,163,.08);
-    --crit:#ff5d5d;--high:#ffa53d;--med:#ffd84d;--low:#5db4ff;
+    --crit:#ff5d5d;--high:#ffa53d;
     --sans:Geist,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
-    --mx:1180px;--pad:24px}
+    --mx:1200px;--pad:24px;--r:16px}
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;
     -webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:"ss01","cv01"}
   ::selection{background:var(--acc);color:#04140c}
   a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
   .mono{font-family:var(--mono)}
   .acc{color:var(--acc)}
   .wrap{max-width:var(--mx);margin:0 auto;padding:0 var(--pad)}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;
+    padding:10px 18px;border-radius:0 0 10px 0;font-weight:600;font-size:14px}
+  .skip:focus{left:0}
   body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:radial-gradient(1100px 620px at 78% -8%,rgba(79,240,163,.10),transparent 60%),
       radial-gradient(760px 520px at -5% 12%,rgba(79,240,163,.05),transparent 55%);opacity:.9}
@@ -49,22 +55,22 @@
   main,nav,footer{position:relative;z-index:1}
 
   /* NAV */
-  nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(8,10,9,.72);
+  nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(7,10,8,.74);
     border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;gap:16px;height:66px}
+  .nav{display:flex;align-items:center;gap:16px;height:68px}
   .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:18px;flex:none}
-  .eye{width:24px;height:24px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;position:relative}
-  .eye::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 14px var(--acc)}
-  .nlinks{display:flex;gap:30px;align-items:center;font-size:14.5px;color:var(--mut);margin-left:auto}
+  .eye{width:24px;height:24px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;position:relative;flex:none}
+  .eye::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc)}
+  .nlinks{display:flex;gap:28px;align-items:center;font-size:14.5px;color:var(--mut);margin-left:auto}
   .nlinks a{transition:color .2s}.nlinks a:hover{color:var(--ink)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:550;font-size:14.5px;
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:560;font-size:14.5px;
     padding:11px 20px;border-radius:100px;transition:transform .15s,background .2s,border-color .2s,box-shadow .2s;
     cursor:pointer;border:1px solid transparent;white-space:nowrap;font-family:var(--sans)}
-  .btn:active{transform:translateY(1px)}
-  .btn-p{background:var(--acc);color:#04140c;font-weight:600}
-  .btn-p:hover{background:#63f4b1;box-shadow:0 0 0 4px var(--acc-ghost)}
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn-p{background:var(--acc);color:#04140c;font-weight:640}
+  .btn-p:hover{background:#63f4b1;box-shadow:0 0 0 4px var(--acc-ghost);transform:translateY(-1px)}
   .btn-g{border-color:var(--line2);color:var(--ink)}
-  .btn-g:hover{border-color:var(--acc-dim);background:rgba(255,255,255,.03)}
+  .btn-g:hover{border-color:var(--acc-dim);background:rgba(255,255,255,.03);transform:translateY(-1px)}
   .langsel{position:relative;flex:none}
   .langsel summary{list-style:none;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--mut);
     border:1px solid var(--line2);border-radius:100px;padding:8px 13px;display:flex;align-items:center;gap:7px}
@@ -72,32 +78,32 @@
   .langsel summary:hover{border-color:var(--acc-dim);color:var(--ink)}
   .langsel summary .car{font-size:9px;color:var(--dim)}
   .langmenu{position:absolute;top:calc(100% + 8px);right:0;background:var(--panel);border:1px solid var(--line2);
-    border-radius:12px;padding:6px;min-width:172px;box-shadow:0 24px 60px -18px rgba(0,0,0,.7)}
+    border-radius:12px;padding:6px;min-width:176px;box-shadow:0 24px 60px -18px rgba(0,0,0,.7)}
   .langmenu a{display:flex;justify-content:space-between;gap:14px;padding:9px 12px;border-radius:8px;font-size:14px;
     color:var(--mut);transition:background .15s,color .15s}
   .langmenu a:hover{background:var(--acc-ghost);color:var(--ink)}
   .langmenu a.on{color:var(--acc)}
   .langmenu a small{font-family:var(--mono);font-size:11px;color:var(--dim)}
-  @media(max-width:900px){.nlinks{display:none}}
+  @media(max-width:960px){.nlinks{display:none}}
 
   /* HERO */
-  .hero{display:grid;grid-template-columns:1.04fr .96fr;gap:52px;align-items:center;
-    min-height:calc(100dvh - 66px);padding:40px 0 68px}
+  .hero{display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center;
+    min-height:calc(100dvh - 68px);padding:36px 0 72px}
   .cli{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;color:var(--mut);
-    border:1px solid var(--line2);border-radius:100px;padding:8px 15px;margin-bottom:26px}
+    border:1px solid var(--line2);border-radius:100px;padding:8px 15px;margin-bottom:28px}
   .cli .p{color:var(--acc)}
-  h1{font-size:clamp(40px,5.7vw,68px);line-height:1.0;letter-spacing:-.038em;font-weight:600;margin-bottom:24px}
+  h1{font-size:clamp(44px,6.2vw,84px);line-height:.98;letter-spacing:-.045em;font-weight:640;margin-bottom:26px}
   h1 em{font-style:normal;color:var(--acc)}
-  .sub{font-size:19.5px;color:var(--mut);max-width:44ch;margin-bottom:34px;line-height:1.55}
+  .sub{font-size:clamp(17px,1.6vw,20px);color:var(--mut);max-width:46ch;margin-bottom:36px;line-height:1.55}
   .cta-row{display:flex;gap:13px;flex-wrap:wrap}
-  .btn-lg{padding:15px 27px;font-size:15.5px}
-  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px;min-height:0;padding-top:36px}h1{font-size:clamp(36px,10vw,52px)}}
+  .btn-lg{padding:16px 28px;font-size:15.5px}
+  @media(max-width:960px){.hero{grid-template-columns:1fr;gap:42px;min-height:0;padding-top:40px}h1{font-size:clamp(38px,10.5vw,56px)}}
 
-  /* HERO PANEL (scanner + heatmap de risque) */
-  .panel{border:1px solid var(--line2);border-radius:18px;overflow:hidden;position:relative;
+  /* HERO PANEL (scanner + heatmap, reflet du produit reel) */
+  .panel{border:1px solid var(--line2);border-radius:20px;overflow:hidden;position:relative;
     background:linear-gradient(180deg,#0e1310,#0a0d0b);
     box-shadow:0 40px 90px -40px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.03)}
-  .panel::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;pointer-events:none;
+  .panel::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;pointer-events:none;
     background:linear-gradient(180deg,rgba(79,240,163,.28),transparent 40%);
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
   .ptop{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line);
@@ -123,7 +129,7 @@
     animation:pop .5s cubic-bezier(.16,1,.3,1) forwards}
   .tile.ok{background:var(--acc-dim)}.tile.hit{background:var(--high)}.tile.crit{background:var(--crit)}
   @keyframes pop{to{opacity:1;transform:scale(1)}}
-  .pmap-l{padding:2px 16px 12px;font-family:var(--mono);font-size:10.5px;color:var(--dim);display:flex;gap:14px}
+  .pmap-l{padding:2px 16px 12px;font-family:var(--mono);font-size:11px;color:var(--dim);display:flex;gap:14px}
   .pmap-l b{color:var(--mut)}
   .pfoot{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--line)}
   .score{display:flex;align-items:baseline;gap:9px}
@@ -133,27 +139,27 @@
   .prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .5s}
 
   /* PROOF BAND */
-  .proof{margin:6px 0 22px;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .proof p{color:var(--mut);font-size:15px;max-width:64ch;margin-bottom:22px}
-  .proof p b{color:var(--ink);font-weight:550}
+  .proof{margin:6px 0 22px;padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .proof p{color:var(--mut);font-size:15px;max-width:64ch;margin-bottom:24px}
+  .proof p b{color:var(--ink);font-weight:560}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
   .stats>div{background:var(--bg);padding:4px 22px 4px 0}
-  .stats b{display:block;font-family:var(--mono);font-size:24px;letter-spacing:-.02em;margin-bottom:5px}
+  .stats b{display:block;font-family:var(--mono);font-size:25px;letter-spacing:-.02em;margin-bottom:6px}
   .stats span{font-size:13px;color:var(--mut)}
-  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr);gap:22px 0}.stats>div{padding-right:0}}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr);gap:22px 0}.stats>div{padding-right:12px}}
 
   /* SECTIONS */
-  section{padding:88px 0}
-  .shead{margin-bottom:44px;max-width:70ch}
+  section{padding:96px 0}
+  .shead{margin-bottom:48px;max-width:72ch}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:15px}
-  h2{font-size:clamp(29px,3.9vw,44px);line-height:1.06;letter-spacing:-.03em;font-weight:600;max-width:20ch}
-  .lead{font-size:17.5px;color:var(--mut);max-width:62ch;margin-top:18px;line-height:1.6}
+  h2{font-size:clamp(31px,4.3vw,50px);line-height:1.04;letter-spacing:-.033em;font-weight:620;max-width:21ch}
+  .lead{font-size:17.5px;color:var(--mut);max-width:64ch;margin-top:18px;line-height:1.6}
 
   /* PROBLEM */
-  .prob{text-align:center;max-width:820px;margin:0 auto}
-  .prob h2{margin:0 auto;max-width:22ch}.prob .lead{margin:18px auto 0}
-  .tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:34px}
-  .tool{font-family:var(--mono);font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:100px;padding:8px 15px}
+  .prob{text-align:center;max-width:860px;margin:0 auto}
+  .prob h2{margin:0 auto;max-width:23ch}.prob .lead{margin:18px auto 0}
+  .tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
+  .tool{font-family:var(--mono);font-size:13px;color:var(--mut);border:1px solid var(--line);border-radius:100px;padding:8px 15px}
   .tool.us{color:#04140c;background:var(--acc);border-color:var(--acc);font-weight:600}
 
   /* PIPELINE */
@@ -162,81 +168,114 @@
   .step{display:grid;grid-template-columns:48px 1fr;gap:26px;padding:22px 0;position:relative}
   .step .no{width:48px;height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);
     display:grid;place-items:center;font-family:var(--mono);font-size:15px;color:var(--acc);z-index:1}
-  .step h4{font-size:19px;letter-spacing:-.01em;margin-bottom:7px;font-weight:550}
+  .step h3{font-size:19px;letter-spacing:-.01em;margin-bottom:7px;font-weight:560}
   .step p{font-size:15px;color:var(--mut);max-width:66ch}
   .step .tag{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:100px;padding:3px 11px;margin-top:10px;display:inline-block}
 
-  /* AGENTS */
-  .fam{margin-bottom:30px}
-  .fam-h{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-  .fam-h h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:550}
-  .fam-h .ln{flex:1;height:1px;background:var(--line)}
-  .fam-h .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .agrid{display:grid;gap:12px}
-  .fam.f6 .agrid{grid-template-columns:repeat(3,1fr)}
-  .fam.f4 .agrid{grid-template-columns:repeat(4,1fr)}
-  .fam.f3 .agrid{grid-template-columns:repeat(3,1fr)}
-  .fam.f2 .agrid{grid-template-columns:repeat(2,1fr)}
-  .acard{border:1px solid var(--line);border-radius:16px;padding:22px;background:linear-gradient(180deg,var(--bg2),var(--bg));
-    transition:border-color .25s,transform .25s,box-shadow .25s;position:relative}
-  .acard:hover{border-color:var(--acc-dim);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
-  .acard .num{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:12px}
-  .acard h4{font-size:16.5px;letter-spacing:-.01em;margin-bottom:8px;font-weight:550}
-  .acard p{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:15px}
+  /* AGENTS - grille de couverture unifiee */
+  .cov{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .cov-h{grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:22px 0 4px}
+  .cov-h:first-child{margin-top:0}
+  .cov-h h3{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);font-weight:560}
+  .cov-h .ln{flex:1;height:1px;background:var(--line)}
+  .cov-h .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .cv{border:1px solid var(--line);border-radius:14px;padding:19px 20px;background:linear-gradient(180deg,var(--bg2),var(--bg));
+    transition:border-color .25s,transform .25s,box-shadow .25s}
+  .cv:hover{border-color:var(--acc-dim);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
+  .cv .top{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
+  .cv .num{font-family:var(--mono);font-size:11.5px;color:var(--acc)}
+  .cv h4{font-size:16px;letter-spacing:-.01em;font-weight:560}
+  .cv p{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:13px}
   .fw{display:flex;flex-wrap:wrap;gap:6px}
   .fw span{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
-  @media(max-width:900px){.fam.f6 .agrid,.fam.f4 .agrid,.fam.f3 .agrid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:520px){.agrid{grid-template-columns:1fr!important}}
+  @media(max-width:900px){.cov{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.cov{grid-template-columns:1fr}}
 
   /* DIFFS (bento) */
   .diffs{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
-  .diff{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--bg2);transition:border-color .25s,transform .25s}
+  .diff{border:1px solid var(--line);border-radius:var(--r);padding:28px;background:var(--bg2);transition:border-color .25s,transform .25s}
   .diff:hover{border-color:var(--acc-dim);transform:translateY(-3px)}
-  .diff.big{grid-row:span 2;background:linear-gradient(155deg,rgba(79,240,163,.07),transparent 55%),var(--bg2);border-color:var(--acc-dim)}
-  .diff .ic{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:16px}
-  .diff h4{font-size:18px;letter-spacing:-.01em;margin-bottom:10px;font-weight:550}
-  .diff.big h4{font-size:25px;letter-spacing:-.02em}
-  .diff p{font-size:14px;color:var(--mut);line-height:1.55}.diff.big p{font-size:16px}
-  @media(max-width:820px){.diffs{grid-template-columns:1fr 1fr}.diff.big{grid-column:span 2;grid-row:auto}}
-  @media(max-width:520px){.diffs{grid-template-columns:1fr}.diff.big{grid-column:auto}}
+  .diff.big{grid-row:span 2;background:linear-gradient(155deg,rgba(79,240,163,.08),transparent 55%),var(--bg2);border-color:var(--acc-dim);
+    display:flex;flex-direction:column;justify-content:center}
+  .diff.tint{background:linear-gradient(200deg,rgba(79,240,163,.05),transparent 60%),var(--bg2)}
+  .diff h3{font-size:18px;letter-spacing:-.01em;margin-bottom:10px;font-weight:560}
+  .diff.big h3{font-size:26px;letter-spacing:-.02em;max-width:16ch}
+  .diff p{font-size:14px;color:var(--mut);line-height:1.55}.diff.big p{font-size:16px;max-width:52ch}
+  @media(max-width:840px){.diffs{grid-template-columns:1fr 1fr}.diff.big{grid-column:span 2;grid-row:auto}}
+  @media(max-width:560px){.diffs{grid-template-columns:1fr}.diff.big{grid-column:auto}}
 
   /* REPORT / FINDING */
-  .rep{display:grid;grid-template-columns:1fr 1.1fr;gap:52px;align-items:center}
-  .fcard{border:1px solid var(--line2);border-radius:16px;background:linear-gradient(180deg,#0e1310,#0a0d0b);overflow:hidden;
+  .rep{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center}
+  .fcard{border:1px solid var(--line2);border-radius:var(--r);background:linear-gradient(180deg,#0e1310,#0a0d0b);overflow:hidden;
     font-size:14px;box-shadow:0 36px 80px -44px rgba(0,0,0,.85)}
   .fcard .fh{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--mut)}
   .sev{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:6px;color:var(--crit);background:rgba(255,93,93,.12);border:1px solid rgba(255,93,93,.3)}
   .fcard .fb{padding:20px}
-  .fcard h4{font-size:17px;letter-spacing:-.01em;margin-bottom:16px;font-family:var(--sans);color:var(--ink);font-weight:550}
-  .frow{display:grid;grid-template-columns:108px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+  .fcard h3{font-size:17px;letter-spacing:-.01em;margin-bottom:16px;font-family:var(--sans);color:var(--ink);font-weight:560}
+  .frow{display:grid;grid-template-columns:112px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
   .frow .k{font-family:var(--mono);color:var(--dim);font-size:11px;letter-spacing:.03em;text-transform:uppercase}
   .frow .v{color:var(--mut);line-height:1.5}.frow .v code{font-family:var(--mono);color:var(--acc);font-size:12.5px}
   .verdict{display:inline-flex;align-items:center;gap:7px;color:var(--acc);font-family:var(--mono);font-size:12px}
   .verdict .c{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--acc);display:grid;place-items:center;font-size:9px}
-  @media(max-width:860px){.rep{grid-template-columns:1fr;gap:32px}}
+  .fex{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
+  @media(max-width:880px){.rep{grid-template-columns:1fr;gap:34px}}
+
+  /* BENCHMARK */
+  .bench{border:1px solid var(--acc-dim);border-radius:22px;padding:clamp(32px,5vw,60px);
+    background:radial-gradient(900px 420px at 12% -20%,rgba(79,240,163,.10),transparent 60%),var(--bg2);
+    display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+  .bench h2{max-width:14ch}
+  .bench .lead{margin-top:16px}
+  .bench .cta-row{margin-top:30px}
+  .bstats{display:grid;gap:0}
+  .bstats>div{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:baseline;padding:18px 0;border-top:1px solid var(--line2)}
+  .bstats>div:first-child{border-top:0}
+  .bstats b{font-family:var(--mono);font-size:clamp(34px,4vw,52px);letter-spacing:-.03em;color:var(--acc);font-weight:600;min-width:2ch}
+  .bstats span{font-size:14.5px;color:var(--mut);line-height:1.45}
+  @media(max-width:840px){.bench{grid-template-columns:1fr;gap:24px}}
 
   /* PRICING */
-  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
-  .price{border:1px solid var(--line);border-radius:18px;padding:30px;background:var(--bg2)}
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;margin-top:8px}
+  .price{border:1px solid var(--line);border-radius:18px;padding:30px;background:var(--bg2);transition:border-color .25s,transform .25s}
+  .price:hover{border-color:var(--line2);transform:translateY(-3px)}
   .price.hi{border-color:var(--acc-dim);background:linear-gradient(165deg,rgba(79,240,163,.07),transparent 60%),var(--bg2);position:relative}
+  .price.hi:hover{border-color:var(--acc2)}
   .price.hi::before{content:attr(data-badge);position:absolute;top:-11px;left:30px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:#04140c;background:var(--acc);padding:4px 12px;border-radius:100px;font-weight:600}
-  .price .pn{font-size:15px;color:var(--mut);margin-bottom:12px;font-weight:550}
+  .price .pn{font-size:15px;color:var(--mut);margin-bottom:12px;font-weight:560}
   .price .pp{font-size:36px;letter-spacing:-.02em;font-weight:600;margin-bottom:5px;font-family:var(--mono)}
   .price .pp small{font-size:15px;color:var(--dim);font-weight:400;font-family:var(--sans)}
-  .price .pd{font-size:13.5px;color:var(--dim);margin-bottom:24px;min-height:40px}
+  .price .pd{font-size:13.5px;color:var(--mut);margin-bottom:24px;min-height:40px}
   .price ul{list-style:none;display:grid;gap:12px;margin-bottom:28px}
   .price li{display:grid;grid-template-columns:18px 1fr;gap:10px;font-size:13.5px;color:var(--mut);line-height:1.45}
   .price li .tk{color:var(--acc);font-family:var(--mono);font-size:13px}
   .price .btn{width:100%}
-  @media(max-width:820px){.prices{grid-template-columns:1fr}}
+  @media(max-width:840px){.prices{grid-template-columns:1fr}}
+
+  /* FAQ */
+  .faq{max-width:780px}
+  .faq h2{margin-bottom:34px}
+  .qa{border-top:1px solid var(--line)}
+  .qa:last-child{border-bottom:1px solid var(--line)}
+  .qa summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:22px 4px;font-size:17px;font-weight:560;letter-spacing:-.01em;transition:color .2s}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{color:var(--acc)}
+  .qa summary .pm{font-family:var(--mono);color:var(--dim);font-size:18px;flex:none;transition:transform .25s,color .25s;line-height:1}
+  .qa[open] summary .pm{transform:rotate(45deg);color:var(--acc)}
+  .qa .ans{padding:0 4px 24px;font-size:15px;color:var(--mut);line-height:1.65;max-width:64ch}
 
   /* FINAL + FOOTER */
-  .final{text-align:center;padding:110px 0}
-  .final h2{margin:0 auto;max-width:22ch}
-  .final .lead{margin:20px auto 36px}.final .cta-row{justify-content:center}
-  footer{border-top:1px solid var(--line);padding:44px 0;color:var(--dim);font-size:13.5px}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
-  .foot .logo{font-size:16px}
+  .final{text-align:center;padding:116px 0}
+  .final h2{margin:0 auto;max-width:22ch;font-size:clamp(34px,4.8vw,56px)}
+  .final .lead{margin:20px auto 38px}.final .cta-row{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:48px 0 40px;color:var(--dim);font-size:13.5px}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;align-items:start}
+  .foot .logo{font-size:16px;color:var(--ink);margin-bottom:12px}
+  .foot .tag{max-width:44ch;line-height:1.55}
+  .flinks{display:flex;gap:26px;justify-content:flex-end;flex-wrap:wrap}
+  .flinks a{color:var(--mut);transition:color .2s}.flinks a:hover{color:var(--acc)}
+  .fbot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:22px;margin-top:8px;flex-wrap:wrap}
+  @media(max-width:720px){.foot{grid-template-columns:1fr}.flinks{justify-content:flex-start}}
 
   /* reveal */
   .rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
@@ -244,110 +283,129 @@
   @media(prefers-reduced-motion:reduce){
     .rv{opacity:1;transform:none;transition:none}
     .arow.run .chip,.tile{animation:none;opacity:1;transform:none}
+    .btn,.cv,.diff,.price{transition:none}
     html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
-<div class="grid-bg"></div>
-<nav>
+<a class="skip" href="#main">Ir al contenido</a>
+<div class="grid-bg" aria-hidden="true"></div>
+<nav aria-label="Panoptic">
   <div class="wrap nav">
-    <a class="logo" href="/es/"><span class="eye"></span>Panoptic</a>
+    <a class="logo" href="/es/"><span class="eye" aria-hidden="true"></span>Panoptic</a>
     <div class="nlinks">
-      <a href="#agents">Las 15 auditorias</a>
+      <a href="#agents">Las 15 auditorías</a>
       <a href="#pipe">El motor</a>
-      <a href="#diff">Por que Panoptic</a>
+      <a href="#diff">Por qué Panoptic</a>
       <a href="#prix">Precios</a>
     </div>
-    <details class="langsel"><summary>ES<span class="car">&#9662;</span></summary><div class="langmenu"><a href="/" hreflang="fr">Francais<small>FR</small></a><a href="/en/" hreflang="en">English<small>EN</small></a><a href="/de/" hreflang="de">Deutsch<small>DE</small></a><a href="/es/" class="on" hreflang="es">Espanol<small>ES</small></a><a href="/it/" hreflang="it">Italiano<small>IT</small></a><a href="/nl/" hreflang="nl">Nederlands<small>NL</small></a></div></details>
-    <a class="btn btn-p" href="/console/">Iniciar auditoria</a>
+    <details class="langsel"><summary aria-label="Elegir idioma">ES<span class="car" aria-hidden="true">&#9662;</span></summary><div class="langmenu"><a href="/" hreflang="fr" lang="fr">Français<small>FR</small></a><a href="/en/" hreflang="en" lang="en">English<small>EN</small></a><a href="/de/" hreflang="de" lang="de">Deutsch<small>DE</small></a><a href="/es/" class="on" hreflang="es" lang="es">Español<small>ES</small></a><a href="/it/" hreflang="it" lang="it">Italiano<small>IT</small></a><a href="/nl/" hreflang="nl" lang="nl">Nederlands<small>NL</small></a></div></details>
+    <a class="btn btn-p" href="/console/">Escanear mi sitio</a>
   </div>
 </nav>
 
-<main class="wrap">
+<main class="wrap" id="main">
   <header class="hero">
     <div class="rv in">
       <span class="cli"><span class="p">$</span> panoptic scan https://tu-sitio.com</span>
       <h1>Quince expertos.<br>Un informe.<br><em>Cero puntos ciegos.</em></h1>
-      <p class="sub">Panoptic lanza quince auditores especializados sobre tu codigo y tu produccion, verifica cada problema, lo cuantifica y lo prioriza.</p>
+      <p class="sub">Quince auditores analizan tu código y tu sitio en línea. Cada problema: verificado, cifrado en euros, priorizado.</p>
       <div class="cta-row">
-        <a class="btn btn-p btn-lg" href="/console/">Iniciar auditoria</a>
-        <a class="btn btn-g btn-lg" href="#report">Ver un informe</a>
+        <a class="btn btn-p btn-lg" href="/console/">Escanear mi sitio</a>
+        <a class="btn btn-g btn-lg" href="#report">Ver un informe real</a>
       </div>
     </div>
     <div class="panel rv in" aria-hidden="true">
       <div class="ptop"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="purl mono">panoptic scan https://tu-sitio.com</span></div>
       <div class="pbody" id="scanRows"></div>
       <div class="pmap"><span class="tile ok" style="animation-delay:1.2s"></span><span class="tile hit" style="animation-delay:1.25s"></span><span class="tile crit" style="animation-delay:1.3s"></span><span class="tile ok" style="animation-delay:1.35s"></span><span class="tile hit" style="animation-delay:1.4s"></span><span class="tile ok" style="animation-delay:1.45s"></span><span class="tile ok" style="animation-delay:1.5s"></span><span class="tile ok" style="animation-delay:1.55s"></span><span class="tile hit" style="animation-delay:1.6s"></span><span class="tile ok" style="animation-delay:1.65s"></span><span class="tile hit" style="animation-delay:1.7s"></span><span class="tile ok" style="animation-delay:1.75s"></span><span class="tile ok" style="animation-delay:1.8s"></span><span class="tile crit" style="animation-delay:1.85s"></span><span class="tile ok" style="animation-delay:1.9s"></span></div>
-      <div class="pmap-l"><span><b>15</b> agentes</span><span><b class="acc">&#9632;</b> ok</span><span><b style="color:var(--high)">&#9632;</b> findings</span><span><b style="color:var(--crit)">&#9632;</b> critique</span></div>
+      <div class="pmap-l"><span><b>15</b> agentes</span><span><b class="acc">&#9632;</b> ok</span><span><b style="color:var(--high)">&#9632;</b> hallazgos</span><span><b style="color:var(--crit)">&#9632;</b> crítico</span></div>
       <div class="pfoot"><div class="score"><b id="scoreNum">0</b><span>/100 salud</span></div><div class="prog"><i id="prog"></i></div></div>
     </div>
   </header>
 
   <div class="proof rv">
-    <p>El sitio que lees pasa su propia auditoria: <b>15 dominios</b>, findings verificados, codigo y produccion.</p>
-    <div class="stats"><div><b class="acc">15</b><span>dominios de auditoria en paralelo, del CVSS al RGPD</span></div><div><b>Codigo + Prod</b><span>la causa en la linea, no solo el sintoma</span></div><div><b class="acc">100%</b><span>de los findings pasan la verificacion adversarial</span></div><div><b>&euro; cifrado</b><span>cada riesgo y cada ganancia traducidos a dinero</span></div></div>
+    <p>Este sitio pasa su propia auditoría: <b>15 dominios</b>, hallazgos verificados, código y producción.</p>
+    <div class="stats"><div><b class="acc">15</b><span>dominios auditados en paralelo, del CVSS al RGPD</span></div><div><b>Código + Prod</b><span>la causa hasta la línea, no solo el síntoma</span></div><div><b class="acc">100%</b><span>de los hallazgos pasan una contraverificación</span></div><div><b>En euros</b><span>cada riesgo y cada ganancia traducidos para quien decide</span></div></div>
   </div>
 
   <section class="prob rv">
-    <h2>Cada herramienta cubre una casilla. Tu tienes un sitio entero.</h2>
-    <p class="lead">SEMrush ve el SEO, Snyk las dependencias, Lighthouse el rendimiento, ZAP la seguridad. Ninguna ve el todo, ni enlaza el sintoma en produccion con su causa en el codigo.</p>
+    <h2>Cada herramienta cubre una casilla. Tú tienes un sitio entero.</h2>
+    <p class="lead">SEMrush ve el SEO, Snyk las dependencias, Lighthouse el rendimiento, ZAP la seguridad. Ninguna ve el conjunto, ni enlaza el síntoma en producción con su causa en el código.</p>
     <div class="tools"><span class="tool">SEMrush</span><span class="tool">Ahrefs</span><span class="tool">Snyk</span><span class="tool">Lighthouse</span><span class="tool">OWASP ZAP</span><span class="tool">Screaming Frog</span><span class="tool us">Panoptic</span></div>
   </section>
 
   <section id="pipe">
-    <div class="shead rv"><h2>Cinco capas. Deterministas.</h2><p class="lead">Lo que separa una auditoria creible de una lista de avisos de herramienta: un perimetro unico, una verificacion sistematica, una sintesis que prioriza.</p></div>
-    <div class="pipe"><div class="step rv"><div class="no">01</div><div><h4>Reconocimiento y scoping</h4><p>Un unico crawl previo: inventario de paginas y subdominios, deteccion del stack, mapeo de formularios y endpoints. Los agentes reciben un perimetro, no lo redescubren quince veces.</p><span class="tag">1 crawl</span></div></div><div class="step rv"><div class="no">02</div><div><h4>Fan-out de los quince agentes</h4><p>Cada agente activo se ejecuta en paralelo sobre el codigo fuente y la produccion real, con su propio framework y herramientas.</p><span class="tag">paralelo</span></div></div><div class="step rv"><div class="no">03</div><div><h4>Verificacion adversarial</h4><p>Cada finding es cuestionado por un agente esceptico: real o falso positivo, reproducible, severidad justificada por evidencia. Voto por mayoria en los criticos.</p><span class="tag">anti falso positivo</span></div></div><div class="step rv"><div class="no">04</div><div><h4>Dedup, scoring, priorizacion</h4><p>El mismo problema aparece a menudo via seguridad Y rendimiento Y SEO. Lo fusionamos, lo puntuamos con severidad unificada, lo priorizamos por impacto / esfuerzo.</p><span class="tag">impacto / esfuerzo</span></div></div><div class="step rv"><div class="no">05</div><div><h4>Sintesis</h4><p>Puntuacion de salud global, resumen ejecutivo, hoja de ruta cifrada en dias-persona y en euros de riesgo y ganancia. Lista para quien decide.</p><span class="tag">hoja de ruta</span></div></div></div>
+    <div class="shead rv"><h2>Cinco pasos. Cero azar.</h2><p class="lead">Lo que separa una auditoría creíble de una lista de avisos: un perímetro único, una verificación sistemática, una síntesis que prioriza.</p></div>
+    <div class="pipe"><div class="step rv"><div class="no" aria-hidden="true">01</div><div><h3>Reconocimiento</h3><p>Un único crawl previo: páginas, subdominios, stack, formularios, endpoints. Los agentes reciben un perímetro preciso en vez de redescubrirlo quince veces.</p><span class="tag">1 crawl</span></div></div><div class="step rv"><div class="no" aria-hidden="true">02</div><div><h3>Quince análisis en paralelo</h3><p>Cada agente examina el código fuente y el sitio en producción con su propio estándar y sus herramientas dedicadas.</p><span class="tag">paralelo</span></div></div><div class="step rv"><div class="no" aria-hidden="true">03</div><div><h3>Contraverificación</h3><p>Un agente escéptico intenta refutar cada hallazgo: real o falso positivo, reproducible, gravedad probada. Voto por mayoría en los críticos.</p><span class="tag">anti falsos positivos</span></div></div><div class="step rv"><div class="no" aria-hidden="true">04</div><div><h3>Fusión y priorización</h3><p>El mismo problema aparece a menudo por seguridad, rendimiento y SEO a la vez. Se fusiona, se puntúa, se ordena por impacto y esfuerzo.</p><span class="tag">impacto / esfuerzo</span></div></div><div class="step rv"><div class="no" aria-hidden="true">05</div><div><h3>Síntesis</h3><p>Puntuación de salud global, resumen para la dirección, hoja de ruta cifrada en días y en euros.</p><span class="tag">hoja de ruta</span></div></div></div>
   </section>
 
   <section id="agents">
-    <div class="shead rv"><div class="eyebrow">Los auditores</div><h2>Quince especialistas, cada uno con su estandar.</h2><p class="lead">Ninguna herramienta del mercado cubre estos quince dominios juntos. Cada agente tiene su propio framework y sus herramientas, y lee tanto el codigo como la produccion.</p></div>
-    <div class="fam f6 rv"><div class="fam-h"><h3>Tecnica</h3><span class="ln"></span><span class="ct">06 agentes</span></div><div class="agrid"><div class="acard"><div class="num">A01</div><h4>Seguridad de aplicaciones</h4><p>Vulnerabilidades explotables, codigo y prod.</p><div class="fw"><span>OWASP Top 10</span><span>ASVS</span><span>CWE</span></div></div><div class="acard"><div class="num">A02</div><h4>Codigo y arquitectura</h4><p>Deuda tecnica, mantenibilidad, coherencia.</p><div class="fw"><span>SOLID</span><span>Clean Archi</span><span>DDD</span></div></div><div class="acard"><div class="num">A03</div><h4>Infra / DevOps</h4><p>DNS, TLS, CI/CD, copias, uptime.</p><div class="fw"><span>Well-Architected</span><span>12-Factor</span></div></div><div class="acard"><div class="num">A04</div><h4>Datos y base de datos</h4><p>Esquema, indices, N+1, PII, cifrado.</p><div class="fw"><span>Normalisation</span><span>Retention</span></div></div><div class="acard"><div class="num">A05</div><h4>Dependencias / supply chain</h4><p>CVE, paquetes abandonados, licencias.</p><div class="fw"><span>Dependency-Check</span><span>SLSA</span><span>SPDX</span></div></div><div class="acard"><div class="num">A06</div><h4>Rendimiento / CWV</h4><p>LCP, INP, CLS, peso, waterfall.</p><div class="fw"><span>Core Web Vitals</span><span>RAIL</span></div></div></div></div><div class="fam f4 rv"><div class="fam-h"><h3>Visibilidad</h3><span class="ln"></span><span class="ct">04 agentes</span></div><div class="agrid"><div class="acard"><div class="num">A07</div><h4>SEO tecnico</h4><p>Rastreabilidad, indexacion, Schema, hreflang.</p><div class="fw"><span>Search Essentials</span></div></div><div class="acard"><div class="num">A08</div><h4>GEO / visibilidad IA</h4><p>Citabilidad en AI Overviews, ChatGPT, Perplexity.</p><div class="fw"><span>llms.txt</span><span>E-E-A-T</span></div></div><div class="acard"><div class="num">A09</div><h4>Analitica y medicion</h4><p>Tracking, eventos rotos, Consent Mode.</p><div class="fw"><span>GA4</span><span>Consent v2</span></div></div><div class="acard"><div class="num">A10</div><h4>Email / entregabilidad</h4><p>SPF, DKIM, DMARC, reputacion, plantillas.</p><div class="fw"><span>DMARC</span><span>BIMI</span></div></div></div></div><div class="fam f3 rv"><div class="fam-h"><h3>Humano</h3><span class="ln"></span><span class="ct">03 agentes</span></div><div class="agrid"><div class="acard"><div class="num">A11</div><h4>Accesibilidad</h4><p>Contrastes, teclado, ARIA, lectores de pantalla.</p><div class="fw"><span>WCAG 2.2 AA</span><span>RGAA</span><span>EAA</span></div></div><div class="acard"><div class="num">A12</div><h4>UX / UI / recorridos</h4><p>Ergonomia, estados, friccion, movil.</p><div class="fw"><span>Nielsen</span><span>UX laws</span></div></div><div class="acard"><div class="num">A13</div><h4>Contenido / editorial / i18n</h4><p>Ortografia, tono, frescura, traducciones.</p><div class="fw"><span>i18n / l10n</span></div></div></div></div><div class="fam f2 rv"><div class="fam-h"><h3>Riesgo</h3><span class="ln"></span><span class="ct">02 agentes</span></div><div class="agrid"><div class="acard"><div class="num">A14</div><h4>Legal / RGPD</h4><p>Consentimiento real de cookies, avisos, registro, fuera UE.</p><div class="fw"><span>GDPR</span><span>ePrivacy</span><span>DSA</span></div></div><div class="acard"><div class="num">A15</div><h4>CRO / conversion</h4><p>Propuesta de valor, CTA, embudo, abandonos.</p><div class="fw"><span>Funnel</span><span>A/B test</span></div></div></div></div>
+    <div class="shead rv"><div class="eyebrow">Los auditores</div><h2>Quince especialistas. Cada uno con su estándar.</h2><p class="lead">Ninguna herramienta del mercado cubre estos quince dominios juntos. Cada agente aplica su propio estándar y lee tanto el código como la producción.</p></div>
+    <div class="cov rv"><div class="cov-h"><h3>Técnica</h3><span class="ln"></span><span class="ct">06 agentes</span></div><div class="cv"><div class="top"><span class="num">A01</span><h4>Seguridad de aplicaciones</h4></div><p>Vulnerabilidades explotables, código y prod.</p><div class="fw"><span>OWASP Top 10</span><span>ASVS</span><span>CWE</span></div></div><div class="cv"><div class="top"><span class="num">A02</span><h4>Código y arquitectura</h4></div><p>Deuda técnica, mantenibilidad, coherencia.</p><div class="fw"><span>SOLID</span><span>Clean Archi</span><span>DDD</span></div></div><div class="cv"><div class="top"><span class="num">A03</span><h4>Infra / DevOps</h4></div><p>DNS, TLS, CI/CD, copias, uptime.</p><div class="fw"><span>Well-Architected</span><span>12-Factor</span></div></div><div class="cv"><div class="top"><span class="num">A04</span><h4>Datos y base de datos</h4></div><p>Esquema, índices, N+1, datos personales.</p><div class="fw"><span>Normalisation</span><span>Retention</span></div></div><div class="cv"><div class="top"><span class="num">A05</span><h4>Dependencias / supply chain</h4></div><p>CVE, paquetes abandonados, licencias.</p><div class="fw"><span>OSV</span><span>SLSA</span><span>SPDX</span></div></div><div class="cv"><div class="top"><span class="num">A06</span><h4>Rendimiento / CWV</h4></div><p>LCP, INP, CLS, peso, waterfall.</p><div class="fw"><span>Core Web Vitals</span><span>RAIL</span></div></div><div class="cov-h"><h3>Visibilidad</h3><span class="ln"></span><span class="ct">04 agentes</span></div><div class="cv"><div class="top"><span class="num">A07</span><h4>SEO técnico</h4></div><p>Rastreabilidad, indexación, Schema, hreflang.</p><div class="fw"><span>Search Essentials</span></div></div><div class="cv"><div class="top"><span class="num">A08</span><h4>GEO / visibilidad IA</h4></div><p>Citabilidad en AI Overviews, ChatGPT, Perplexity.</p><div class="fw"><span>llms.txt</span><span>E-E-A-T</span></div></div><div class="cv"><div class="top"><span class="num">A09</span><h4>Analítica y medición</h4></div><p>Tracking, eventos rotos, Consent Mode.</p><div class="fw"><span>GA4</span><span>Consent v2</span></div></div><div class="cv"><div class="top"><span class="num">A10</span><h4>Email / entregabilidad</h4></div><p>SPF, DKIM, DMARC, reputación, plantillas.</p><div class="fw"><span>DMARC</span><span>BIMI</span></div></div><div class="cov-h"><h3>Humano</h3><span class="ln"></span><span class="ct">03 agentes</span></div><div class="cv"><div class="top"><span class="num">A11</span><h4>Accesibilidad</h4></div><p>Contrastes, teclado, ARIA, lectores de pantalla.</p><div class="fw"><span>WCAG 2.2 AA</span><span>RGAA</span><span>EAA</span></div></div><div class="cv"><div class="top"><span class="num">A12</span><h4>UX / UI / recorridos</h4></div><p>Ergonomía, estados, fricción, móvil.</p><div class="fw"><span>Nielsen</span><span>UX laws</span></div></div><div class="cv"><div class="top"><span class="num">A13</span><h4>Contenido / editorial / i18n</h4></div><p>Ortografía, tono, frescura, traducciones.</p><div class="fw"><span>i18n / l10n</span></div></div><div class="cov-h"><h3>Riesgo</h3><span class="ln"></span><span class="ct">02 agentes</span></div><div class="cv"><div class="top"><span class="num">A14</span><h4>Legal / RGPD</h4></div><p>Consentimiento real de cookies, avisos, registro, fuera UE.</p><div class="fw"><span>GDPR</span><span>ePrivacy</span><span>DSA</span></div></div><div class="cv"><div class="top"><span class="num">A15</span><h4>CRO / conversión</h4></div><p>Propuesta de valor, CTA, embudo, abandonos.</p><div class="fw"><span>Funnel</span><span>A/B test</span></div></div></div>
   </section>
 
   <section id="diff">
-    <div class="shead rv"><h2>Por que supera a las herramientas existentes.</h2><p class="lead">SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: cada una cubre una casilla. Panoptic las reune, en caja blanca, con verificacion.</p></div>
+    <div class="shead rv"><h2>Lo que nadie más hace.</h2><p class="lead">SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: cada una cubre una casilla. Panoptic las reúne, con pruebas.</p></div>
     <div class="diffs rv">
-      <div class="diff big"><div class="ic">01 / La ventaja decisiva</div><h4>Trazabilidad hasta la linea de codigo</h4><p>Los competidores rastrean tu URL en caja negra. Panoptic conecta tu repo: un Core Web Vital lento no se convierte en una puntuacion, se convierte en este componente, este archivo, esta linea. Nadie mas enlaza el sintoma en produccion con su causa en el codigo.</p></div>
-      <div class="diff"><div class="ic">02</div><h4>Findings verificados</h4><p>Cada problema es cuestionado por un agente esceptico antes del informe. Pocos falsos positivos, el dolor numero uno de las herramientas actuales.</p></div><div class="diff"><div class="ic">03</div><h4>Enfoque de negocio</h4><p>Cada finding traducido a dinero: riesgo de multa RGPD, perdida de SEO, ganancia de conversion. Lo que compra quien decide.</p></div><div class="diff"><div class="ic">04</div><h4>Continuo, no puntual</h4><p>Reauditoria automatica en cada despliegue, deteccion de regresion, historial y tendencia.</p></div><div class="diff"><div class="ic">05</div><h4>Benchmark competitivo</h4><p>Tu sitio comparado con tres competidores en cada una de las quince dimensiones.</p></div>
+      <div class="diff big"><h3>La causa hasta la línea de código</h3><p>Las demás herramientas miran tu sitio desde fuera. Panoptic también lee tu repositorio: una página lenta no se convierte en una puntuación, se convierte en este componente, este archivo, esta línea que corregir.</p></div>
+      <div class="diff"><h3>Hallazgos contraverificados</h3><p>Cada problema es cuestionado por un agente escéptico antes de entrar en el informe. Los falsos positivos, el dolor número uno de las herramientas actuales, se filtran.</p></div><div class="diff tint"><h3>Cifrado para decidir</h3><p>Riesgo de multa RGPD, pérdida de SEO, ganancia de conversión: cada hallazgo se traduce a euros, con el esfuerzo de corrección al lado.</p></div><div class="diff"><h3>Continuo, no puntual</h3><p>Reauditoría en cada despliegue, detección de regresión, historial y tendencia.</p></div><div class="diff"><h3>Correcciones incluidas</h3><p>No solo el diagnóstico: correcciones listas y, si quieres, la pull request abierta en tu repositorio.</p></div>
     </div>
   </section>
 
   <section id="report">
     <div class="rep">
-      <div class="rv"><div class="eyebrow">El entregable</div><h2>Un informe que quien decide lee.</h2><p class="lead">Puntuacion global ponderada, cuadro por dominio, findings priorizados, impacto cifrado. Generado en HTML, descargable en PDF.</p>
-        <div class="cta-row" style="margin-top:28px"><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Ver un informe completo</a></div>
+      <div class="rv"><div class="eyebrow">El entregable</div><h2>Un informe que un directivo puede leer.</h2><p class="lead">Puntuación global ponderada, cuadro por dominio, hallazgos priorizados, impacto cifrado. Generado en HTML, descargable en PDF.</p>
+        <div class="cta-row" style="margin-top:28px"><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Ver un informe real</a></div>
       </div>
       <div class="fcard rv">
-        <div class="fh"><span class="sev">Critico</span><span>SEC-014 &middot; Seguridad de aplicaciones</span><span style="margin-left:auto;color:var(--dim)">CVSS 9.1</span></div>
-        <div class="fb"><h4>Clave API de Stripe expuesta en el bundle del cliente</h4><div class="frow"><div class="k">Evidencia</div><div class="v">Secreto <code>sk_live_&hellip;</code> presente en <code>main.a3f2.js</code>, servido publicamente. Reproducible.</div></div><div class="frow"><div class="k">Ubicacion</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; bundle prod <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impacto</div><div class="v">Cargos fraudulentos posibles. Riesgo estimado <b class="acc">18 400 &euro;</b>.</div></div><div class="frow"><div class="k">Correccion</div><div class="v">Mover la llamada al servidor, revocar la clave, purgar el historial git. Parche incluido.</div></div><div class="frow"><div class="k">Esfuerzo</div><div class="v">0,5 dia-persona &middot; reportado por seguridad + dependencias</div></div><div class="frow"><div class="k">Verificacion</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Confirmado &middot; 3 votos / 0 refutaciones</span></div></div></div>
+        <div class="fh"><span class="sev">Crítico</span><span>SEC-014 &middot; Seguridad de aplicaciones</span><span class="fex">Hallazgo de ejemplo</span></div>
+        <div class="fb"><h3>Clave API de Stripe expuesta en el bundle del cliente</h3><div class="frow"><div class="k">Evidencia</div><div class="v">Secreto <code>sk_live_&hellip;</code> presente en <code>main.a3f2.js</code>, servido públicamente. Reproducible.</div></div><div class="frow"><div class="k">Ubicación</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; bundle prod <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impacto</div><div class="v">Cargos fraudulentos posibles. Riesgo estimado <b class="acc">18 400 &euro;</b>.</div></div><div class="frow"><div class="k">Corrección</div><div class="v">Mover la llamada al servidor, revocar la clave, purgar el historial git. Parche incluido.</div></div><div class="frow"><div class="k">Esfuerzo</div><div class="v">0,5 día-persona &middot; reportado por seguridad + dependencias</div></div><div class="frow"><div class="k">Verificación</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Confirmado &middot; 3 votos / 0 refutaciones</span></div></div></div>
       </div>
     </div>
   </section>
 
+  <section id="bench">
+    <div class="bench rv">
+      <div><h2>La prueba, en público.</h2><p class="lead">Diez sitios conocidos auditados con los mismos agentes, resultados publicados: Wikipedia, Python.org, Hacker News y siete más.</p>
+        <div class="cta-row"><a class="btn btn-p btn-lg" href="/benchmark/">Explorar el benchmark</a></div>
+      </div>
+      <div class="bstats"><div><b>10</b><span>sitios públicos auditados</span></div><div><b>225</b><span>hallazgos reales detectados</span></div><div><b>3</b><span>motores de prueba: semgrep, axe-core, Lighthouse</span></div></div>
+    </div>
+  </section>
+
   <section id="prix">
-    <div class="shead rv"><h2>Empieza gratis. Pasa a continuo.</h2></div>
-    <div class="prices rv"><div class="price"><div class="pn">Scan</div><div class="pp">Gratis</div><div class="pd">Una pagina, en caja negra, para descubrir la profundidad.</div><ul><li><span class="tk">&#10003;</span>Auditoria de una URL, solo prod</li><li><span class="tk">&#10003;</span>Los 15 dominios, vista previa</li><li><span class="tk">&#10003;</span>Puntuacion de salud + top 5 findings</li></ul><a class="btn btn-g" href="/console/">Escanear mi sitio</a></div><div class="price hi" data-badge="El mas completo"><div class="pn">Auditoria completa</div><div class="pp">490 &euro; <small>/ auditoria</small></div><div class="pd">Codigo + prod, multipagina, informe ejecutivo cifrado.</div><ul><li><span class="tk">&#10003;</span>Conexion del repo, caja blanca</li><li><span class="tk">&#10003;</span>15 agentes, findings verificados</li><li><span class="tk">&#10003;</span>Hoja de ruta cifrada en dias y euros</li><li><span class="tk">&#10003;</span>Correcciones y pull requests</li><li><span class="tk">&#10003;</span>Benchmark 3 competidores</li></ul><a class="btn btn-p" href="https://panoptic-audit.onrender.com/">Iniciar la auditoria completa</a></div><div class="price"><div class="pn">Continuo</div><div class="pp">190 &euro; <small>/ mes</small></div><div class="pd">El sitio queda bajo vigilancia, despliegue tras despliegue.</div><ul><li><span class="tk">&#10003;</span>Reauditoria en cada despliegue</li><li><span class="tk">&#10003;</span>Deteccion de regresion y tendencia</li><li><span class="tk">&#10003;</span>Alertas e historial completo</li><li><span class="tk">&#10003;</span>Benchmark competitivo mensual</li></ul><a class="btn btn-g" href="https://panoptic-audit.onrender.com/">Activar la vigilancia</a></div></div>
+    <div class="shead rv"><h2>Empieza gratis.</h2><p class="lead">Un escaneo de descubrimiento sin cuenta, una auditoría completa cuando quieras profundidad, una vigilancia cuando quieras dormir tranquilo.</p></div>
+    <div class="prices rv"><div class="price"><div class="pn">Scan</div><div class="pp">Gratis</div><div class="pd">Una página, sin acceso al código, para descubrir la profundidad.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Auditoría de una URL, solo producción</li><li><span class="tk" aria-hidden="true">&#10003;</span>Los 15 dominios, en vista previa</li><li><span class="tk" aria-hidden="true">&#10003;</span>Puntuación de salud + top 5 de hallazgos</li></ul><a class="btn btn-g" href="/console/">Escanear mi sitio</a></div><div class="price hi" data-badge="El más completo"><div class="pn">Auditoría completa</div><div class="pp">490 &euro; <small>/ auditoría</small></div><div class="pd">Código + producción, multipágina, informe ejecutivo cifrado.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Lectura del repositorio, solo lectura</li><li><span class="tk" aria-hidden="true">&#10003;</span>15 agentes, hallazgos contraverificados</li><li><span class="tk" aria-hidden="true">&#10003;</span>Hoja de ruta cifrada en días y en euros</li><li><span class="tk" aria-hidden="true">&#10003;</span>Correcciones y pull requests</li><li><span class="tk" aria-hidden="true">&#10003;</span>Comparación con 3 competidores</li></ul><a class="btn btn-p" href="https://panoptic-audit.onrender.com/">Iniciar la auditoría completa</a></div><div class="price"><div class="pn">Continuo</div><div class="pp">190 &euro; <small>/ mes</small></div><div class="pd">Tu sitio queda vigilado, despliegue tras despliegue.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Reauditoría en cada despliegue</li><li><span class="tk" aria-hidden="true">&#10003;</span>Detección de regresión y tendencia</li><li><span class="tk" aria-hidden="true">&#10003;</span>Alertas e historial completo</li><li><span class="tk" aria-hidden="true">&#10003;</span>Benchmark competitivo mensual</li></ul><a class="btn btn-g" href="https://panoptic-audit.onrender.com/">Activar la vigilancia</a></div></div>
+  </section>
+
+  <section id="faq">
+    <div class="faq rv"><h2>Preguntas frecuentes</h2><details class="qa"><summary>¿Tengo que dar acceso a mi código?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">No para el escaneo gratis: observa tu sitio desde fuera, como un visitante. La auditoría completa lee un repositorio Git en modo solo lectura, clonado durante el análisis y luego eliminado.</div></details><details class="qa"><summary>¿Cómo evitáis los falsos positivos?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Cada hallazgo pasa por una capa de contraverificación independiente que intenta refutarlo antes del informe. El veredicto (confirmado o plausible) se muestra en cada hallazgo, con su evidencia.</div></details><details class="qa"><summary>¿Cuánto dura una auditoría?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">El escaneo gratis tarda menos de un minuto. La auditoría completa código + producción tarda unos minutos, y el informe está disponible de inmediato.</div></details><details class="qa"><summary>¿Los importes en euros son reales?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Son estimaciones, siempre etiquetadas como tales. Si aportas tus cifras (visitas, valor de una conversión), se calibran a tu negocio; si no, obtienes horquillas por gravedad.</div></details><details class="qa"><summary>¿Para quién está escrito el informe?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Para ambos lectores a la vez: síntesis, puntuación y prioridades para el directivo; evidencias, archivos, líneas y correcciones para el equipo técnico.</div></details></div>
   </section>
 
   <section class="final rv">
     <h2>Tu sitio tiene puntos ciegos. Velos todos.</h2>
-    <p class="lead">Un escaneo gratis en caja negra, o la auditoria completa que lee tu codigo. Tu eliges la profundidad.</p>
-    <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Iniciar auditoria</a><a class="btn btn-g btn-lg" href="#report">Ver un informe</a></div>
+    <p class="lead">Un escaneo gratis en menos de un minuto, o la auditoría completa que lee tu código. Tú eliges la profundidad.</p>
+    <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Escanear mi sitio</a><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Ver un informe real</a></div>
   </section>
 </main>
 
-<footer><div class="wrap foot"><a class="logo" href="/es/"><span class="eye"></span>Panoptic</a><span>Seguridad &middot; Infra &middot; Datos &middot; SEO &middot; GEO &middot; Rendimiento &middot; Accesibilidad &middot; RGPD &middot; CRO</span><span>&copy; 2026 Panoptic</span></div></footer>
+<footer><div class="wrap foot">
+  <div><a class="logo" href="/es/"><span class="eye" aria-hidden="true"></span>Panoptic</a><p class="tag">La auditoría de sitios completa: quince auditores especializados sobre tu código y tu producción.</p></div>
+  <div class="flinks"><a href="/console/">Consola</a><a href="/benchmark/">Benchmark</a><a href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Informe de ejemplo</a></div>
+  <div class="fbot"><span>&copy; 2026 Panoptic</span><span class="mono">code + prod</span></div>
+</div></footer>
 <script>
 const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const rowsEl=document.getElementById("scanRows");
-const list=[["Seguridad de aplicaciones",2],["Infra",1],["Dependencias",3],["Datos y base de datos",0],["Rendimiento",2],["SEO tecnico",1],["Accesibilidad",4],["Legal",1],["CRO",0]];
+const list=[["Seguridad de aplicaciones",2],["Infra",1],["Dependencias",3],["Datos y base de datos",0],["Rendimiento",2],["SEO técnico",1],["Accesibilidad",4],["Legal",1],["CRO",0]];
 rowsEl.innerHTML=list.map(([n])=>'<div class="arow"><span class="chip"></span><span class="an">'+n+'</span><span class="cnt"></span></div>').join("");
 const rows=[...rowsEl.querySelectorAll(".arow")];
 const scoreEl=document.getElementById("scoreNum"),progEl=document.getElementById("prog");
 let shown=0;
 function setScore(){const d=rows.filter(r=>r.classList.contains("done")).length;progEl.style.width=(d/rows.length*100)+"%";scoreEl.textContent=Math.max(0,Math.round(100-(shown*shown)/(shown*shown+42)*100-shown*2));}
-function fin(i){const r=rows[i],c=list[i][1];r.classList.remove("run");r.classList.add("done");if(c===0)r.classList.add("clean");r.querySelector(".cnt").textContent=c?(c+" "+"finding"+(c>1?"s":"")):"limpio";shown+=c;setScore();}
+function fin(i){const r=rows[i],c=list[i][1];r.classList.remove("run");r.classList.add("done");if(c===0)r.classList.add("clean");r.querySelector(".cnt").textContent=c?(c+" "+(c>1?"hallazgos":"hallazgo")):"limpio";shown+=c;setScore();}
 function run(){rows.forEach(r=>{r.className="arow";r.querySelector(".cnt").textContent="";});shown=0;setScore();let i=0;const step=()=>{if(i>0)fin(i-1);if(i>=rows.length){setTimeout(run,2800);return;}rows[i].classList.add("run");i++;setTimeout(step,520);};setTimeout(step,400);}
 if(reduce){shown=0;rows.forEach((r,k)=>{r.className="arow";fin(k);});}else{run();}
 const rv=[...document.querySelectorAll(".rv:not(.in)")];

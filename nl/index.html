@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panoptic - De volledige audit die je code en je productie leest</title>
-<meta name="description" content="Panoptic zet vijftien gespecialiseerde auditors in op je broncode en je live productie, verifieert elk probleem en prioriteert het. Beveiliging, infra, data, SEO, GEO, prestaties, toegankelijkheid, AVG, CRO. Een rapport.">
+<title>Panoptic - Volledige site-audit: 15 experts op je code en je productie</title>
+<meta name="description" content="Vijftien gespecialiseerde auditors analyseren je broncode en je live site: beveiliging, SEO, prestaties, toegankelijkheid, AVG, conversie. Elke bevinding wordt geverifieerd, becijferd in euro's en geprioriteerd in één rapport.">
 <link rel="canonical" href="https://panoptic-audit.netlify.app/nl/">
 <link rel="alternate" hreflang="fr" href="https://panoptic-audit.netlify.app/">
 <link rel="alternate" hreflang="en" href="https://panoptic-audit.netlify.app/en/">
@@ -14,30 +14,36 @@
 <link rel="alternate" hreflang="nl" href="https://panoptic-audit.netlify.app/nl/">
 <link rel="alternate" hreflang="x-default" href="https://panoptic-audit.netlify.app/">
 <meta property="og:title" content="Panoptic - De meest volledige site-audit op de markt">
-<meta property="og:description" content="Vijftien experts. Een rapport. Elk probleem geverifieerd, becijferd, geprioriteerd.">
+<meta property="og:description" content="Vijftien experts. Eén rapport. Elke bevinding geverifieerd, becijferd, geprioriteerd.">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nl">
 <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Panoptic","applicationCategory":"DeveloperApplication","operatingSystem":"Web","url":"https://panoptic-audit.netlify.app/nl/","description":"Vijftien gespecialiseerde auditors analyseren je broncode en je live site: beveiliging, SEO, prestaties, toegankelijkheid, AVG, conversie. Elke bevinding wordt geverifieerd, becijferd in euro's en geprioriteerd in één rapport.","inLanguage":"nl","offers":[{"@type":"Offer","price":"0","priceCurrency":"EUR","name":"Scan"},{"@type":"Offer","price":"490","priceCurrency":"EUR","name":"Volledige audit"},{"@type":"Offer","price":"190","priceCurrency":"EUR","name":"Continu"}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Moet ik toegang geven tot mijn code?","acceptedAnswer":{"@type":"Answer","text":"Niet voor de gratis scan: die bekijkt je site van buitenaf, als een bezoeker. De volledige audit leest een Git-repository in alleen-lezen modus, gekloond voor de duur van de analyse en daarna verwijderd."}},{"@type":"Question","name":"Hoe vermijden jullie vals-positieven?","acceptedAnswer":{"@type":"Answer","text":"Elke bevinding gaat door een onafhankelijke tegencontrolelaag die haar probeert te weerleggen vóór het rapport. Het oordeel (bevestigd of plausibel) staat bij elke bevinding, met het bewijs."}},{"@type":"Question","name":"Hoe lang duurt een audit?","acceptedAnswer":{"@type":"Answer","text":"De gratis scan duurt minder dan een minuut. De volledige code + productie audit duurt enkele minuten, en het rapport is direct beschikbaar."}},{"@type":"Question","name":"Zijn de eurobedragen echt?","acceptedAnswer":{"@type":"Answer","text":"Het zijn schattingen, altijd als zodanig gelabeld. Lever je je cijfers aan (bezoeken, waarde van een conversie), dan worden ze gekalibreerd op je business; anders krijg je bandbreedtes per ernst."}},{"@type":"Question","name":"Voor wie is het rapport geschreven?","acceptedAnswer":{"@type":"Answer","text":"Voor beide lezers tegelijk: samenvatting, score en prioriteiten voor de directeur; bewijzen, bestanden, regels en fixes voor het technische team."}}]}</script>
 <style>
   @font-face{font-family:Geist;src:url(/fonts/Geist-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
   @font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
   :root{
-    --bg:#080a09;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#252e28;
-    --ink:#f1f4f1;--mut:#98a29b;--dim:#5c665f;
+    --bg:#070a08;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#27302a;
+    --ink:#f2f5f2;--mut:#a4aea7;--dim:#7e8a81;
     --acc:#4ff0a3;--acc2:#2fd88a;--acc-dim:#1e6b47;--acc-ghost:rgba(79,240,163,.08);
-    --crit:#ff5d5d;--high:#ffa53d;--med:#ffd84d;--low:#5db4ff;
+    --crit:#ff5d5d;--high:#ffa53d;
     --sans:Geist,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;
     --mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;
-    --mx:1180px;--pad:24px}
+    --mx:1200px;--pad:24px;--r:16px}
   *{box-sizing:border-box;margin:0;padding:0}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
   body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;
     -webkit-font-smoothing:antialiased;overflow-x:hidden;font-feature-settings:"ss01","cv01"}
   ::selection{background:var(--acc);color:#04140c}
   a{color:inherit;text-decoration:none}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
   .mono{font-family:var(--mono)}
   .acc{color:var(--acc)}
   .wrap{max-width:var(--mx);margin:0 auto;padding:0 var(--pad)}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;
+    padding:10px 18px;border-radius:0 0 10px 0;font-weight:600;font-size:14px}
+  .skip:focus{left:0}
   body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:radial-gradient(1100px 620px at 78% -8%,rgba(79,240,163,.10),transparent 60%),
       radial-gradient(760px 520px at -5% 12%,rgba(79,240,163,.05),transparent 55%);opacity:.9}
@@ -49,22 +55,22 @@
   main,nav,footer{position:relative;z-index:1}
 
   /* NAV */
-  nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(8,10,9,.72);
+  nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(16px);background:rgba(7,10,8,.74);
     border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;gap:16px;height:66px}
+  .nav{display:flex;align-items:center;gap:16px;height:68px}
   .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:18px;flex:none}
-  .eye{width:24px;height:24px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;position:relative}
-  .eye::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 14px var(--acc)}
-  .nlinks{display:flex;gap:30px;align-items:center;font-size:14.5px;color:var(--mut);margin-left:auto}
+  .eye{width:24px;height:24px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center;position:relative;flex:none}
+  .eye::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--acc)}
+  .nlinks{display:flex;gap:28px;align-items:center;font-size:14.5px;color:var(--mut);margin-left:auto}
   .nlinks a{transition:color .2s}.nlinks a:hover{color:var(--ink)}
-  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:550;font-size:14.5px;
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-weight:560;font-size:14.5px;
     padding:11px 20px;border-radius:100px;transition:transform .15s,background .2s,border-color .2s,box-shadow .2s;
     cursor:pointer;border:1px solid transparent;white-space:nowrap;font-family:var(--sans)}
-  .btn:active{transform:translateY(1px)}
-  .btn-p{background:var(--acc);color:#04140c;font-weight:600}
-  .btn-p:hover{background:#63f4b1;box-shadow:0 0 0 4px var(--acc-ghost)}
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn-p{background:var(--acc);color:#04140c;font-weight:640}
+  .btn-p:hover{background:#63f4b1;box-shadow:0 0 0 4px var(--acc-ghost);transform:translateY(-1px)}
   .btn-g{border-color:var(--line2);color:var(--ink)}
-  .btn-g:hover{border-color:var(--acc-dim);background:rgba(255,255,255,.03)}
+  .btn-g:hover{border-color:var(--acc-dim);background:rgba(255,255,255,.03);transform:translateY(-1px)}
   .langsel{position:relative;flex:none}
   .langsel summary{list-style:none;cursor:pointer;font-family:var(--mono);font-size:13px;color:var(--mut);
     border:1px solid var(--line2);border-radius:100px;padding:8px 13px;display:flex;align-items:center;gap:7px}
@@ -72,32 +78,32 @@
   .langsel summary:hover{border-color:var(--acc-dim);color:var(--ink)}
   .langsel summary .car{font-size:9px;color:var(--dim)}
   .langmenu{position:absolute;top:calc(100% + 8px);right:0;background:var(--panel);border:1px solid var(--line2);
-    border-radius:12px;padding:6px;min-width:172px;box-shadow:0 24px 60px -18px rgba(0,0,0,.7)}
+    border-radius:12px;padding:6px;min-width:176px;box-shadow:0 24px 60px -18px rgba(0,0,0,.7)}
   .langmenu a{display:flex;justify-content:space-between;gap:14px;padding:9px 12px;border-radius:8px;font-size:14px;
     color:var(--mut);transition:background .15s,color .15s}
   .langmenu a:hover{background:var(--acc-ghost);color:var(--ink)}
   .langmenu a.on{color:var(--acc)}
   .langmenu a small{font-family:var(--mono);font-size:11px;color:var(--dim)}
-  @media(max-width:900px){.nlinks{display:none}}
+  @media(max-width:960px){.nlinks{display:none}}
 
   /* HERO */
-  .hero{display:grid;grid-template-columns:1.04fr .96fr;gap:52px;align-items:center;
-    min-height:calc(100dvh - 66px);padding:40px 0 68px}
+  .hero{display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center;
+    min-height:calc(100dvh - 68px);padding:36px 0 72px}
   .cli{display:inline-flex;align-items:center;gap:9px;font-family:var(--mono);font-size:13px;color:var(--mut);
-    border:1px solid var(--line2);border-radius:100px;padding:8px 15px;margin-bottom:26px}
+    border:1px solid var(--line2);border-radius:100px;padding:8px 15px;margin-bottom:28px}
   .cli .p{color:var(--acc)}
-  h1{font-size:clamp(40px,5.7vw,68px);line-height:1.0;letter-spacing:-.038em;font-weight:600;margin-bottom:24px}
+  h1{font-size:clamp(44px,6.2vw,84px);line-height:.98;letter-spacing:-.045em;font-weight:640;margin-bottom:26px}
   h1 em{font-style:normal;color:var(--acc)}
-  .sub{font-size:19.5px;color:var(--mut);max-width:44ch;margin-bottom:34px;line-height:1.55}
+  .sub{font-size:clamp(17px,1.6vw,20px);color:var(--mut);max-width:46ch;margin-bottom:36px;line-height:1.55}
   .cta-row{display:flex;gap:13px;flex-wrap:wrap}
-  .btn-lg{padding:15px 27px;font-size:15.5px}
-  @media(max-width:900px){.hero{grid-template-columns:1fr;gap:40px;min-height:0;padding-top:36px}h1{font-size:clamp(36px,10vw,52px)}}
+  .btn-lg{padding:16px 28px;font-size:15.5px}
+  @media(max-width:960px){.hero{grid-template-columns:1fr;gap:42px;min-height:0;padding-top:40px}h1{font-size:clamp(38px,10.5vw,56px)}}
 
-  /* HERO PANEL (scanner + heatmap de risque) */
-  .panel{border:1px solid var(--line2);border-radius:18px;overflow:hidden;position:relative;
+  /* HERO PANEL (scanner + heatmap, reflet du produit reel) */
+  .panel{border:1px solid var(--line2);border-radius:20px;overflow:hidden;position:relative;
     background:linear-gradient(180deg,#0e1310,#0a0d0b);
     box-shadow:0 40px 90px -40px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.03)}
-  .panel::before{content:"";position:absolute;inset:0;border-radius:18px;padding:1px;pointer-events:none;
+  .panel::before{content:"";position:absolute;inset:0;border-radius:20px;padding:1px;pointer-events:none;
     background:linear-gradient(180deg,rgba(79,240,163,.28),transparent 40%);
     -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
   .ptop{display:flex;align-items:center;gap:8px;padding:14px 16px;border-bottom:1px solid var(--line);
@@ -123,7 +129,7 @@
     animation:pop .5s cubic-bezier(.16,1,.3,1) forwards}
   .tile.ok{background:var(--acc-dim)}.tile.hit{background:var(--high)}.tile.crit{background:var(--crit)}
   @keyframes pop{to{opacity:1;transform:scale(1)}}
-  .pmap-l{padding:2px 16px 12px;font-family:var(--mono);font-size:10.5px;color:var(--dim);display:flex;gap:14px}
+  .pmap-l{padding:2px 16px 12px;font-family:var(--mono);font-size:11px;color:var(--dim);display:flex;gap:14px}
   .pmap-l b{color:var(--mut)}
   .pfoot{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-top:1px solid var(--line)}
   .score{display:flex;align-items:baseline;gap:9px}
@@ -133,27 +139,27 @@
   .prog i{display:block;height:100%;width:0;background:var(--acc);transition:width .5s}
 
   /* PROOF BAND */
-  .proof{margin:6px 0 22px;padding:26px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-  .proof p{color:var(--mut);font-size:15px;max-width:64ch;margin-bottom:22px}
-  .proof p b{color:var(--ink);font-weight:550}
+  .proof{margin:6px 0 22px;padding:28px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .proof p{color:var(--mut);font-size:15px;max-width:64ch;margin-bottom:24px}
+  .proof p b{color:var(--ink);font-weight:560}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
   .stats>div{background:var(--bg);padding:4px 22px 4px 0}
-  .stats b{display:block;font-family:var(--mono);font-size:24px;letter-spacing:-.02em;margin-bottom:5px}
+  .stats b{display:block;font-family:var(--mono);font-size:25px;letter-spacing:-.02em;margin-bottom:6px}
   .stats span{font-size:13px;color:var(--mut)}
-  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr);gap:22px 0}.stats>div{padding-right:0}}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr);gap:22px 0}.stats>div{padding-right:12px}}
 
   /* SECTIONS */
-  section{padding:88px 0}
-  .shead{margin-bottom:44px;max-width:70ch}
+  section{padding:96px 0}
+  .shead{margin-bottom:48px;max-width:72ch}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:15px}
-  h2{font-size:clamp(29px,3.9vw,44px);line-height:1.06;letter-spacing:-.03em;font-weight:600;max-width:20ch}
-  .lead{font-size:17.5px;color:var(--mut);max-width:62ch;margin-top:18px;line-height:1.6}
+  h2{font-size:clamp(31px,4.3vw,50px);line-height:1.04;letter-spacing:-.033em;font-weight:620;max-width:21ch}
+  .lead{font-size:17.5px;color:var(--mut);max-width:64ch;margin-top:18px;line-height:1.6}
 
   /* PROBLEM */
-  .prob{text-align:center;max-width:820px;margin:0 auto}
-  .prob h2{margin:0 auto;max-width:22ch}.prob .lead{margin:18px auto 0}
-  .tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:34px}
-  .tool{font-family:var(--mono);font-size:13px;color:var(--dim);border:1px solid var(--line);border-radius:100px;padding:8px 15px}
+  .prob{text-align:center;max-width:860px;margin:0 auto}
+  .prob h2{margin:0 auto;max-width:23ch}.prob .lead{margin:18px auto 0}
+  .tools{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:36px}
+  .tool{font-family:var(--mono);font-size:13px;color:var(--mut);border:1px solid var(--line);border-radius:100px;padding:8px 15px}
   .tool.us{color:#04140c;background:var(--acc);border-color:var(--acc);font-weight:600}
 
   /* PIPELINE */
@@ -162,81 +168,114 @@
   .step{display:grid;grid-template-columns:48px 1fr;gap:26px;padding:22px 0;position:relative}
   .step .no{width:48px;height:48px;border-radius:12px;border:1px solid var(--line2);background:var(--panel);
     display:grid;place-items:center;font-family:var(--mono);font-size:15px;color:var(--acc);z-index:1}
-  .step h4{font-size:19px;letter-spacing:-.01em;margin-bottom:7px;font-weight:550}
+  .step h3{font-size:19px;letter-spacing:-.01em;margin-bottom:7px;font-weight:560}
   .step p{font-size:15px;color:var(--mut);max-width:66ch}
   .step .tag{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:100px;padding:3px 11px;margin-top:10px;display:inline-block}
 
-  /* AGENTS */
-  .fam{margin-bottom:30px}
-  .fam-h{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-  .fam-h h3{font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);font-weight:550}
-  .fam-h .ln{flex:1;height:1px;background:var(--line)}
-  .fam-h .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .agrid{display:grid;gap:12px}
-  .fam.f6 .agrid{grid-template-columns:repeat(3,1fr)}
-  .fam.f4 .agrid{grid-template-columns:repeat(4,1fr)}
-  .fam.f3 .agrid{grid-template-columns:repeat(3,1fr)}
-  .fam.f2 .agrid{grid-template-columns:repeat(2,1fr)}
-  .acard{border:1px solid var(--line);border-radius:16px;padding:22px;background:linear-gradient(180deg,var(--bg2),var(--bg));
-    transition:border-color .25s,transform .25s,box-shadow .25s;position:relative}
-  .acard:hover{border-color:var(--acc-dim);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
-  .acard .num{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:12px}
-  .acard h4{font-size:16.5px;letter-spacing:-.01em;margin-bottom:8px;font-weight:550}
-  .acard p{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:15px}
+  /* AGENTS - grille de couverture unifiee */
+  .cov{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .cov-h{grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:22px 0 4px}
+  .cov-h:first-child{margin-top:0}
+  .cov-h h3{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);font-weight:560}
+  .cov-h .ln{flex:1;height:1px;background:var(--line)}
+  .cov-h .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
+  .cv{border:1px solid var(--line);border-radius:14px;padding:19px 20px;background:linear-gradient(180deg,var(--bg2),var(--bg));
+    transition:border-color .25s,transform .25s,box-shadow .25s}
+  .cv:hover{border-color:var(--acc-dim);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
+  .cv .top{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
+  .cv .num{font-family:var(--mono);font-size:11.5px;color:var(--acc)}
+  .cv h4{font-size:16px;letter-spacing:-.01em;font-weight:560}
+  .cv p{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:13px}
   .fw{display:flex;flex-wrap:wrap;gap:6px}
   .fw span{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
-  @media(max-width:900px){.fam.f6 .agrid,.fam.f4 .agrid,.fam.f3 .agrid{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:520px){.agrid{grid-template-columns:1fr!important}}
+  @media(max-width:900px){.cov{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){.cov{grid-template-columns:1fr}}
 
   /* DIFFS (bento) */
   .diffs{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
-  .diff{border:1px solid var(--line);border-radius:16px;padding:26px;background:var(--bg2);transition:border-color .25s,transform .25s}
+  .diff{border:1px solid var(--line);border-radius:var(--r);padding:28px;background:var(--bg2);transition:border-color .25s,transform .25s}
   .diff:hover{border-color:var(--acc-dim);transform:translateY(-3px)}
-  .diff.big{grid-row:span 2;background:linear-gradient(155deg,rgba(79,240,163,.07),transparent 55%),var(--bg2);border-color:var(--acc-dim)}
-  .diff .ic{font-family:var(--mono);font-size:12px;color:var(--acc);margin-bottom:16px}
-  .diff h4{font-size:18px;letter-spacing:-.01em;margin-bottom:10px;font-weight:550}
-  .diff.big h4{font-size:25px;letter-spacing:-.02em}
-  .diff p{font-size:14px;color:var(--mut);line-height:1.55}.diff.big p{font-size:16px}
-  @media(max-width:820px){.diffs{grid-template-columns:1fr 1fr}.diff.big{grid-column:span 2;grid-row:auto}}
-  @media(max-width:520px){.diffs{grid-template-columns:1fr}.diff.big{grid-column:auto}}
+  .diff.big{grid-row:span 2;background:linear-gradient(155deg,rgba(79,240,163,.08),transparent 55%),var(--bg2);border-color:var(--acc-dim);
+    display:flex;flex-direction:column;justify-content:center}
+  .diff.tint{background:linear-gradient(200deg,rgba(79,240,163,.05),transparent 60%),var(--bg2)}
+  .diff h3{font-size:18px;letter-spacing:-.01em;margin-bottom:10px;font-weight:560}
+  .diff.big h3{font-size:26px;letter-spacing:-.02em;max-width:16ch}
+  .diff p{font-size:14px;color:var(--mut);line-height:1.55}.diff.big p{font-size:16px;max-width:52ch}
+  @media(max-width:840px){.diffs{grid-template-columns:1fr 1fr}.diff.big{grid-column:span 2;grid-row:auto}}
+  @media(max-width:560px){.diffs{grid-template-columns:1fr}.diff.big{grid-column:auto}}
 
   /* REPORT / FINDING */
-  .rep{display:grid;grid-template-columns:1fr 1.1fr;gap:52px;align-items:center}
-  .fcard{border:1px solid var(--line2);border-radius:16px;background:linear-gradient(180deg,#0e1310,#0a0d0b);overflow:hidden;
+  .rep{display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center}
+  .fcard{border:1px solid var(--line2);border-radius:var(--r);background:linear-gradient(180deg,#0e1310,#0a0d0b);overflow:hidden;
     font-size:14px;box-shadow:0 36px 80px -44px rgba(0,0,0,.85)}
   .fcard .fh{display:flex;align-items:center;gap:10px;padding:15px 18px;border-bottom:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--mut)}
   .sev{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;padding:4px 9px;border-radius:6px;color:var(--crit);background:rgba(255,93,93,.12);border:1px solid rgba(255,93,93,.3)}
   .fcard .fb{padding:20px}
-  .fcard h4{font-size:17px;letter-spacing:-.01em;margin-bottom:16px;font-family:var(--sans);color:var(--ink);font-weight:550}
-  .frow{display:grid;grid-template-columns:108px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
+  .fcard h3{font-size:17px;letter-spacing:-.01em;margin-bottom:16px;font-family:var(--sans);color:var(--ink);font-weight:560}
+  .frow{display:grid;grid-template-columns:112px 1fr;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:13px}
   .frow .k{font-family:var(--mono);color:var(--dim);font-size:11px;letter-spacing:.03em;text-transform:uppercase}
   .frow .v{color:var(--mut);line-height:1.5}.frow .v code{font-family:var(--mono);color:var(--acc);font-size:12.5px}
   .verdict{display:inline-flex;align-items:center;gap:7px;color:var(--acc);font-family:var(--mono);font-size:12px}
   .verdict .c{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--acc);display:grid;place-items:center;font-size:9px}
-  @media(max-width:860px){.rep{grid-template-columns:1fr;gap:32px}}
+  .fex{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
+  @media(max-width:880px){.rep{grid-template-columns:1fr;gap:34px}}
+
+  /* BENCHMARK */
+  .bench{border:1px solid var(--acc-dim);border-radius:22px;padding:clamp(32px,5vw,60px);
+    background:radial-gradient(900px 420px at 12% -20%,rgba(79,240,163,.10),transparent 60%),var(--bg2);
+    display:grid;grid-template-columns:1.1fr .9fr;gap:44px;align-items:center}
+  .bench h2{max-width:14ch}
+  .bench .lead{margin-top:16px}
+  .bench .cta-row{margin-top:30px}
+  .bstats{display:grid;gap:0}
+  .bstats>div{display:grid;grid-template-columns:auto 1fr;gap:20px;align-items:baseline;padding:18px 0;border-top:1px solid var(--line2)}
+  .bstats>div:first-child{border-top:0}
+  .bstats b{font-family:var(--mono);font-size:clamp(34px,4vw,52px);letter-spacing:-.03em;color:var(--acc);font-weight:600;min-width:2ch}
+  .bstats span{font-size:14.5px;color:var(--mut);line-height:1.45}
+  @media(max-width:840px){.bench{grid-template-columns:1fr;gap:24px}}
 
   /* PRICING */
-  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start}
-  .price{border:1px solid var(--line);border-radius:18px;padding:30px;background:var(--bg2)}
+  .prices{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;align-items:start;margin-top:8px}
+  .price{border:1px solid var(--line);border-radius:18px;padding:30px;background:var(--bg2);transition:border-color .25s,transform .25s}
+  .price:hover{border-color:var(--line2);transform:translateY(-3px)}
   .price.hi{border-color:var(--acc-dim);background:linear-gradient(165deg,rgba(79,240,163,.07),transparent 60%),var(--bg2);position:relative}
+  .price.hi:hover{border-color:var(--acc2)}
   .price.hi::before{content:attr(data-badge);position:absolute;top:-11px;left:30px;font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:#04140c;background:var(--acc);padding:4px 12px;border-radius:100px;font-weight:600}
-  .price .pn{font-size:15px;color:var(--mut);margin-bottom:12px;font-weight:550}
+  .price .pn{font-size:15px;color:var(--mut);margin-bottom:12px;font-weight:560}
   .price .pp{font-size:36px;letter-spacing:-.02em;font-weight:600;margin-bottom:5px;font-family:var(--mono)}
   .price .pp small{font-size:15px;color:var(--dim);font-weight:400;font-family:var(--sans)}
-  .price .pd{font-size:13.5px;color:var(--dim);margin-bottom:24px;min-height:40px}
+  .price .pd{font-size:13.5px;color:var(--mut);margin-bottom:24px;min-height:40px}
   .price ul{list-style:none;display:grid;gap:12px;margin-bottom:28px}
   .price li{display:grid;grid-template-columns:18px 1fr;gap:10px;font-size:13.5px;color:var(--mut);line-height:1.45}
   .price li .tk{color:var(--acc);font-family:var(--mono);font-size:13px}
   .price .btn{width:100%}
-  @media(max-width:820px){.prices{grid-template-columns:1fr}}
+  @media(max-width:840px){.prices{grid-template-columns:1fr}}
+
+  /* FAQ */
+  .faq{max-width:780px}
+  .faq h2{margin-bottom:34px}
+  .qa{border-top:1px solid var(--line)}
+  .qa:last-child{border-bottom:1px solid var(--line)}
+  .qa summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;
+    padding:22px 4px;font-size:17px;font-weight:560;letter-spacing:-.01em;transition:color .2s}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{color:var(--acc)}
+  .qa summary .pm{font-family:var(--mono);color:var(--dim);font-size:18px;flex:none;transition:transform .25s,color .25s;line-height:1}
+  .qa[open] summary .pm{transform:rotate(45deg);color:var(--acc)}
+  .qa .ans{padding:0 4px 24px;font-size:15px;color:var(--mut);line-height:1.65;max-width:64ch}
 
   /* FINAL + FOOTER */
-  .final{text-align:center;padding:110px 0}
-  .final h2{margin:0 auto;max-width:22ch}
-  .final .lead{margin:20px auto 36px}.final .cta-row{justify-content:center}
-  footer{border-top:1px solid var(--line);padding:44px 0;color:var(--dim);font-size:13.5px}
-  .foot{display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap}
-  .foot .logo{font-size:16px}
+  .final{text-align:center;padding:116px 0}
+  .final h2{margin:0 auto;max-width:22ch;font-size:clamp(34px,4.8vw,56px)}
+  .final .lead{margin:20px auto 38px}.final .cta-row{justify-content:center}
+  footer{border-top:1px solid var(--line);padding:48px 0 40px;color:var(--dim);font-size:13.5px}
+  .foot{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;align-items:start}
+  .foot .logo{font-size:16px;color:var(--ink);margin-bottom:12px}
+  .foot .tag{max-width:44ch;line-height:1.55}
+  .flinks{display:flex;gap:26px;justify-content:flex-end;flex-wrap:wrap}
+  .flinks a{color:var(--mut);transition:color .2s}.flinks a:hover{color:var(--acc)}
+  .fbot{grid-column:1/-1;display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:22px;margin-top:8px;flex-wrap:wrap}
+  @media(max-width:720px){.foot{grid-template-columns:1fr}.flinks{justify-content:flex-start}}
 
   /* reveal */
   .rv{opacity:0;transform:translateY(26px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
@@ -244,100 +283,119 @@
   @media(prefers-reduced-motion:reduce){
     .rv{opacity:1;transform:none;transition:none}
     .arow.run .chip,.tile{animation:none;opacity:1;transform:none}
+    .btn,.cv,.diff,.price{transition:none}
     html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
-<div class="grid-bg"></div>
-<nav>
+<a class="skip" href="#main">Naar de inhoud</a>
+<div class="grid-bg" aria-hidden="true"></div>
+<nav aria-label="Panoptic">
   <div class="wrap nav">
-    <a class="logo" href="/nl/"><span class="eye"></span>Panoptic</a>
+    <a class="logo" href="/nl/"><span class="eye" aria-hidden="true"></span>Panoptic</a>
     <div class="nlinks">
       <a href="#agents">De 15 audits</a>
       <a href="#pipe">De motor</a>
       <a href="#diff">Waarom Panoptic</a>
       <a href="#prix">Prijzen</a>
     </div>
-    <details class="langsel"><summary>NL<span class="car">&#9662;</span></summary><div class="langmenu"><a href="/" hreflang="fr">Francais<small>FR</small></a><a href="/en/" hreflang="en">English<small>EN</small></a><a href="/de/" hreflang="de">Deutsch<small>DE</small></a><a href="/es/" hreflang="es">Espanol<small>ES</small></a><a href="/it/" hreflang="it">Italiano<small>IT</small></a><a href="/nl/" class="on" hreflang="nl">Nederlands<small>NL</small></a></div></details>
-    <a class="btn btn-p" href="/console/">Start een audit</a>
+    <details class="langsel"><summary aria-label="Taal kiezen">NL<span class="car" aria-hidden="true">&#9662;</span></summary><div class="langmenu"><a href="/" hreflang="fr" lang="fr">Français<small>FR</small></a><a href="/en/" hreflang="en" lang="en">English<small>EN</small></a><a href="/de/" hreflang="de" lang="de">Deutsch<small>DE</small></a><a href="/es/" hreflang="es" lang="es">Español<small>ES</small></a><a href="/it/" hreflang="it" lang="it">Italiano<small>IT</small></a><a href="/nl/" class="on" hreflang="nl" lang="nl">Nederlands<small>NL</small></a></div></details>
+    <a class="btn btn-p" href="/console/">Scan mijn site</a>
   </div>
 </nav>
 
-<main class="wrap">
+<main class="wrap" id="main">
   <header class="hero">
     <div class="rv in">
       <span class="cli"><span class="p">$</span> panoptic scan https://jouw-site.nl</span>
-      <h1>Vijftien experts.<br>Een rapport.<br><em>Nul blinde vlekken.</em></h1>
-      <p class="sub">Panoptic zet vijftien gespecialiseerde auditors in op je code en je productie, verifieert elk probleem, becijfert het en prioriteert het.</p>
+      <h1>Vijftien experts.<br>Eén rapport.<br><em>Nul blinde vlekken.</em></h1>
+      <p class="sub">Vijftien auditors analyseren je code en je live site. Elk probleem: geverifieerd, becijferd in euro's, geprioriteerd.</p>
       <div class="cta-row">
-        <a class="btn btn-p btn-lg" href="/console/">Start een audit</a>
-        <a class="btn btn-g btn-lg" href="#report">Bekijk een rapport</a>
+        <a class="btn btn-p btn-lg" href="/console/">Scan mijn site</a>
+        <a class="btn btn-g btn-lg" href="#report">Bekijk een echt rapport</a>
       </div>
     </div>
     <div class="panel rv in" aria-hidden="true">
       <div class="ptop"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span><span class="purl mono">panoptic scan https://jouw-site.nl</span></div>
       <div class="pbody" id="scanRows"></div>
       <div class="pmap"><span class="tile ok" style="animation-delay:1.2s"></span><span class="tile hit" style="animation-delay:1.25s"></span><span class="tile crit" style="animation-delay:1.3s"></span><span class="tile ok" style="animation-delay:1.35s"></span><span class="tile hit" style="animation-delay:1.4s"></span><span class="tile ok" style="animation-delay:1.45s"></span><span class="tile ok" style="animation-delay:1.5s"></span><span class="tile ok" style="animation-delay:1.55s"></span><span class="tile hit" style="animation-delay:1.6s"></span><span class="tile ok" style="animation-delay:1.65s"></span><span class="tile hit" style="animation-delay:1.7s"></span><span class="tile ok" style="animation-delay:1.75s"></span><span class="tile ok" style="animation-delay:1.8s"></span><span class="tile crit" style="animation-delay:1.85s"></span><span class="tile ok" style="animation-delay:1.9s"></span></div>
-      <div class="pmap-l"><span><b>15</b> agenten</span><span><b class="acc">&#9632;</b> ok</span><span><b style="color:var(--high)">&#9632;</b> findings</span><span><b style="color:var(--crit)">&#9632;</b> critique</span></div>
+      <div class="pmap-l"><span><b>15</b> agenten</span><span><b class="acc">&#9632;</b> ok</span><span><b style="color:var(--high)">&#9632;</b> bevindingen</span><span><b style="color:var(--crit)">&#9632;</b> kritiek</span></div>
       <div class="pfoot"><div class="score"><b id="scoreNum">0</b><span>/100 gezondheid</span></div><div class="prog"><i id="prog"></i></div></div>
     </div>
   </header>
 
   <div class="proof rv">
-    <p>De site die je leest doorstaat zijn eigen audit: <b>15 domeinen</b>, geverifieerde findings, code en productie.</p>
-    <div class="stats"><div><b class="acc">15</b><span>auditdomeinen parallel, van CVSS tot AVG</span></div><div><b>Code + Prod</b><span>de oorzaak op de regel, niet alleen het symptoom</span></div><div><b class="acc">100%</b><span>van de findings doorstaat de adversariale verificatie</span></div><div><b>&euro; becijferd</b><span>elk risico en elke winst vertaald naar geld</span></div></div>
+    <p>Deze site doorstaat zijn eigen audit: <b>15 domeinen</b>, geverifieerde bevindingen, code en productie.</p>
+    <div class="stats"><div><b class="acc">15</b><span>auditdomeinen parallel, van CVSS tot AVG</span></div><div><b>Code + Prod</b><span>de oorzaak tot op de regel, niet alleen het symptoom</span></div><div><b class="acc">100%</b><span>van de bevindingen doorloopt een tegencontrole</span></div><div><b>In euro's</b><span>elk risico en elke winst vertaald voor de beslisser</span></div></div>
   </div>
 
   <section class="prob rv">
-    <h2>Elke tool dekt een vakje. Jij runt een hele site.</h2>
+    <h2>Elke tool dekt één vakje. Jij runt een hele site.</h2>
     <p class="lead">SEMrush ziet SEO, Snyk de dependencies, Lighthouse de prestaties, ZAP de beveiliging. Geen enkele ziet het geheel, of koppelt het symptoom in productie aan zijn oorzaak in de code.</p>
     <div class="tools"><span class="tool">SEMrush</span><span class="tool">Ahrefs</span><span class="tool">Snyk</span><span class="tool">Lighthouse</span><span class="tool">OWASP ZAP</span><span class="tool">Screaming Frog</span><span class="tool us">Panoptic</span></div>
   </section>
 
   <section id="pipe">
-    <div class="shead rv"><h2>Vijf lagen. Deterministisch.</h2><p class="lead">Wat een geloofwaardige audit onderscheidt van een lijst tool-waarschuwingen: een enkele scope, systematische verificatie, een synthese die prioriteert.</p></div>
-    <div class="pipe"><div class="step rv"><div class="no">01</div><div><h4>Verkenning en scoping</h4><p>Een enkele crawl vooraf: inventaris van pagina's en subdomeinen, stackdetectie, mapping van formulieren en endpoints. Agenten krijgen een scope, ze ontdekken die niet vijftien keer opnieuw.</p><span class="tag">1 crawl</span></div></div><div class="step rv"><div class="no">02</div><div><h4>Fan-out van de vijftien agenten</h4><p>Elke actieve agent draait parallel op de broncode en de live productie, met eigen framework en tools.</p><span class="tag">parallel</span></div></div><div class="step rv"><div class="no">03</div><div><h4>Adversariale verificatie</h4><p>Elke finding wordt uitgedaagd door een sceptische agent: echt of vals-positief, reproduceerbaar, ernst onderbouwd met bewijs. Meerderheidsstem bij kritieke.</p><span class="tag">anti vals-positief</span></div></div><div class="step rv"><div class="no">04</div><div><h4>Dedup, scoring, prioritering</h4><p>Hetzelfde probleem duikt vaak op via beveiliging EN prestaties EN SEO. We voegen het samen, scoren het op uniforme ernst, prioriteren op impact / inspanning.</p><span class="tag">impact / inspanning</span></div></div><div class="step rv"><div class="no">05</div><div><h4>Synthese</h4><p>Globale gezondheidsscore, executive summary, roadmap becijferd in mensdagen en in euro's risico en winst. Klaar voor de beslisser.</p><span class="tag">roadmap</span></div></div></div>
+    <div class="shead rv"><h2>Vijf stappen. Nul toeval.</h2><p class="lead">Wat een geloofwaardige audit onderscheidt van een lijst waarschuwingen: één scope, systematische verificatie, een synthese die prioriteert.</p></div>
+    <div class="pipe"><div class="step rv"><div class="no" aria-hidden="true">01</div><div><h3>Verkenning</h3><p>Eén crawl vooraf: pagina's, subdomeinen, stack, formulieren, endpoints. Agenten krijgen een precieze scope in plaats van die vijftien keer opnieuw te ontdekken.</p><span class="tag">1 crawl</span></div></div><div class="step rv"><div class="no" aria-hidden="true">02</div><div><h3>Vijftien analyses parallel</h3><p>Elke agent onderzoekt de broncode en de live site met zijn eigen standaard en toegewijde tools.</p><span class="tag">parallel</span></div></div><div class="step rv"><div class="no" aria-hidden="true">03</div><div><h3>Tegencontrole</h3><p>Een sceptische agent probeert elke bevinding te weerleggen: echt of vals-positief, reproduceerbaar, ernst bewezen. Meerderheidsstem bij kritieke.</p><span class="tag">anti vals-positieven</span></div></div><div class="step rv"><div class="no" aria-hidden="true">04</div><div><h3>Samenvoegen en prioriteren</h3><p>Hetzelfde probleem duikt vaak op via beveiliging, prestaties en SEO tegelijk. Het wordt samengevoegd, gescoord, gerangschikt op impact en inspanning.</p><span class="tag">impact / inspanning</span></div></div><div class="step rv"><div class="no" aria-hidden="true">05</div><div><h3>Synthese</h3><p>Globale gezondheidsscore, samenvatting voor de directie, roadmap becijferd in dagen en in euro's.</p><span class="tag">roadmap</span></div></div></div>
   </section>
 
   <section id="agents">
-    <div class="shead rv"><div class="eyebrow">De auditors</div><h2>Vijftien specialisten, elk met eigen standaard.</h2><p class="lead">Geen enkele tool op de markt dekt deze vijftien domeinen samen. Elke agent heeft zijn eigen framework en tools, en leest zowel de code als de productie.</p></div>
-    <div class="fam f6 rv"><div class="fam-h"><h3>Techniek</h3><span class="ln"></span><span class="ct">06 agenten</span></div><div class="agrid"><div class="acard"><div class="num">A01</div><h4>Applicatiebeveiliging</h4><p>Misbruikbare kwetsbaarheden, code en prod.</p><div class="fw"><span>OWASP Top 10</span><span>ASVS</span><span>CWE</span></div></div><div class="acard"><div class="num">A02</div><h4>Code en architectuur</h4><p>Technische schuld, onderhoudbaarheid, samenhang.</p><div class="fw"><span>SOLID</span><span>Clean Archi</span><span>DDD</span></div></div><div class="acard"><div class="num">A03</div><h4>Infra / DevOps</h4><p>DNS, TLS, CI/CD, back-ups, uptime.</p><div class="fw"><span>Well-Architected</span><span>12-Factor</span></div></div><div class="acard"><div class="num">A04</div><h4>Data en database</h4><p>Schema, indexen, N+1, PII, versleuteling.</p><div class="fw"><span>Normalisation</span><span>Retention</span></div></div><div class="acard"><div class="num">A05</div><h4>Dependencies / supply chain</h4><p>CVE's, verlaten packages, licenties.</p><div class="fw"><span>Dependency-Check</span><span>SLSA</span><span>SPDX</span></div></div><div class="acard"><div class="num">A06</div><h4>Prestaties / CWV</h4><p>LCP, INP, CLS, gewicht, waterfall.</p><div class="fw"><span>Core Web Vitals</span><span>RAIL</span></div></div></div></div><div class="fam f4 rv"><div class="fam-h"><h3>Zichtbaarheid</h3><span class="ln"></span><span class="ct">04 agenten</span></div><div class="agrid"><div class="acard"><div class="num">A07</div><h4>Technische SEO</h4><p>Crawlbaarheid, indexering, Schema, hreflang.</p><div class="fw"><span>Search Essentials</span></div></div><div class="acard"><div class="num">A08</div><h4>GEO / AI-zichtbaarheid</h4><p>Citeerbaarheid in AI Overviews, ChatGPT, Perplexity.</p><div class="fw"><span>llms.txt</span><span>E-E-A-T</span></div></div><div class="acard"><div class="num">A09</div><h4>Analytics en meting</h4><p>Tracking, kapotte events, Consent Mode.</p><div class="fw"><span>GA4</span><span>Consent v2</span></div></div><div class="acard"><div class="num">A10</div><h4>E-mail / afleverbaarheid</h4><p>SPF, DKIM, DMARC, reputatie, templates.</p><div class="fw"><span>DMARC</span><span>BIMI</span></div></div></div></div><div class="fam f3 rv"><div class="fam-h"><h3>Mens</h3><span class="ln"></span><span class="ct">03 agenten</span></div><div class="agrid"><div class="acard"><div class="num">A11</div><h4>Toegankelijkheid</h4><p>Contrast, toetsenbord, ARIA, schermlezers.</p><div class="fw"><span>WCAG 2.2 AA</span><span>RGAA</span><span>EAA</span></div></div><div class="acard"><div class="num">A12</div><h4>UX / UI / journeys</h4><p>Ergonomie, statussen, wrijving, mobiel.</p><div class="fw"><span>Nielsen</span><span>UX laws</span></div></div><div class="acard"><div class="num">A13</div><h4>Content / redactie / i18n</h4><p>Spelling, toon, actualiteit, vertalingen.</p><div class="fw"><span>i18n / l10n</span></div></div></div></div><div class="fam f2 rv"><div class="fam-h"><h3>Risico</h3><span class="ln"></span><span class="ct">02 agenten</span></div><div class="agrid"><div class="acard"><div class="num">A14</div><h4>Juridisch / AVG</h4><p>Echte cookie-toestemming, vermeldingen, register, buiten EU.</p><div class="fw"><span>GDPR</span><span>ePrivacy</span><span>DSA</span></div></div><div class="acard"><div class="num">A15</div><h4>CRO / conversie</h4><p>Waardepropositie, CTA, funnel, uitval.</p><div class="fw"><span>Funnel</span><span>A/B test</span></div></div></div></div>
+    <div class="shead rv"><div class="eyebrow">De auditors</div><h2>Vijftien specialisten. Elk met een eigen standaard.</h2><p class="lead">Geen enkele tool op de markt dekt deze vijftien domeinen samen. Elke agent past zijn eigen standaard toe en leest zowel de code als de productie.</p></div>
+    <div class="cov rv"><div class="cov-h"><h3>Techniek</h3><span class="ln"></span><span class="ct">06 agenten</span></div><div class="cv"><div class="top"><span class="num">A01</span><h4>Applicatiebeveiliging</h4></div><p>Misbruikbare kwetsbaarheden, code en prod.</p><div class="fw"><span>OWASP Top 10</span><span>ASVS</span><span>CWE</span></div></div><div class="cv"><div class="top"><span class="num">A02</span><h4>Code en architectuur</h4></div><p>Technische schuld, onderhoudbaarheid, samenhang.</p><div class="fw"><span>SOLID</span><span>Clean Archi</span><span>DDD</span></div></div><div class="cv"><div class="top"><span class="num">A03</span><h4>Infra / DevOps</h4></div><p>DNS, TLS, CI/CD, back-ups, uptime.</p><div class="fw"><span>Well-Architected</span><span>12-Factor</span></div></div><div class="cv"><div class="top"><span class="num">A04</span><h4>Data en database</h4></div><p>Schema, indexen, N+1, persoonsgegevens.</p><div class="fw"><span>Normalisation</span><span>Retention</span></div></div><div class="cv"><div class="top"><span class="num">A05</span><h4>Dependencies / supply chain</h4></div><p>CVE's, verlaten packages, licenties.</p><div class="fw"><span>OSV</span><span>SLSA</span><span>SPDX</span></div></div><div class="cv"><div class="top"><span class="num">A06</span><h4>Prestaties / CWV</h4></div><p>LCP, INP, CLS, gewicht, waterfall.</p><div class="fw"><span>Core Web Vitals</span><span>RAIL</span></div></div><div class="cov-h"><h3>Zichtbaarheid</h3><span class="ln"></span><span class="ct">04 agenten</span></div><div class="cv"><div class="top"><span class="num">A07</span><h4>Technische SEO</h4></div><p>Crawlbaarheid, indexering, Schema, hreflang.</p><div class="fw"><span>Search Essentials</span></div></div><div class="cv"><div class="top"><span class="num">A08</span><h4>GEO / AI-zichtbaarheid</h4></div><p>Citeerbaarheid in AI Overviews, ChatGPT, Perplexity.</p><div class="fw"><span>llms.txt</span><span>E-E-A-T</span></div></div><div class="cv"><div class="top"><span class="num">A09</span><h4>Analytics en meting</h4></div><p>Tracking, kapotte events, Consent Mode.</p><div class="fw"><span>GA4</span><span>Consent v2</span></div></div><div class="cv"><div class="top"><span class="num">A10</span><h4>E-mail / afleverbaarheid</h4></div><p>SPF, DKIM, DMARC, reputatie, templates.</p><div class="fw"><span>DMARC</span><span>BIMI</span></div></div><div class="cov-h"><h3>Mens</h3><span class="ln"></span><span class="ct">03 agenten</span></div><div class="cv"><div class="top"><span class="num">A11</span><h4>Toegankelijkheid</h4></div><p>Contrast, toetsenbord, ARIA, schermlezers.</p><div class="fw"><span>WCAG 2.2 AA</span><span>RGAA</span><span>EAA</span></div></div><div class="cv"><div class="top"><span class="num">A12</span><h4>UX / UI / journeys</h4></div><p>Ergonomie, statussen, wrijving, mobiel.</p><div class="fw"><span>Nielsen</span><span>UX laws</span></div></div><div class="cv"><div class="top"><span class="num">A13</span><h4>Content / redactie / i18n</h4></div><p>Spelling, toon, actualiteit, vertalingen.</p><div class="fw"><span>i18n / l10n</span></div></div><div class="cov-h"><h3>Risico</h3><span class="ln"></span><span class="ct">02 agenten</span></div><div class="cv"><div class="top"><span class="num">A14</span><h4>Juridisch / AVG</h4></div><p>Echte cookie-toestemming, vermeldingen, register, buiten EU.</p><div class="fw"><span>GDPR</span><span>ePrivacy</span><span>DSA</span></div></div><div class="cv"><div class="top"><span class="num">A15</span><h4>CRO / conversie</h4></div><p>Waardepropositie, CTA, funnel, uitval.</p><div class="fw"><span>Funnel</span><span>A/B test</span></div></div></div>
   </section>
 
   <section id="diff">
-    <div class="shead rv"><h2>Waarom het de bestaande tools verslaat.</h2><p class="lead">SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: elk dekt een vakje. Panoptic verenigt ze, white-box, met verificatie.</p></div>
+    <div class="shead rv"><h2>Wat niemand anders doet.</h2><p class="lead">SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: elk dekt één vakje. Panoptic verenigt ze, met bewijs.</p></div>
     <div class="diffs rv">
-      <div class="diff big"><div class="ic">01 / Het beslissende voordeel</div><h4>Traceerbaarheid tot de coderegel</h4><p>Concurrenten crawlen je URL black-box. Panoptic koppelt je repo: een trage Core Web Vital wordt geen score, het wordt dit component, dit bestand, deze regel. Niemand anders koppelt het symptoom in productie aan zijn oorzaak in de code.</p></div>
-      <div class="diff"><div class="ic">02</div><h4>Geverifieerde findings</h4><p>Elk probleem wordt voor het rapport uitgedaagd door een sceptische agent. Weinig vals-positieven, de pijn nummer een van de huidige tools.</p></div><div class="diff"><div class="ic">03</div><h4>Business-kader</h4><p>Elke finding vertaald naar geld: AVG-boeterisico, SEO-verlies, conversiewinst. Wat de beslisser koopt.</p></div><div class="diff"><div class="ic">04</div><h4>Continu, geen eenmalige actie</h4><p>Automatische her-audit bij elke deployment, regressiedetectie, historie en trend.</p></div><div class="diff"><div class="ic">05</div><h4>Concurrentie-benchmark</h4><p>Je site vergeleken met drie concurrenten op elk van de vijftien dimensies.</p></div>
+      <div class="diff big"><h3>De oorzaak tot op de coderegel</h3><p>Andere tools bekijken je site van buitenaf. Panoptic leest ook je repository: een trage pagina wordt geen score, het wordt dit component, dit bestand, deze regel om te corrigeren.</p></div>
+      <div class="diff"><h3>Tegengecontroleerde bevindingen</h3><p>Elk probleem wordt uitgedaagd door een sceptische agent voordat het in het rapport komt. Vals-positieven, de pijn nummer één van de huidige tools, worden gefilterd.</p></div><div class="diff tint"><h3>Becijferd om te beslissen</h3><p>AVG-boeterisico, SEO-verlies, conversiewinst: elke bevinding wordt vertaald naar euro's, met de correctie-inspanning ernaast.</p></div><div class="diff"><h3>Continu, niet eenmalig</h3><p>Her-audit bij elke deployment, regressiedetectie, historie en trend.</p></div><div class="diff"><h3>Fixes inbegrepen</h3><p>Niet alleen de diagnose: kant-en-klare fixes en, als je wilt, de pull request geopend op je repository.</p></div>
     </div>
   </section>
 
   <section id="report">
     <div class="rep">
-      <div class="rv"><div class="eyebrow">De oplevering</div><h2>Een rapport dat de beslisser leest.</h2><p class="lead">Gewogen totaalscore, dashboard per domein, geprioriteerde findings, becijferde impact. Gegenereerd in HTML, downloadbaar als PDF.</p>
-        <div class="cta-row" style="margin-top:28px"><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Bekijk een volledig rapport</a></div>
+      <div class="rv"><div class="eyebrow">De oplevering</div><h2>Een rapport dat een directeur kan lezen.</h2><p class="lead">Gewogen totaalscore, dashboard per domein, geprioriteerde bevindingen, becijferde impact. Gegenereerd in HTML, downloadbaar als PDF.</p>
+        <div class="cta-row" style="margin-top:28px"><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Bekijk een echt rapport</a></div>
       </div>
       <div class="fcard rv">
-        <div class="fh"><span class="sev">Kritiek</span><span>SEC-014 &middot; Applicatiebeveiliging</span><span style="margin-left:auto;color:var(--dim)">CVSS 9.1</span></div>
-        <div class="fb"><h4>Stripe-API-sleutel blootgesteld in de client-bundle</h4><div class="frow"><div class="k">Bewijs</div><div class="v">Secret <code>sk_live_&hellip;</code> aanwezig in <code>main.a3f2.js</code>, publiek geserveerd. Reproduceerbaar.</div></div><div class="frow"><div class="k">Locatie</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; prod-bundle <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impact</div><div class="v">Frauduleuze afschrijvingen mogelijk. Geschat risico <b class="acc">18.400 &euro;</b>.</div></div><div class="frow"><div class="k">Fix</div><div class="v">Roep verplaatsen naar de server, sleutel intrekken, git-historie opschonen. Patch geleverd.</div></div><div class="frow"><div class="k">Inspanning</div><div class="v">0,5 mensdag &middot; gemeld door beveiliging + dependencies</div></div><div class="frow"><div class="k">Verificatie</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Bevestigd &middot; 3 stemmen / 0 weerleggingen</span></div></div></div>
+        <div class="fh"><span class="sev">Kritiek</span><span>SEC-014 &middot; Applicatiebeveiliging</span><span class="fex">Voorbeeldbevinding</span></div>
+        <div class="fb"><h3>Stripe-API-sleutel blootgesteld in de client-bundle</h3><div class="frow"><div class="k">Bewijs</div><div class="v">Secret <code>sk_live_&hellip;</code> aanwezig in <code>main.a3f2.js</code>, publiek geserveerd. Reproduceerbaar.</div></div><div class="frow"><div class="k">Locatie</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; prod-bundle <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impact</div><div class="v">Frauduleuze afschrijvingen mogelijk. Geschat risico <b class="acc">18.400 &euro;</b>.</div></div><div class="frow"><div class="k">Fix</div><div class="v">Aanroep naar de server verplaatsen, sleutel intrekken, git-historie opschonen. Patch geleverd.</div></div><div class="frow"><div class="k">Inspanning</div><div class="v">0,5 mensdag &middot; gemeld door beveiliging + dependencies</div></div><div class="frow"><div class="k">Verificatie</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Bevestigd &middot; 3 stemmen / 0 weerleggingen</span></div></div></div>
       </div>
     </div>
   </section>
 
+  <section id="bench">
+    <div class="bench rv">
+      <div><h2>Het bewijs, publiek.</h2><p class="lead">Tien bekende sites geauditeerd met dezelfde agenten, resultaten gepubliceerd: Wikipedia, Python.org, Hacker News en zeven andere.</p>
+        <div class="cta-row"><a class="btn btn-p btn-lg" href="/benchmark/">Verken de benchmark</a></div>
+      </div>
+      <div class="bstats"><div><b>10</b><span>publieke sites geauditeerd</span></div><div><b>225</b><span>echte bevindingen vastgesteld</span></div><div><b>3</b><span>bewijsmotoren: semgrep, axe-core, Lighthouse</span></div></div>
+    </div>
+  </section>
+
   <section id="prix">
-    <div class="shead rv"><h2>Begin gratis. Ga naar continu.</h2></div>
-    <div class="prices rv"><div class="price"><div class="pn">Scan</div><div class="pp">Gratis</div><div class="pd">Een pagina, black-box, om de diepte te ontdekken.</div><ul><li><span class="tk">&#10003;</span>Audit van een URL, alleen prod</li><li><span class="tk">&#10003;</span>De 15 domeinen, voorbeeld</li><li><span class="tk">&#10003;</span>Gezondheidsscore + top 5 findings</li></ul><a class="btn btn-g" href="/console/">Mijn site scannen</a></div><div class="price hi" data-badge="Meest volledig"><div class="pn">Volledige audit</div><div class="pp">490 &euro; <small>/ audit</small></div><div class="pd">Code + prod, meerdere pagina's, becijferd executive-rapport.</div><ul><li><span class="tk">&#10003;</span>Repo-koppeling, white-box</li><li><span class="tk">&#10003;</span>15 agenten, geverifieerde findings</li><li><span class="tk">&#10003;</span>Roadmap becijferd in dagen en euro's</li><li><span class="tk">&#10003;</span>Fixes en pull requests</li><li><span class="tk">&#10003;</span>Benchmark 3 concurrenten</li></ul><a class="btn btn-p" href="https://panoptic-audit.onrender.com/">Start de volledige audit</a></div><div class="price"><div class="pn">Continu</div><div class="pp">190 &euro; <small>/ maand</small></div><div class="pd">De site blijft bewaakt, deployment na deployment.</div><ul><li><span class="tk">&#10003;</span>Her-audit bij elke deployment</li><li><span class="tk">&#10003;</span>Regressiedetectie en trend</li><li><span class="tk">&#10003;</span>Alerts en volledige historie</li><li><span class="tk">&#10003;</span>Maandelijkse concurrentie-benchmark</li></ul><a class="btn btn-g" href="https://panoptic-audit.onrender.com/">Bewaking activeren</a></div></div>
+    <div class="shead rv"><h2>Begin gratis.</h2><p class="lead">Een ontdekkingsscan zonder account, een volledige audit als je diepte wilt, bewaking als je rustig wilt slapen.</p></div>
+    <div class="prices rv"><div class="price"><div class="pn">Scan</div><div class="pp">Gratis</div><div class="pd">Eén pagina, zonder codetoegang, om de diepte te ontdekken.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Audit van één URL, alleen productie</li><li><span class="tk" aria-hidden="true">&#10003;</span>De 15 domeinen, als voorproef</li><li><span class="tk" aria-hidden="true">&#10003;</span>Gezondheidsscore + top 5 bevindingen</li></ul><a class="btn btn-g" href="/console/">Scan mijn site</a></div><div class="price hi" data-badge="Meest volledig"><div class="pn">Volledige audit</div><div class="pp">490 &euro; <small>/ audit</small></div><div class="pd">Code + productie, meerdere pagina's, becijferd executive-rapport.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Repository lezen, alleen-lezen</li><li><span class="tk" aria-hidden="true">&#10003;</span>15 agenten, tegengecontroleerde bevindingen</li><li><span class="tk" aria-hidden="true">&#10003;</span>Roadmap becijferd in dagen en euro's</li><li><span class="tk" aria-hidden="true">&#10003;</span>Fixes en pull requests</li><li><span class="tk" aria-hidden="true">&#10003;</span>Vergelijking met 3 concurrenten</li></ul><a class="btn btn-p" href="https://panoptic-audit.onrender.com/">Start de volledige audit</a></div><div class="price"><div class="pn">Continu</div><div class="pp">190 &euro; <small>/ maand</small></div><div class="pd">Je site blijft bewaakt, deployment na deployment.</div><ul><li><span class="tk" aria-hidden="true">&#10003;</span>Her-audit bij elke deployment</li><li><span class="tk" aria-hidden="true">&#10003;</span>Regressiedetectie en trend</li><li><span class="tk" aria-hidden="true">&#10003;</span>Alerts en volledige historie</li><li><span class="tk" aria-hidden="true">&#10003;</span>Maandelijkse concurrentie-benchmark</li></ul><a class="btn btn-g" href="https://panoptic-audit.onrender.com/">Bewaking activeren</a></div></div>
+  </section>
+
+  <section id="faq">
+    <div class="faq rv"><h2>Veelgestelde vragen</h2><details class="qa"><summary>Moet ik toegang geven tot mijn code?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Niet voor de gratis scan: die bekijkt je site van buitenaf, als een bezoeker. De volledige audit leest een Git-repository in alleen-lezen modus, gekloond voor de duur van de analyse en daarna verwijderd.</div></details><details class="qa"><summary>Hoe vermijden jullie vals-positieven?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Elke bevinding gaat door een onafhankelijke tegencontrolelaag die haar probeert te weerleggen vóór het rapport. Het oordeel (bevestigd of plausibel) staat bij elke bevinding, met het bewijs.</div></details><details class="qa"><summary>Hoe lang duurt een audit?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">De gratis scan duurt minder dan een minuut. De volledige code + productie audit duurt enkele minuten, en het rapport is direct beschikbaar.</div></details><details class="qa"><summary>Zijn de eurobedragen echt?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Het zijn schattingen, altijd als zodanig gelabeld. Lever je je cijfers aan (bezoeken, waarde van een conversie), dan worden ze gekalibreerd op je business; anders krijg je bandbreedtes per ernst.</div></details><details class="qa"><summary>Voor wie is het rapport geschreven?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Voor beide lezers tegelijk: samenvatting, score en prioriteiten voor de directeur; bewijzen, bestanden, regels en fixes voor het technische team.</div></details></div>
   </section>
 
   <section class="final rv">
     <h2>Je site heeft blinde vlekken. Zie ze allemaal.</h2>
-    <p class="lead">Een gratis black-box scan, of de volledige audit die je code leest. Jij kiest de diepte.</p>
-    <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Start een audit</a><a class="btn btn-g btn-lg" href="#report">Bekijk een rapport</a></div>
+    <p class="lead">Een gratis scan in minder dan een minuut, of de volledige audit die je code leest. Jij kiest de diepte.</p>
+    <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Scan mijn site</a><a class="btn btn-g btn-lg" href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Bekijk een echt rapport</a></div>
   </section>
 </main>
 
-<footer><div class="wrap foot"><a class="logo" href="/nl/"><span class="eye"></span>Panoptic</a><span>Beveiliging &middot; Infra &middot; Data &middot; SEO &middot; GEO &middot; Prestaties &middot; Toegankelijkheid &middot; AVG &middot; CRO</span><span>&copy; 2026 Panoptic</span></div></footer>
+<footer><div class="wrap foot">
+  <div><a class="logo" href="/nl/"><span class="eye" aria-hidden="true"></span>Panoptic</a><p class="tag">De volledige site-audit: vijftien gespecialiseerde auditors op je code en je productie.</p></div>
+  <div class="flinks"><a href="/console/">Console</a><a href="/benchmark/">Benchmark</a><a href="https://panoptic-audit.onrender.com/api/audits/aud_mrrxfh7nqpkzxg/report" target="_blank" rel="noopener">Voorbeeldrapport</a></div>
+  <div class="fbot"><span>&copy; 2026 Panoptic</span><span class="mono">code + prod</span></div>
+</div></footer>
 <script>
 const reduce=matchMedia("(prefers-reduced-motion:reduce)").matches;
 const rowsEl=document.getElementById("scanRows");
@@ -347,7 +405,7 @@ const rows=[...rowsEl.querySelectorAll(".arow")];
 const scoreEl=document.getElementById("scoreNum"),progEl=document.getElementById("prog");
 let shown=0;
 function setScore(){const d=rows.filter(r=>r.classList.contains("done")).length;progEl.style.width=(d/rows.length*100)+"%";scoreEl.textContent=Math.max(0,Math.round(100-(shown*shown)/(shown*shown+42)*100-shown*2));}
-function fin(i){const r=rows[i],c=list[i][1];r.classList.remove("run");r.classList.add("done");if(c===0)r.classList.add("clean");r.querySelector(".cnt").textContent=c?(c+" "+"finding"+(c>1?"s":"")):"schoon";shown+=c;setScore();}
+function fin(i){const r=rows[i],c=list[i][1];r.classList.remove("run");r.classList.add("done");if(c===0)r.classList.add("clean");r.querySelector(".cnt").textContent=c?(c+" "+(c>1?"bevindingen":"bevinding")):"schoon";shown+=c;setScore();}
 function run(){rows.forEach(r=>{r.className="arow";r.querySelector(".cnt").textContent="";});shown=0;setScore();let i=0;const step=()=>{if(i>0)fin(i-1);if(i>=rows.length){setTimeout(run,2800);return;}rows[i].classList.add("run");i++;setTimeout(step,520);};setTimeout(step,400);}
 if(reduce){shown=0;rows.forEach((r,k)=>{r.className="arow";fin(k);});}else{run();}
 const rv=[...document.querySelectorAll(".rv:not(.in)")];
