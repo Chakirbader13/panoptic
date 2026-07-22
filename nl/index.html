@@ -268,18 +268,35 @@
   .price .btn{width:100%}
   @media(max-width:840px){.prices{grid-template-columns:1fr}}
 
-  /* FAQ */
-  .faq{max-width:780px}
-  .faq h2{margin-bottom:34px}
-  .qa{border-top:1px solid var(--line)}
-  .qa:last-child{border-bottom:1px solid var(--line)}
-  .qa summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;
-    padding:22px 4px;font-size:17px;font-weight:560;letter-spacing:-.01em;transition:color .2s}
+  /* FAQ - split sticky + cartes accordeon exclusives */
+  :root{interpolate-size:allow-keywords}
+  .faqwrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:start}
+  .faqhead{position:sticky;top:110px}
+  .faqhead .lead{margin-top:16px}
+  .faqhead .cta-row{margin-top:30px}
+  .qa{border:1px solid var(--line);border-radius:16px;background:var(--bg2);margin-bottom:12px;overflow:hidden;
+    transition:border-color .3s,transform .3s,background .3s}
+  .qa:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .qa[open]{border-color:var(--acc-dim);background:linear-gradient(165deg,rgba(79,240,163,.06),transparent 55%),var(--bg2);transform:none}
+  .qa summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+    padding:20px 22px;font-size:16.5px;font-weight:560;letter-spacing:-.01em}
   .qa summary::-webkit-details-marker{display:none}
-  .qa summary:hover{color:var(--acc)}
-  .qa summary .pm{font-family:var(--mono);color:var(--dim);font-size:18px;flex:none;transition:transform .25s,color .25s;line-height:1}
-  .qa[open] summary .pm{transform:rotate(45deg);color:var(--acc)}
-  .qa .ans{padding:0 4px 24px;font-size:15px;color:var(--mut);line-height:1.65;max-width:64ch}
+  .qa summary:hover .qq{color:var(--acc)}
+  .qq{transition:color .25s}
+  .qa[open] .qq{color:var(--ink)}
+  .qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
+    border:1px solid var(--line);border-radius:100px;padding:4px 11px;white-space:nowrap;transition:color .3s,border-color .3s}
+  .qa[open] .qtag{color:var(--acc);border-color:var(--acc-dim)}
+  .pm{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;
+    color:var(--mut);font-family:var(--mono);font-size:16px;line-height:1;flex:none;
+    transition:transform .35s cubic-bezier(.16,1,.3,1),background .3s,color .3s,border-color .3s}
+  .qa[open] .pm{transform:rotate(45deg);background:var(--acc);border-color:var(--acc);color:#04140c}
+  .qa::details-content{block-size:0;overflow:clip;
+    transition:block-size .45s cubic-bezier(.16,1,.3,1),content-visibility .45s allow-discrete}
+  .qa[open]::details-content{block-size:auto}
+  .qa .ans{margin:0 22px;padding:16px 0 22px;border-top:1px solid var(--line);font-size:15px;color:var(--mut);line-height:1.65;max-width:58ch}
+  @media(max-width:880px){.faqwrap{grid-template-columns:1fr;gap:34px}.faqhead{position:static}}
+  @media(max-width:560px){.qa summary{grid-template-columns:1fr auto;padding:17px 18px}.qtag{display:none}.qa .ans{margin:0 18px}}
 
   /* FINAL + FOOTER */
   .final{text-align:center;padding:116px 0}
@@ -302,6 +319,8 @@
     .arow.run .chip,.tile{animation:none;opacity:1;transform:none}
     .btn,.cv,.diff,.price{transition:none}
     .step::before,.step .no,.step .tag,body.js .step>div{transition:none}
+    .qa,.qa .pm,.qa .qtag,.qa .qq{transition:none}
+    .qa::details-content{transition:none}
     .step.cur .no::after{animation:none;display:none}
     body.js .step>div{opacity:1;transform:none}
     html{scroll-behavior:auto}
@@ -401,7 +420,12 @@
   </section>
 
   <section id="faq">
-    <div class="faq rv"><h2>Veelgestelde vragen</h2><details class="qa"><summary>Moet ik toegang geven tot mijn code?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Niet voor de gratis scan: die bekijkt je site van buitenaf, als een bezoeker. De volledige audit leest een Git-repository in alleen-lezen modus, gekloond voor de duur van de analyse en daarna verwijderd.</div></details><details class="qa"><summary>Hoe vermijden jullie vals-positieven?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Elke bevinding gaat door een onafhankelijke tegencontrolelaag die haar probeert te weerleggen vóór het rapport. Het oordeel (bevestigd of plausibel) staat bij elke bevinding, met het bewijs.</div></details><details class="qa"><summary>Hoe lang duurt een audit?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">De gratis scan duurt minder dan een minuut. De volledige code + productie audit duurt enkele minuten, en het rapport is direct beschikbaar.</div></details><details class="qa"><summary>Zijn de eurobedragen echt?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Het zijn schattingen, altijd als zodanig gelabeld. Lever je je cijfers aan (bezoeken, waarde van een conversie), dan worden ze gekalibreerd op je business; anders krijg je bandbreedtes per ernst.</div></details><details class="qa"><summary>Voor wie is het rapport geschreven?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Voor beide lezers tegelijk: samenvatting, score en prioriteiten voor de directeur; bewijzen, bestanden, regels en fixes voor het technische team.</div></details></div>
+    <div class="faqwrap rv">
+      <div class="faqhead"><h2>Veelgestelde vragen</h2><p class="lead">De vijf vragen die we horen vóór een eerste scan. Elke keer een eerlijk antwoord.</p>
+        <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Scan mijn site</a></div>
+      </div>
+      <div><details class="qa" name="faq" open><summary><span class="qtag">toegang</span><span class="qq">Moet ik toegang geven tot mijn code?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Niet voor de gratis scan: die bekijkt je site van buitenaf, als een bezoeker. De volledige audit leest een Git-repository in alleen-lezen modus, gekloond voor de duur van de analyse en daarna verwijderd.</div></details><details class="qa" name="faq"><summary><span class="qtag">precisie</span><span class="qq">Hoe vermijden jullie vals-positieven?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Elke bevinding gaat door een onafhankelijke tegencontrolelaag die haar probeert te weerleggen vóór het rapport. Het oordeel (bevestigd of plausibel) staat bij elke bevinding, met het bewijs.</div></details><details class="qa" name="faq"><summary><span class="qtag">duur</span><span class="qq">Hoe lang duurt een audit?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">De gratis scan duurt minder dan een minuut. De volledige code + productie audit duurt enkele minuten, en het rapport is direct beschikbaar.</div></details><details class="qa" name="faq"><summary><span class="qtag">schatting</span><span class="qq">Zijn de eurobedragen echt?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Het zijn schattingen, altijd als zodanig gelabeld. Lever je je cijfers aan (bezoeken, waarde van een conversie), dan worden ze gekalibreerd op je business; anders krijg je bandbreedtes per ernst.</div></details><details class="qa" name="faq"><summary><span class="qtag">lezers</span><span class="qq">Voor wie is het rapport geschreven?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Voor beide lezers tegelijk: samenvatting, score en prioriteiten voor de directeur; bewijzen, bestanden, regels en fixes voor het technische team.</div></details></div>
+    </div>
   </section>
 
   <section class="final rv">

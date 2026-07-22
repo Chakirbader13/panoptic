@@ -220,6 +220,8 @@ export const T = {
       ["Continu", "190 &euro;", "/ mois", "Votre site reste surveillé, mise en production après mise en production.", ["Ré-audit à chaque déploiement", "Détection de régression et tendance", "Alertes et historique complet", "Benchmark concurrentiel mensuel"], "Activer la surveillance"],
     ],
     faqH2: "Questions fréquentes",
+    faqLead: "Les cinq questions qu'on nous pose avant de lancer un premier scan. Une réponse honnête à chaque fois.",
+    faqTags: ["accès", "précision", "durée", "estimations", "lecteurs"],
     faqs: [
       ["Faut-il donner accès à mon code ?", "Non pour le scan gratuit : il observe votre site de l'extérieur, comme un visiteur. L'audit complet lit un dépôt Git en lecture seule, cloné le temps de l'analyse puis supprimé."],
       ["Comment évitez-vous les faux positifs ?", "Chaque constat passe par une couche de contre-vérification indépendante qui tente de le réfuter avant le rapport. Le verdict (confirmé ou plausible) est affiché sur chaque constat, avec sa preuve."],
@@ -304,6 +306,8 @@ export const T = {
       ["Continuous", "&euro;190", "/ month", "Your site stays monitored, deployment after deployment.", ["Re-audit on every deployment", "Regression detection and trend", "Alerts and full history", "Monthly competitive benchmark"], "Enable monitoring"],
     ],
     faqH2: "Frequently asked questions",
+    faqLead: "The five questions we hear before a first scan. An honest answer, every time.",
+    faqTags: ["access", "accuracy", "speed", "estimates", "readers"],
     faqs: [
       ["Do I have to give access to my code?", "Not for the free scan: it observes your site from the outside, like a visitor. The full audit reads a Git repository in read-only mode, cloned for the duration of the analysis and then deleted."],
       ["How do you avoid false positives?", "Every finding goes through an independent counter-verification layer that tries to refute it before the report. The verdict (confirmed or plausible) is displayed on each finding, with its evidence."],
@@ -388,6 +392,8 @@ export const T = {
       ["Kontinuierlich", "190 &euro;", "/ Monat", "Ihre Website bleibt überwacht, Deployment für Deployment.", ["Re-Audit bei jedem Deployment", "Regressionserkennung und Trend", "Alerts und vollständige Historie", "Monatlicher Wettbewerbs-Benchmark"], "Überwachung aktivieren"],
     ],
     faqH2: "Häufige Fragen",
+    faqLead: "Die fünf Fragen, die wir vor einem ersten Scan hören. Jedes Mal eine ehrliche Antwort.",
+    faqTags: ["Zugriff", "Präzision", "Dauer", "Schätzung", "Leser"],
     faqs: [
       ["Muss ich Zugriff auf meinen Code geben?", "Nicht für den kostenlosen Scan: er betrachtet Ihre Website von außen, wie ein Besucher. Das Vollaudit liest ein Git-Repository nur lesend, geklont für die Dauer der Analyse und danach gelöscht."],
       ["Wie vermeiden Sie Fehlalarme?", "Jedes Finding durchläuft eine unabhängige Gegenprüfungsschicht, die versucht, es vor dem Bericht zu widerlegen. Das Urteil (bestätigt oder plausibel) steht an jedem Finding, mit seinem Beweis."],
@@ -472,6 +478,8 @@ export const T = {
       ["Continuo", "190 &euro;", "/ mes", "Tu sitio queda vigilado, despliegue tras despliegue.", ["Reauditoría en cada despliegue", "Detección de regresión y tendencia", "Alertas e historial completo", "Benchmark competitivo mensual"], "Activar la vigilancia"],
     ],
     faqH2: "Preguntas frecuentes",
+    faqLead: "Las cinco preguntas que escuchamos antes de un primer escaneo. Una respuesta honesta cada vez.",
+    faqTags: ["acceso", "precisión", "duración", "estimación", "lectores"],
     faqs: [
       ["¿Tengo que dar acceso a mi código?", "No para el escaneo gratis: observa tu sitio desde fuera, como un visitante. La auditoría completa lee un repositorio Git en modo solo lectura, clonado durante el análisis y luego eliminado."],
       ["¿Cómo evitáis los falsos positivos?", "Cada hallazgo pasa por una capa de contraverificación independiente que intenta refutarlo antes del informe. El veredicto (confirmado o plausible) se muestra en cada hallazgo, con su evidencia."],
@@ -556,6 +564,8 @@ export const T = {
       ["Continuo", "190 &euro;", "/ mese", "Il tuo sito resta sorvegliato, deploy dopo deploy.", ["Re-audit a ogni deploy", "Rilevamento di regressione e tendenza", "Alert e storico completo", "Benchmark competitivo mensile"], "Attiva la sorveglianza"],
     ],
     faqH2: "Domande frequenti",
+    faqLead: "Le cinque domande che sentiamo prima di una prima scansione. Una risposta onesta, ogni volta.",
+    faqTags: ["accesso", "precisione", "durata", "stime", "lettori"],
     faqs: [
       ["Devo dare accesso al mio codice?", "No per la scansione gratuita: osserva il tuo sito dall'esterno, come un visitatore. L'audit completo legge un repository Git in sola lettura, clonato per la durata dell'analisi e poi eliminato."],
       ["Come evitate i falsi positivi?", "Ogni rilievo passa da uno strato di controverifica indipendente che prova a confutarlo prima del report. Il verdetto (confermato o plausibile) è mostrato su ogni rilievo, con la sua prova."],
@@ -640,6 +650,8 @@ export const T = {
       ["Continu", "190 &euro;", "/ maand", "Je site blijft bewaakt, deployment na deployment.", ["Her-audit bij elke deployment", "Regressiedetectie en trend", "Alerts en volledige historie", "Maandelijkse concurrentie-benchmark"], "Bewaking activeren"],
     ],
     faqH2: "Veelgestelde vragen",
+    faqLead: "De vijf vragen die we horen vóór een eerste scan. Elke keer een eerlijk antwoord.",
+    faqTags: ["toegang", "precisie", "duur", "schatting", "lezers"],
     faqs: [
       ["Moet ik toegang geven tot mijn code?", "Niet voor de gratis scan: die bekijkt je site van buitenaf, als een bezoeker. De volledige audit leest een Git-repository in alleen-lezen modus, gekloond voor de duur van de analyse en daarna verwijderd."],
       ["Hoe vermijden jullie vals-positieven?", "Elke bevinding gaat door een onafhankelijke tegencontrolelaag die haar probeert te weerleggen vóór het rapport. Het oordeel (bevestigd of plausibel) staat bij elke bevinding, met het bewijs."],

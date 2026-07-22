@@ -268,18 +268,35 @@
   .price .btn{width:100%}
   @media(max-width:840px){.prices{grid-template-columns:1fr}}
 
-  /* FAQ */
-  .faq{max-width:780px}
-  .faq h2{margin-bottom:34px}
-  .qa{border-top:1px solid var(--line)}
-  .qa:last-child{border-bottom:1px solid var(--line)}
-  .qa summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:20px;
-    padding:22px 4px;font-size:17px;font-weight:560;letter-spacing:-.01em;transition:color .2s}
+  /* FAQ - split sticky + cartes accordeon exclusives */
+  :root{interpolate-size:allow-keywords}
+  .faqwrap{display:grid;grid-template-columns:.85fr 1.15fr;gap:64px;align-items:start}
+  .faqhead{position:sticky;top:110px}
+  .faqhead .lead{margin-top:16px}
+  .faqhead .cta-row{margin-top:30px}
+  .qa{border:1px solid var(--line);border-radius:16px;background:var(--bg2);margin-bottom:12px;overflow:hidden;
+    transition:border-color .3s,transform .3s,background .3s}
+  .qa:hover{border-color:var(--line2);transform:translateY(-2px)}
+  .qa[open]{border-color:var(--acc-dim);background:linear-gradient(165deg,rgba(79,240,163,.06),transparent 55%),var(--bg2);transform:none}
+  .qa summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;
+    padding:20px 22px;font-size:16.5px;font-weight:560;letter-spacing:-.01em}
   .qa summary::-webkit-details-marker{display:none}
-  .qa summary:hover{color:var(--acc)}
-  .qa summary .pm{font-family:var(--mono);color:var(--dim);font-size:18px;flex:none;transition:transform .25s,color .25s;line-height:1}
-  .qa[open] summary .pm{transform:rotate(45deg);color:var(--acc)}
-  .qa .ans{padding:0 4px 24px;font-size:15px;color:var(--mut);line-height:1.65;max-width:64ch}
+  .qa summary:hover .qq{color:var(--acc)}
+  .qq{transition:color .25s}
+  .qa[open] .qq{color:var(--ink)}
+  .qtag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);
+    border:1px solid var(--line);border-radius:100px;padding:4px 11px;white-space:nowrap;transition:color .3s,border-color .3s}
+  .qa[open] .qtag{color:var(--acc);border-color:var(--acc-dim)}
+  .pm{width:30px;height:30px;border-radius:50%;border:1px solid var(--line2);display:grid;place-items:center;
+    color:var(--mut);font-family:var(--mono);font-size:16px;line-height:1;flex:none;
+    transition:transform .35s cubic-bezier(.16,1,.3,1),background .3s,color .3s,border-color .3s}
+  .qa[open] .pm{transform:rotate(45deg);background:var(--acc);border-color:var(--acc);color:#04140c}
+  .qa::details-content{block-size:0;overflow:clip;
+    transition:block-size .45s cubic-bezier(.16,1,.3,1),content-visibility .45s allow-discrete}
+  .qa[open]::details-content{block-size:auto}
+  .qa .ans{margin:0 22px;padding:16px 0 22px;border-top:1px solid var(--line);font-size:15px;color:var(--mut);line-height:1.65;max-width:58ch}
+  @media(max-width:880px){.faqwrap{grid-template-columns:1fr;gap:34px}.faqhead{position:static}}
+  @media(max-width:560px){.qa summary{grid-template-columns:1fr auto;padding:17px 18px}.qtag{display:none}.qa .ans{margin:0 18px}}
 
   /* FINAL + FOOTER */
   .final{text-align:center;padding:116px 0}
@@ -302,6 +319,8 @@
     .arow.run .chip,.tile{animation:none;opacity:1;transform:none}
     .btn,.cv,.diff,.price{transition:none}
     .step::before,.step .no,.step .tag,body.js .step>div{transition:none}
+    .qa,.qa .pm,.qa .qtag,.qa .qq{transition:none}
+    .qa::details-content{transition:none}
     .step.cur .no::after{animation:none;display:none}
     body.js .step>div{opacity:1;transform:none}
     html{scroll-behavior:auto}
@@ -401,7 +420,12 @@
   </section>
 
   <section id="faq">
-    <div class="faq rv"><h2>Preguntas frecuentes</h2><details class="qa"><summary>¿Tengo que dar acceso a mi código?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">No para el escaneo gratis: observa tu sitio desde fuera, como un visitante. La auditoría completa lee un repositorio Git en modo solo lectura, clonado durante el análisis y luego eliminado.</div></details><details class="qa"><summary>¿Cómo evitáis los falsos positivos?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Cada hallazgo pasa por una capa de contraverificación independiente que intenta refutarlo antes del informe. El veredicto (confirmado o plausible) se muestra en cada hallazgo, con su evidencia.</div></details><details class="qa"><summary>¿Cuánto dura una auditoría?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">El escaneo gratis tarda menos de un minuto. La auditoría completa código + producción tarda unos minutos, y el informe está disponible de inmediato.</div></details><details class="qa"><summary>¿Los importes en euros son reales?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Son estimaciones, siempre etiquetadas como tales. Si aportas tus cifras (visitas, valor de una conversión), se calibran a tu negocio; si no, obtienes horquillas por gravedad.</div></details><details class="qa"><summary>¿Para quién está escrito el informe?<span class="pm" aria-hidden="true">+</span></summary><div class="ans">Para ambos lectores a la vez: síntesis, puntuación y prioridades para el directivo; evidencias, archivos, líneas y correcciones para el equipo técnico.</div></details></div>
+    <div class="faqwrap rv">
+      <div class="faqhead"><h2>Preguntas frecuentes</h2><p class="lead">Las cinco preguntas que escuchamos antes de un primer escaneo. Una respuesta honesta cada vez.</p>
+        <div class="cta-row"><a class="btn btn-p btn-lg" href="/console/">Escanear mi sitio</a></div>
+      </div>
+      <div><details class="qa" name="faq" open><summary><span class="qtag">acceso</span><span class="qq">¿Tengo que dar acceso a mi código?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">No para el escaneo gratis: observa tu sitio desde fuera, como un visitante. La auditoría completa lee un repositorio Git en modo solo lectura, clonado durante el análisis y luego eliminado.</div></details><details class="qa" name="faq"><summary><span class="qtag">precisión</span><span class="qq">¿Cómo evitáis los falsos positivos?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Cada hallazgo pasa por una capa de contraverificación independiente que intenta refutarlo antes del informe. El veredicto (confirmado o plausible) se muestra en cada hallazgo, con su evidencia.</div></details><details class="qa" name="faq"><summary><span class="qtag">duración</span><span class="qq">¿Cuánto dura una auditoría?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">El escaneo gratis tarda menos de un minuto. La auditoría completa código + producción tarda unos minutos, y el informe está disponible de inmediato.</div></details><details class="qa" name="faq"><summary><span class="qtag">estimación</span><span class="qq">¿Los importes en euros son reales?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Son estimaciones, siempre etiquetadas como tales. Si aportas tus cifras (visitas, valor de una conversión), se calibran a tu negocio; si no, obtienes horquillas por gravedad.</div></details><details class="qa" name="faq"><summary><span class="qtag">lectores</span><span class="qq">¿Para quién está escrito el informe?</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">Para ambos lectores a la vez: síntesis, puntuación y prioridades para el directivo; evidencias, archivos, líneas y correcciones para el equipo técnico.</div></details></div>
+    </div>
   </section>
 
   <section class="final rv">
