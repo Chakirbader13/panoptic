@@ -5,6 +5,11 @@ import { openAuditPR } from "../../server/github.js";
 
 export default async (req) => {
   if (req.method !== "POST") return json({ error: "POST requis" }, 405);
+  // Offre gratuite: la remediation (correctifs, PR) fait partie de l'Audit complet.
+  // PANOPTIC_FREE_PR=on permet de reactiver pour une demo.
+  if (process.env.PANOPTIC_FREE_PR !== "on") {
+    return json({ error: "La pull request de correctifs fait partie de l'Audit complet (490 EUR), ou nous l'appliquons pour vous. Voir https://panoptic-audit.netlify.app/#prix" }, 402);
+  }
   let body;
   try { body = await req.json(); } catch { return json({ error: "JSON invalide" }, 400); }
   const { result, owner, repo, dryRun } = body || {};

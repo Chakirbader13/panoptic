@@ -38,10 +38,14 @@ export default async (req) => {
       const orchestrate = createOrchestrator({ scan, runAgent, verify, onProgress, concurrency: 6 });
       try {
         const r = await orchestrate(target);
+        // Offre gratuite = diagnostic complet, mais les CORRECTIFS restent dans l'Audit
+        // complet (ou appliques par nous). On retire fix de la reponse elle-meme:
+        // rien a masquer cote client si la donnee ne part jamais.
+        const stripFix = (fs) => (fs || []).map(({ fix, ...rest }) => rest);
         send({ type: "done", result: {
-          target: r.target, score: r.score, agents: r.agents,
+          target: r.target, score: r.score, agents: r.agents, tier: "free",
           reachable: r.scope?.reachable, stack: r.scope?.stack || [],
-          findings: r.findings, summary: r.summary, generatedAt: new Date().toISOString(),
+          findings: stripFix(r.findings), summary: r.summary, generatedAt: new Date().toISOString(),
         } });
       } catch (e) {
         send({ type: "error", error: e.message });

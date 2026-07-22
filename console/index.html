@@ -130,9 +130,9 @@
         <div class="kpis" id="kpis"></div>
         <div class="actions">
           <button class="btn" id="dlReport">Rapport PDF</button>
-          <button class="btn btn-g" id="dlFix">Correctifs</button>
+          <button class="btn btn-g" id="unlock">D&eacute;bloquer les correctifs</button>
         </div>
-        <button class="btn btn-g" id="openPr" style="width:100%;margin-top:8px">Preparer une pull request</button>
+        <div class="muted" style="margin-top:12px;font-size:12px;line-height:1.55">Le scan gratuit montre les constats et leur co&ucirc;t. Correctifs d&eacute;taill&eacute;s et r&eacute;paration par notre &eacute;quipe : <a href="/#prix">Audit complet</a>.</div>
         <div id="prOut" class="muted" style="margin-top:10px;font-size:12.5px"></div>
       </div>
     </div>
@@ -197,9 +197,8 @@ function fmtRange(b){
 
 $("go").onclick = start;
 $("url").addEventListener("keydown", e=>{ if(e.key==="Enter") start(); });
-$("dlFix").onclick = downloadFix;
+$("unlock").onclick = () => { location.href = "/#prix"; };
 $("dlReport").onclick = openReport;
-$("openPr").onclick = openPr;
 
 async function openReport(){
   if(!last) return;
@@ -213,20 +212,6 @@ async function openReport(){
     setTimeout(()=>URL.revokeObjectURL(a.href), 3000);
   }catch(e){ $("prOut").innerHTML = '<span style="color:var(--crit)">Erreur rapport: '+esc(e.message)+'</span>'; }
   btn.textContent = orig; btn.disabled = false;
-}
-
-async function openPr(){
-  if(!last) return;
-  const repo = prompt("Depot GitHub cible (owner/repo) pour la PR de correctifs:");
-  if(!repo) return;
-  const [owner, name] = repo.split("/");
-  $("prOut").textContent = "Preparation...";
-  try{
-    const r = await (await fetch("/api/pr",{ method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ result: last, owner, repo: name }) })).json();
-    if(r.error){ $("prOut").innerHTML = '<span style="color:var(--crit)">'+esc(r.error)+'</span>'; return; }
-    if(r.url){ $("prOut").innerHTML = 'PR ouverte: <a href="'+r.url+'" target="_blank" style="color:var(--acc)">'+esc(r.url)+'</a>'; }
-    else { $("prOut").innerHTML = 'Plan pret (branche <b>'+esc(r.branch)+'</b>, fichiers: '+esc(Object.keys(r.files||{}).join(", "))+'). '+esc(r.note||"")+' Definir GITHUB_TOKEN cote serveur pour ouvrir la PR.'; }
-  }catch(e){ $("prOut").innerHTML = '<span style="color:var(--crit)">Erreur: '+esc(e.message)+'</span>'; }
 }
 
 async function start(){
@@ -292,19 +277,6 @@ function renderFindings(){
       <div><div class="t">${esc(f.title)}</div><div class="m">${f.agent}${f.cwe?" · "+f.cwe:""} · ${esc(loc)}</div></div>
       <div class="r">${f.effort??""}j<br><span title="estimation">${val}</span></div></div>`;
   }).join("") || '<div class="muted">Aucun finding dans ce filtre.</div>';
-}
-
-function downloadFix(){
-  if(!last) return;
-  const f = findings;
-  const order = ["critical","high","medium","low","info"];
-  const line = (x)=>{ const loc = x.location?.file? x.location.file+":"+x.location.line : x.location?.url; return `- [ ] **[${x.severity}]** ${x.title} (\`${loc}\`${x.cwe?", "+x.cwe:""})\n      - Correctif: ${x.fix?.summary||""}\n      - Effort: ${x.effort??"?"} j-h`; };
-  const sorted = [...f].sort((a,b)=>order.indexOf(a.severity)-order.indexOf(b.severity));
-  const su = last.summary||{};
-  const riskR = `${eur(su.riskLow)} - ${eur(su.riskHigh)} EUR (est.${su.calibrated?", calibre":""})`;
-  const md = `## Audit Panoptic - correctifs proposes\n\n**Cible:** ${last.target}\n**Sante:** ${last.score}/100 | **Findings:** ${f.length} | **Effort:** ${su.effortDays??"?"} j-h | **Risque:** ${riskR}\n\n### A corriger (${f.length})\n${sorted.map(line).join("\n")||"_Aucun._"}\n\n---\n_Montants = estimations indicatives. Genere par Panoptic._`;
-  const blob = new Blob([md],{type:"text/markdown"});
-  const a = document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="panoptic-correctifs.md"; a.click();
 }
 
 function shorten(u){ return String(u||"").replace(/^https?:\/\//,"").slice(0,40); }

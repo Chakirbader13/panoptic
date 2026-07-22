@@ -8,7 +8,8 @@ export default async (req) => {
   let result;
   try { result = (await req.json()).result; } catch { return new Response("JSON invalide", { status: 400 }); }
   if (!result || !result.findings) return new Response("resultat d'audit requis", { status: 400 });
-  const html = renderReport(result);
+  // La console serverless est l'offre GRATUITE: rapport diagnostic, correctifs verrouilles.
+  const html = renderReport(result, { tier: "free" });
   return new Response(html, { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
 };
 

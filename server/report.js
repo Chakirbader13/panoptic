@@ -38,16 +38,20 @@ function domainCard(d) {
   </div>`;
 }
 
-function findingCard(f) {
+function findingCard(f, locked) {
   const [lab, col, bg] = SEV[f.severity] || SEV.info;
   const loc = f.location?.file ? `${esc(f.location.file)}:${f.location.line}` : esc(f.location?.url || "");
   const b = f.business || {};
   const money = `${b.kind === "gain" ? "+" : ""}${eur(b.low)} - ${eur(b.high)} €`;
   const raised = f.raisedBy && f.raisedBy.length > 1 ? ` &middot; remonte par ${f.raisedBy.join(", ")}` : "";
+  // Offre gratuite: le diagnostic est complet, la reponse (comment corriger) est le produit paye.
+  const fix = locked
+    ? `<p class="ffix flock">Correctif detaille : reserve a l'Audit complet, ou applique pour vous par notre equipe.</p>`
+    : `<p class="ffix"><b>Correctif :</b> ${esc(f.fix?.summary || "")}</p>`;
   return `<div class="fcard" style="border-left-color:${col}">
     <div class="fhead"><span class="sev" style="color:${col};background:${bg}">${lab}</span><h4>${esc(f.title)}</h4></div>
     <div class="fproof">${esc(String(f.evidence?.proof || "").slice(0, 300))}</div>
-    <p class="ffix"><b>Correctif :</b> ${esc(f.fix?.summary || "")}</p>
+    ${fix}
     <div class="fmeta">
       <span>${esc(f.agent)}${f.cwe ? " &middot; " + esc(f.cwe) : ""}${raised}</span>
       <span>${f.effort ?? "?"} j &middot; <b style="color:${col}">${money}</b> est.</span>
@@ -55,7 +59,8 @@ function findingCard(f) {
   </div>`;
 }
 
-export function renderReport(rec) {
+export function renderReport(rec, opts = {}) {
+  const locked = opts.tier === "free" || rec.tier === "free";
   const f = rec.findings || [];
   const s = rec.summary || {};
   const gScore = s.weightedScore ?? rec.score ?? 0;
@@ -85,13 +90,24 @@ export function renderReport(rec) {
     if (!items.length) return "";
     return `<div class="tier">
       <div class="tier-h"><span class="tier-tag tier-${t.key}">${t.key}</span><h3>${esc(t.label)} <span>&mdash; ${esc(t.sub)}</span></h3><span class="tier-ct">${items.length} item${items.length > 1 ? "s" : ""}</span></div>
-      ${items.map(findingCard).join("")}
+      ${items.map((x) => findingCard(x, locked)).join("")}
     </div>`;
   }).join("");
 
+  const upsellHtml = locked && f.length ? `
+  <section>
+    <h2><span class="n">03</span>Debloquer les correctifs</h2>
+    <div class="upsell">
+      <p>Ce scan gratuit montre <b>ce qui cloche et ce que cela coute</b>. L'<b>Audit complet (490 €)</b> fournit
+      chaque correctif detaille, lit votre code source pour remonter a la cause, et notre equipe peut
+      <b>appliquer les corrections pour vous</b> : mises a jour, patchs, configuration, jusqu'a la pull request sur votre depot.</p>
+      <a class="upbtn" href="https://panoptic-audit.netlify.app/#prix">Passer a l'Audit complet</a>
+    </div>
+  </section>` : "";
+
   const strengthsHtml = strengths.length ? `
     <section>
-      <h2><span class="n">04</span>Ce qui est deja excellent</h2>
+      <h2><span class="n">${locked && f.length ? "04" : "03"}</span>Ce qui est deja excellent</h2>
       <p class="lead">Verifie et mesure, a preserver lors des correctifs.</p>
       <div class="sgrid">${strengths.map((d) => `<div class="scard"><div class="stitle"><span class="dot"></span>${esc(d.label)} <b>${d.score}/100</b></div><p>${esc(d.note)}</p></div>`).join("")}</div>
     </section>` : "";
@@ -152,6 +168,11 @@ export function renderReport(rec) {
   .fhead h4{font-size:15.5px;line-height:1.35;font-weight:620}
   .fproof{font-size:12px;background:#f4f6f5;border:1px solid var(--line);border-radius:7px;padding:9px 11px;color:#3c4641;margin-bottom:11px;white-space:pre-wrap;word-break:break-word;line-height:1.5}
   .ffix{font-size:13.5px;color:#374039;margin-bottom:11px}
+  .flock{color:var(--dim);font-style:italic;border:1px dashed var(--line);border-radius:7px;padding:8px 11px;background:#fafbfa}
+  .upsell{border:1px solid #bfe3cf;background:#f2faf5;border-radius:14px;padding:22px 24px;max-width:70ch}
+  .upsell p{font-size:14.5px;color:#2f3a34;line-height:1.6;margin-bottom:16px}
+  .upbtn{display:inline-block;background:var(--acc);color:#fff;border-radius:100px;padding:11px 22px;font-weight:600;font-size:14px;text-decoration:none}
+  .upbtn:hover{background:#0c8654}
   .fmeta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:ui-monospace,monospace;font-size:11px;color:var(--dim);border-top:1px solid var(--line);padding-top:9px}
   /* STRENGTHS */
   .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
@@ -201,6 +222,8 @@ export function renderReport(rec) {
     <p class="lead">Dedupliques sur les ${domains.length} domaines, classes par risque reel. Effort et impact estimes par finding.</p>
     ${tiersHtml || '<p class="lead">Aucun finding.</p>'}
   </section>
+
+  ${upsellHtml}
 
   ${strengthsHtml}
 
