@@ -47,7 +47,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "a11ylabel-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "cspdefault-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", audits: await store.list(tenant) });
     }
 
     const mAudit = p.match(/^\/api\/audits\/([\w]+)$/);

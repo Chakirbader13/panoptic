@@ -130,6 +130,20 @@ export async function scanProd(rawUrl) {
   // 4b. Faiblesses de la CSP (analysee seulement si presente: preuve directe dans l'en-tete)
   const csp = H["content-security-policy"] || "";
   if (csp) {
+    // Sans default-src, TOUT ce qui n'a pas de directive explicite est libre
+    // (connect-src, img-src, frame-src, font-src...): exfiltration possible.
+    // Plus grave que 'unsafe-inline' et pourtant invisible sans cette analyse.
+    if (!/(^|;)\s*default-src/i.test(csp)) {
+      const missing = ["connect-src", "img-src", "frame-src", "font-src", "media-src"]
+        .filter((d) => !new RegExp(`(^|;)\\s*${d}`, "i").test(csp));
+      findings.push({
+        ruleId: "csp-no-default-src", cwe: "CWE-693", kind: "prod", severity: "medium", effort: 0.3,
+        title: "CSP sans default-src (directives non couvertes laissees libres)",
+        fix: `Ajouter default-src 'self' puis restreindre explicitement ${missing.slice(0, 3).join(", ")}. Sans default-src, ces directives n'ont AUCUNE restriction (exfiltration de donnees possible).`,
+        url, proof: `CSP sans default-src. Non couvert: ${missing.join(", ") || "(toutes les directives sont explicites)"}.`,
+        confidence: "high",
+      });
+    }
     for (const w of CSP_WEAK) {
       if (w.re.test(csp)) findings.push({
         ruleId: w.id, cwe: "CWE-693", kind: "prod", severity: w.severity, effort: 0.4,
