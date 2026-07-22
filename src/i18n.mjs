@@ -181,6 +181,7 @@ export const T = {
     agentsEye: "Les auditeurs", agentsH2: "Quinze spécialistes. Chacun son référentiel.",
     agentsLead: "Aucun outil du marché ne couvre ces quinze domaines ensemble. Chaque agent applique son propre référentiel et lit à la fois le code et la production.",
     famLabel: { technique: "Technique", visibilite: "Visibilité", humain: "Humain", risque: "Risque" }, famUnit: "agents",
+    agentsIn: ["code source", "production"],
     diffH2: "Ce que personne d'autre ne fait.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP : chacun couvre une case. Panoptic les réunit, preuve à l'appui.",
     diffs: [
@@ -267,6 +268,7 @@ export const T = {
     agentsEye: "The auditors", agentsH2: "Fifteen specialists. Each with its own standard.",
     agentsLead: "No tool on the market covers these fifteen domains together. Each agent applies its own standard and reads both the code and the production.",
     famLabel: { technique: "Technical", visibilite: "Visibility", humain: "Human", risque: "Risk" }, famUnit: "agents",
+    agentsIn: ["source code", "production"],
     diffH2: "What nobody else does.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: each covers one box. Panoptic unites them, evidence included.",
     diffs: [
@@ -353,6 +355,7 @@ export const T = {
     agentsEye: "Die Auditoren", agentsH2: "Fünfzehn Spezialisten. Jeder mit eigenem Standard.",
     agentsLead: "Kein Tool am Markt deckt diese fünfzehn Domänen zusammen ab. Jeder Agent wendet seinen eigenen Standard an und liest sowohl den Code als auch die Produktion.",
     famLabel: { technique: "Technik", visibilite: "Sichtbarkeit", humain: "Mensch", risque: "Risiko" }, famUnit: "Agenten",
+    agentsIn: ["Quellcode", "Produktion"],
     diffH2: "Was niemand sonst macht.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: jedes deckt ein Feld ab. Panoptic vereint sie, mit Beweis.",
     diffs: [
@@ -439,6 +442,7 @@ export const T = {
     agentsEye: "Los auditores", agentsH2: "Quince especialistas. Cada uno con su estándar.",
     agentsLead: "Ninguna herramienta del mercado cubre estos quince dominios juntos. Cada agente aplica su propio estándar y lee tanto el código como la producción.",
     famLabel: { technique: "Técnica", visibilite: "Visibilidad", humain: "Humano", risque: "Riesgo" }, famUnit: "agentes",
+    agentsIn: ["código fuente", "producción"],
     diffH2: "Lo que nadie más hace.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: cada una cubre una casilla. Panoptic las reúne, con pruebas.",
     diffs: [
@@ -525,6 +529,7 @@ export const T = {
     agentsEye: "Gli auditor", agentsH2: "Quindici specialisti. Ognuno col suo standard.",
     agentsLead: "Nessuno strumento sul mercato copre questi quindici domini insieme. Ogni agente applica il proprio standard e legge sia il codice sia la produzione.",
     famLabel: { technique: "Tecnica", visibilite: "Visibilità", humain: "Umano", risque: "Rischio" }, famUnit: "agenti",
+    agentsIn: ["codice sorgente", "produzione"],
     diffH2: "Quello che nessun altro fa.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: ognuno copre una casella. Panoptic li riunisce, prove alla mano.",
     diffs: [
@@ -611,6 +616,7 @@ export const T = {
     agentsEye: "De auditors", agentsH2: "Vijftien specialisten. Elk met een eigen standaard.",
     agentsLead: "Geen enkele tool op de markt dekt deze vijftien domeinen samen. Elke agent past zijn eigen standaard toe en leest zowel de code als de productie.",
     famLabel: { technique: "Techniek", visibilite: "Zichtbaarheid", humain: "Mens", risque: "Risico" }, famUnit: "agenten",
+    agentsIn: ["broncode", "productie"],
     diffH2: "Wat niemand anders doet.",
     diffLead: "SEMrush, Ahrefs, Screaming Frog, Lighthouse, Snyk, OWASP ZAP: elk dekt één vakje. Panoptic verenigt ze, met bewijs.",
     diffs: [

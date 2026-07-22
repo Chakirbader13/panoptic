@@ -78,6 +78,12 @@ const CSS = `
   .langmenu a.on{color:var(--acc)}
   .langmenu a small{font-family:var(--mono);font-size:11px;color:var(--dim)}
   @media(max-width:960px){.nlinks{display:none}}
+  @media(max-width:480px){
+    .nav{gap:10px}
+    .logo{font-size:16px;gap:8px}
+    .nav .btn{padding:9px 14px;font-size:13.5px}
+    .langsel summary{padding:7px 10px;font-size:12px}
+  }
 
   /* HERO */
   .hero{display:grid;grid-template-columns:1.06fr .94fr;gap:56px;align-items:center;
@@ -182,24 +188,49 @@ const CSS = `
     .pipe::before,.step::before{left:21px}.step.cur .no::after{border-radius:15px}
     .step h3{font-size:19px}}
 
-  /* AGENTS - grille de couverture unifiee */
-  .cov{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  .cov-h{grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:22px 0 4px}
-  .cov-h:first-child{margin-top:0}
-  .cov-h h3{font-size:13px;letter-spacing:.09em;text-transform:uppercase;color:var(--mut);font-weight:560}
-  .cov-h .ln{flex:1;height:1px;background:var(--line)}
-  .cov-h .ct{font-family:var(--mono);font-size:12px;color:var(--dim)}
-  .cv{border:1px solid var(--line);border-radius:14px;padding:19px 20px;background:linear-gradient(180deg,var(--bg2),var(--bg));
-    transition:border-color .25s,transform .25s,box-shadow .25s}
-  .cv:hover{border-color:var(--acc-dim);transform:translateY(-3px);box-shadow:0 20px 40px -24px rgba(0,0,0,.8)}
-  .cv .top{display:flex;align-items:baseline;gap:10px;margin-bottom:7px}
-  .cv .num{font-family:var(--mono);font-size:11.5px;color:var(--acc)}
-  .cv h4{font-size:16px;letter-spacing:-.01em;font-weight:560}
-  .cv p{font-size:13.5px;color:var(--mut);line-height:1.5;margin-bottom:13px}
-  .fw{display:flex;flex-wrap:wrap;gap:6px}
-  .fw span{font-family:var(--mono);font-size:11px;color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:3px 8px}
-  @media(max-width:900px){.cov{grid-template-columns:repeat(2,1fr)}}
-  @media(max-width:560px){.cov{grid-template-columns:1fr}}
+  /* AGENTS - console maitre-detail: index des 15 agents + dossier plein format qui cycle */
+  .lab{display:grid;grid-template-columns:.88fr 1.12fr;border:1px solid var(--line2);border-radius:22px;overflow:hidden;
+    background:linear-gradient(180deg,#0e1310,#0a0d0b);position:relative;
+    box-shadow:0 44px 100px -48px rgba(0,0,0,.85),inset 0 1px 0 rgba(255,255,255,.03)}
+  .lab-idx{border-right:1px solid var(--line);padding:14px 12px 18px}
+  .lab-fam{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    padding:16px 14px 8px}
+  .lab-fam:first-child{padding-top:6px}
+  .lab-row{display:grid;grid-template-columns:38px 1fr;gap:12px;align-items:center;width:100%;text-align:left;
+    padding:10px 14px;border:0;border-radius:10px;background:none;cursor:pointer;font-family:var(--sans);
+    font-size:14.5px;color:var(--mut);position:relative;transition:background .25s,color .25s}
+  .lab-row .ln{font-family:var(--mono);font-size:11.5px;color:var(--dim);transition:color .25s}
+  .lab-row:hover{background:rgba(255,255,255,.03);color:var(--ink)}
+  .lab-row.on{background:var(--acc-ghost);color:var(--ink);font-weight:560}
+  .lab-row.on .ln{color:var(--acc)}
+  .lab-row.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2.5px;border-radius:2px;background:var(--acc)}
+  .lab-view{position:relative;min-height:100%}
+  .lab-panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:0;
+    padding:52px 56px;opacity:0;visibility:hidden;transform:translateY(16px);
+    transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1),visibility 0s .5s}
+  .lab-panel.on{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+  .lab-panel .wm{position:absolute;top:18px;right:26px;font-family:var(--mono);font-weight:700;
+    font-size:clamp(90px,10vw,150px);line-height:1;letter-spacing:-.04em;pointer-events:none;
+    color:rgba(79,240,163,.05);-webkit-text-stroke:1px var(--line2)}
+  .lab-panel .fam{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
+  .lab-panel h3{font-size:clamp(24px,2.6vw,34px);letter-spacing:-.025em;font-weight:620;margin-bottom:14px;max-width:16ch}
+  .lab-panel p{font-size:16.5px;color:var(--mut);line-height:1.6;max-width:44ch;margin-bottom:26px}
+  .fw{display:flex;flex-wrap:wrap;gap:7px}
+  .fw span{font-family:var(--mono);font-size:11.5px;color:var(--mut);border:1px solid var(--line2);border-radius:7px;padding:5px 10px}
+  .lab-in{display:flex;gap:8px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
+  .lab-in span{font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--acc);
+    border:1px solid var(--acc-dim);background:var(--acc-ghost);border-radius:100px;padding:5px 13px}
+  .lab.auto .lab-panel.on::after{content:"";position:absolute;left:0;bottom:0;height:2px;width:100%;
+    background:linear-gradient(90deg,var(--acc),var(--acc2));transform-origin:left;animation:labprog 2.8s linear forwards}
+  @keyframes labprog{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+  @media(max-width:880px){
+    .lab{grid-template-columns:1fr}
+    .lab-view{order:-1;min-height:380px;border-bottom:1px solid var(--line)}
+    .lab-panel{padding:30px 26px}
+    .lab-panel .wm{font-size:84px;top:12px;right:16px}
+    .lab-idx{border-right:0}
+  }
 
   /* DIFFS (bento) */
   .diffs{display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:14px}
@@ -314,6 +345,8 @@ const CSS = `
     .step::before,.step .no,.step .tag,body.js .step>div{transition:none}
     .qa,.qa .pm,.qa .qtag,.qa .qq{transition:none}
     .qa::details-content{transition:none}
+    .lab-panel{transition:none}
+    .lab.auto .lab-panel.on::after{animation:none;display:none}
     .step.cur .no::after{animation:none;display:none}
     body.js .step>div{opacity:1;transform:none}
     html{scroll-behavior:auto}
@@ -351,6 +384,23 @@ if(reduce){shown=0;rows.forEach((r,k)=>{r.className="arow";fin(k);});}else{run()
 const rv=[...document.querySelectorAll(".rv:not(.in)")];
 if("IntersectionObserver" in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("in");io.unobserve(e.target)}}),{threshold:.06,rootMargin:"0px 0px -4% 0px"});rv.forEach(e=>io.observe(e));setTimeout(()=>rv.forEach(e=>e.classList.add("in")),1000);}else{rv.forEach(e=>e.classList.add("in"));}
 document.body.classList.add("js");
+const lab=document.querySelector(".lab");
+if(lab){
+  const lrows=[...lab.querySelectorAll(".lab-row")],lpanels=[...lab.querySelectorAll(".lab-panel")];
+  let lcur=0,ltimer=null;
+  const lset=i=>{lcur=i;lrows.forEach((r,k)=>{r.classList.toggle("on",k===i);r.setAttribute("aria-expanded",k===i?"true":"false");});lpanels.forEach((p,k)=>p.classList.toggle("on",k===i));};
+  const lstop=()=>{if(ltimer){clearInterval(ltimer);ltimer=null;}lab.classList.remove("auto");lab.dataset.stopped="1";};
+  lset(0);
+  lrows.forEach((r,i)=>r.addEventListener("click",()=>{lstop();lset(i);}));
+  lab.addEventListener("focusin",e=>{if(e.target.closest(".lab-row"))lstop();});
+  if(!reduce&&"IntersectionObserver" in window){
+    const lio=new IntersectionObserver(es=>es.forEach(e=>{
+      if(e.isIntersecting&&!ltimer&&!lab.dataset.stopped){lab.classList.add("auto");ltimer=setInterval(()=>lset((lcur+1)%lrows.length),2800);}
+      else if(!e.isIntersecting&&ltimer){clearInterval(ltimer);ltimer=null;lab.classList.remove("auto");}
+    }),{threshold:.3});
+    lio.observe(lab);
+  }
+}
 const steps=[...document.querySelectorAll(".pipe .step")];
 function allOn(){steps.forEach(s=>s.classList.add("on"));}
 if(steps.length){
@@ -373,16 +423,23 @@ if(steps.length){
 `;
 }
 
-// Grille de couverture unifiee: 4 intercalaires de famille + 15 tuiles compactes.
+// Console maitre-detail: index groupe par famille + 15 dossiers pre-rendus (SEO).
 function agentsHTML(lang, t) {
-  return FAM_ORDER.map((f) => {
+  const ordered = FAM_ORDER.flatMap((f) => AGENTS.filter((a) => a.fam === f.k));
+  const idx = FAM_ORDER.map((f) => {
     const list = AGENTS.filter((a) => a.fam === f.k);
-    const cards = list.map((a) => {
-      const [name, mission] = AGENT_TX[lang][a.id];
-      return `<div class="cv"><div class="top"><span class="num">A${String(a.n).padStart(2, "0")}</span><h4>${esc(name)}</h4></div><p>${esc(mission)}</p><div class="fw">${a.fw.map((x) => `<span>${esc(x)}</span>`).join("")}</div></div>`;
+    const rows = list.map((a) => {
+      const i = ordered.indexOf(a);
+      const [name] = AGENT_TX[lang][a.id];
+      return `<button class="lab-row" type="button" data-i="${i}" aria-expanded="false"><span class="ln">A${String(a.n).padStart(2, "0")}</span><span>${esc(name)}</span></button>`;
     }).join("");
-    return `<div class="cov-h"><h3>${esc(t.famLabel[f.k])}</h3><span class="ln"></span><span class="ct">${String(list.length).padStart(2, "0")} ${esc(t.famUnit)}</span></div>${cards}`;
+    return `<div class="lab-fam"><span>${esc(t.famLabel[f.k])}</span><span>${String(list.length).padStart(2, "0")} ${esc(t.famUnit)}</span></div>${rows}`;
   }).join("");
+  const panels = ordered.map((a, i) => {
+    const [name, mission] = AGENT_TX[lang][a.id];
+    return `<div class="lab-panel" data-i="${i}"><span class="wm" aria-hidden="true">A${String(a.n).padStart(2, "0")}</span><div class="fam">${esc(t.famLabel[a.fam])}</div><h3>${esc(name)}</h3><p>${esc(mission)}</p><div class="fw">${a.fw.map((x) => `<span>${esc(x)}</span>`).join("")}</div><div class="lab-in"><span>${esc(t.agentsIn[0])}</span><span>${esc(t.agentsIn[1])}</span></div></div>`;
+  }).join("");
+  return `<div class="lab-idx">${idx}</div><div class="lab-view">${panels}</div>`;
 }
 
 function langSwitcher(cur, label) {
@@ -505,7 +562,7 @@ ${jsonLd(t, self)}
 
   <section id="agents">
     <div class="shead rv"><div class="eyebrow">${esc(t.agentsEye)}</div><h2>${esc(t.agentsH2)}</h2><p class="lead">${esc(t.agentsLead)}</p></div>
-    <div class="cov rv">${agentsHTML(lang, t)}</div>
+    <div class="lab rv">${agentsHTML(lang, t)}</div>
   </section>
 
   <section id="diff">
