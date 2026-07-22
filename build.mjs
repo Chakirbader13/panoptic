@@ -205,17 +205,25 @@ const CSS = `
   .lab-row.on{background:var(--acc-ghost);color:var(--ink);font-weight:560}
   .lab-row.on .ln{color:var(--acc)}
   .lab-row.on::before{content:"";position:absolute;left:0;top:9px;bottom:9px;width:2.5px;border-radius:2px;background:var(--acc)}
-  .lab-view{position:relative;min-height:100%}
-  .lab-panel{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;gap:0;
-    padding:52px 56px;opacity:0;visibility:hidden;transform:translateY(16px);
-    transition:opacity .5s cubic-bezier(.16,1,.3,1),transform .5s cubic-bezier(.16,1,.3,1),visibility 0s .5s}
-  .lab-panel.on{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+  .lab-view{position:relative}
+  .lab-panel{display:none;position:relative;height:100%;flex-direction:column;justify-content:center;gap:0;
+    padding:46px 56px}
+  .lab-panel.on{display:flex;animation:panelin .5s cubic-bezier(.16,1,.3,1)}
+  @keyframes panelin{from{opacity:0;transform:translateY(16px)}}
   .lab-panel .wm{position:absolute;top:18px;right:26px;font-family:var(--mono);font-weight:700;
     font-size:clamp(90px,10vw,150px);line-height:1;letter-spacing:-.04em;pointer-events:none;
     color:rgba(79,240,163,.05);-webkit-text-stroke:1px var(--line2)}
   .lab-panel .fam{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:18px}
-  .lab-panel h3{font-size:clamp(24px,2.6vw,34px);letter-spacing:-.025em;font-weight:620;margin-bottom:14px;max-width:16ch}
-  .lab-panel p{font-size:16.5px;color:var(--mut);line-height:1.6;max-width:44ch;margin-bottom:26px}
+  .lab-panel h3{font-size:clamp(23px,2.4vw,31px);letter-spacing:-.025em;font-weight:620;margin-bottom:10px;max-width:18ch}
+  .lab-panel p{font-size:15.5px;color:var(--mut);line-height:1.55;max-width:48ch;margin-bottom:22px}
+  .lab-rows{display:grid;gap:0;margin-bottom:22px}
+  .lr{display:grid;grid-template-columns:104px 1fr;gap:14px;padding:11px 0;border-top:1px solid var(--line);align-items:baseline}
+  .lr .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim)}
+  .lr:first-child .k{color:var(--high)}
+  .lr:nth-child(2) .k{color:var(--crit)}
+  .lr:last-child .k{color:var(--acc)}
+  .lr .v{font-size:14px;color:var(--mut);line-height:1.5;max-width:52ch}
+  .lr:last-child .v{color:var(--ink)}
   .fw{display:flex;flex-wrap:wrap;gap:7px}
   .fw span{font-family:var(--mono);font-size:11.5px;color:var(--mut);border:1px solid var(--line2);border-radius:7px;padding:5px 10px}
   .lab-in{display:flex;gap:8px;margin-top:26px;padding-top:22px;border-top:1px solid var(--line)}
@@ -227,9 +235,12 @@ const CSS = `
   @media(max-width:880px){
     .lab{grid-template-columns:1fr}
     .lab-view{order:-1;min-height:380px;border-bottom:1px solid var(--line)}
-    .lab-panel{padding:30px 26px}
+    .lab-panel{padding:28px 24px}
     .lab-panel .wm{font-size:84px;top:12px;right:16px}
     .lab-idx{border-right:0}
+  }
+  @media(max-width:560px){
+    .lr{grid-template-columns:1fr;gap:4px;padding:10px 0}
   }
 
   /* DIFFS (bento) */
@@ -345,7 +356,7 @@ const CSS = `
     .step::before,.step .no,.step .tag,body.js .step>div{transition:none}
     .qa,.qa .pm,.qa .qtag,.qa .qq{transition:none}
     .qa::details-content{transition:none}
-    .lab-panel{transition:none}
+    .lab-panel.on{animation:none}
     .lab.auto .lab-panel.on::after{animation:none;display:none}
     .step.cur .no::after{animation:none;display:none}
     body.js .step>div{opacity:1;transform:none}
@@ -436,8 +447,9 @@ function agentsHTML(lang, t) {
     return `<div class="lab-fam"><span>${esc(t.famLabel[f.k])}</span><span>${String(list.length).padStart(2, "0")} ${esc(t.famUnit)}</span></div>${rows}`;
   }).join("");
   const panels = ordered.map((a, i) => {
-    const [name, mission] = AGENT_TX[lang][a.id];
-    return `<div class="lab-panel" data-i="${i}"><span class="wm" aria-hidden="true">A${String(a.n).padStart(2, "0")}</span><div class="fam">${esc(t.famLabel[a.fam])}</div><h3>${esc(name)}</h3><p>${esc(mission)}</p><div class="fw">${a.fw.map((x) => `<span>${esc(x)}</span>`).join("")}</div><div class="lab-in"><span>${esc(t.agentsIn[0])}</span><span>${esc(t.agentsIn[1])}</span></div></div>`;
+    const [name, mission, gap, cost, fix] = AGENT_TX[lang][a.id];
+    const rows = [gap, cost, fix].map((v, k) => `<div class="lr"><span class="k">${esc(t.agentsRowLabels[k])}</span><span class="v">${esc(v)}</span></div>`).join("");
+    return `<div class="lab-panel" data-i="${i}"><span class="wm" aria-hidden="true">A${String(a.n).padStart(2, "0")}</span><div class="fam">${esc(t.famLabel[a.fam])}</div><h3>${esc(name)}</h3><p>${esc(mission)}</p><div class="lab-rows">${rows}</div><div class="fw">${a.fw.map((x) => `<span>${esc(x)}</span>`).join("")}</div><div class="lab-in"><span>${esc(t.agentsIn[0])}</span><span>${esc(t.agentsIn[1])}</span></div></div>`;
   }).join("");
   return `<div class="lab-idx">${idx}</div><div class="lab-view">${panels}</div>`;
 }
