@@ -279,6 +279,30 @@
   .fex{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
   @media(max-width:880px){.rep{grid-template-columns:1fr;gap:34px}}
 
+  /* COMPARE - matrice de couverture vs pile d'outils */
+  .cmpwrap{overflow-x:auto;border:1px solid var(--line2);border-radius:20px;background:var(--bg2);
+    box-shadow:0 40px 90px -50px rgba(0,0,0,.8)}
+  .cmp{width:100%;border-collapse:collapse;min-width:720px;font-size:14px}
+  .cmp th,.cmp td{padding:15px 12px;text-align:center;border-bottom:1px solid var(--line)}
+  .cmp thead th{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--mut);letter-spacing:.02em;
+    white-space:nowrap;vertical-align:bottom;border-bottom:1px solid var(--line2)}
+  .cmp tbody tr:last-child td{border-bottom:0}
+  .cmp .rowh{text-align:left;font-weight:560;color:var(--ink);font-size:14.5px;white-space:nowrap;padding-left:22px}
+  .cmp thead .rowh{color:var(--dim);font-family:var(--mono);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+  .cmp .us{color:#04140c;background:var(--acc);font-weight:700;font-size:13px;border-radius:8px 8px 0 0;padding:12px 14px;letter-spacing:0}
+  .cmp td.usc{background:var(--acc-ghost)}
+  .cmp tbody tr:hover td:not(.usc){background:rgba(255,255,255,.02)}
+  .cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;line-height:1}
+  .c2{background:var(--acc);color:#04140c;font-size:12px;font-weight:800}
+  .c1{border:1.5px solid var(--high);color:var(--high);font-size:11px}
+  .c0{color:var(--line2);font-size:15px}
+  .usc .c2{box-shadow:0 0 0 4px var(--acc-ghost)}
+  .cmp-l{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;color:var(--mut);align-items:center}
+  .cmp-l span{display:inline-flex;align-items:center;gap:8px}
+  .cmpfoot{margin-top:20px;font-size:15.5px;color:var(--mut);max-width:60ch;line-height:1.6}
+  .cmpfoot b{color:var(--ink);font-weight:560}
+  @media(max-width:560px){.cmp .rowh{padding-left:16px}.cmp th,.cmp td{padding:12px 9px}}
+
   /* BENCHMARK */
   .bench{border:1px solid var(--acc-dim);border-radius:22px;padding:clamp(32px,5vw,60px);
     background:radial-gradient(900px 420px at 12% -20%,rgba(79,240,163,.10),transparent 60%),var(--bg2);
@@ -447,6 +471,13 @@
         <div class="fb"><h3>Stripe-API-sleutel blootgesteld in de client-bundle</h3><div class="frow"><div class="k">Bewijs</div><div class="v">Secret <code>sk_live_&hellip;</code> aanwezig in <code>main.a3f2.js</code>, publiek geserveerd. Reproduceerbaar.</div></div><div class="frow"><div class="k">Locatie</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; prod-bundle <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impact</div><div class="v">Frauduleuze afschrijvingen mogelijk. Geschat risico <b class="acc">18.400 &euro;</b>.</div></div><div class="frow"><div class="k">Fix</div><div class="v">Aanroep naar de server verplaatsen, sleutel intrekken, git-historie opschonen. Patch geleverd.</div></div><div class="frow"><div class="k">Inspanning</div><div class="v">0,5 mensdag &middot; gemeld door beveiliging + dependencies</div></div><div class="frow"><div class="k">Verificatie</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Bevestigd &middot; 3 stemmen / 0 weerleggingen</span></div></div></div>
       </div>
     </div>
+  </section>
+
+  <section id="compare">
+    <div class="shead rv"><div class="eyebrow">Vervangt je stack</div><h2>Eén tool in plaats van zes.</h2><p class="lead">SEO, beveiliging, prestaties, toegankelijkheid, AVG, conversie: vandaag is dat één abonnement per domein, overal vals-positieven en geen enkel verband ertussen. Panoptic dekt alle vijftien in één scan en koppelt wat geen enkele samen ziet.</p></div>
+    <div class="cmpwrap rv"><table class="cmp"><thead><tr><th class="rowh"></th><th>SEMrush</th><th>Snyk</th><th>Lighthouse</th><th>Siteimprove</th><th>Cookiebot</th><th>Hotjar</th><th><span class="us">Panoptic</span></th></tr></thead><tbody><tr><td class="rowh">Technische SEO</td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Beveiliging code + prod</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Prestaties / CWV</td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Toegankelijkheid</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">AVG / cookies</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">UX / conversie</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c2">&#10003;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">AI-zichtbaarheid</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Oorzaak op de coderegel</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr></tbody></table></div>
+    <div class="cmp-l"><span><span class="cell c2">&#10003;</span> gedekt</span><span><span class="cell c1">&#177;</span> gedeeltelijk</span><span><span class="cell c0">&middot;</span> afwezig</span></div>
+    <p class="cmpfoot rv">Elk apart abonnement is ook een silo: niemand koppelt een AVG-boete aan de coderegel die haar veroorzaakt. <b>Panoptic</b> wel.</p>
   </section>
 
   <section id="bench">

@@ -279,6 +279,30 @@
   .fex{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
   @media(max-width:880px){.rep{grid-template-columns:1fr;gap:34px}}
 
+  /* COMPARE - matrice de couverture vs pile d'outils */
+  .cmpwrap{overflow-x:auto;border:1px solid var(--line2);border-radius:20px;background:var(--bg2);
+    box-shadow:0 40px 90px -50px rgba(0,0,0,.8)}
+  .cmp{width:100%;border-collapse:collapse;min-width:720px;font-size:14px}
+  .cmp th,.cmp td{padding:15px 12px;text-align:center;border-bottom:1px solid var(--line)}
+  .cmp thead th{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--mut);letter-spacing:.02em;
+    white-space:nowrap;vertical-align:bottom;border-bottom:1px solid var(--line2)}
+  .cmp tbody tr:last-child td{border-bottom:0}
+  .cmp .rowh{text-align:left;font-weight:560;color:var(--ink);font-size:14.5px;white-space:nowrap;padding-left:22px}
+  .cmp thead .rowh{color:var(--dim);font-family:var(--mono);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+  .cmp .us{color:#04140c;background:var(--acc);font-weight:700;font-size:13px;border-radius:8px 8px 0 0;padding:12px 14px;letter-spacing:0}
+  .cmp td.usc{background:var(--acc-ghost)}
+  .cmp tbody tr:hover td:not(.usc){background:rgba(255,255,255,.02)}
+  .cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;line-height:1}
+  .c2{background:var(--acc);color:#04140c;font-size:12px;font-weight:800}
+  .c1{border:1.5px solid var(--high);color:var(--high);font-size:11px}
+  .c0{color:var(--line2);font-size:15px}
+  .usc .c2{box-shadow:0 0 0 4px var(--acc-ghost)}
+  .cmp-l{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;color:var(--mut);align-items:center}
+  .cmp-l span{display:inline-flex;align-items:center;gap:8px}
+  .cmpfoot{margin-top:20px;font-size:15.5px;color:var(--mut);max-width:60ch;line-height:1.6}
+  .cmpfoot b{color:var(--ink);font-weight:560}
+  @media(max-width:560px){.cmp .rowh{padding-left:16px}.cmp th,.cmp td{padding:12px 9px}}
+
   /* BENCHMARK */
   .bench{border:1px solid var(--acc-dim);border-radius:22px;padding:clamp(32px,5vw,60px);
     background:radial-gradient(900px 420px at 12% -20%,rgba(79,240,163,.10),transparent 60%),var(--bg2);
@@ -447,6 +471,13 @@
         <div class="fb"><h3>Stripe API key exposed in the client bundle</h3><div class="frow"><div class="k">Evidence</div><div class="v">Secret <code>sk_live_&hellip;</code> present in <code>main.a3f2.js</code>, served publicly. Reproducible.</div></div><div class="frow"><div class="k">Location</div><div class="v"><code>src/lib/pay.ts:12</code> &rarr; prod bundle <code>/assets/main.a3f2.js</code></div></div><div class="frow"><div class="k">Impact</div><div class="v">Fraudulent charges possible. Estimated risk <b class="acc">&euro;18,400</b>.</div></div><div class="frow"><div class="k">Fix</div><div class="v">Move the call server-side, revoke the key, purge the git history. Patch provided.</div></div><div class="frow"><div class="k">Effort</div><div class="v">0.5 person-day &middot; raised by security + dependencies</div></div><div class="frow"><div class="k">Verification</div><div class="v"><span class="verdict"><span class="c">&#10003;</span>Confirmed &middot; 3 votes / 0 rebuttals</span></div></div></div>
       </div>
     </div>
+  </section>
+
+  <section id="compare">
+    <div class="shead rv"><div class="eyebrow">Replaces your stack</div><h2>One tool instead of six.</h2><p class="lead">SEO, security, performance, accessibility, GDPR, conversion: today that means one subscription per domain, false positives everywhere, and no link between them. Panoptic covers all fifteen in one scan, and connects what none of them sees together.</p></div>
+    <div class="cmpwrap rv"><table class="cmp"><thead><tr><th class="rowh"></th><th>SEMrush</th><th>Snyk</th><th>Lighthouse</th><th>Siteimprove</th><th>Cookiebot</th><th>Hotjar</th><th><span class="us">Panoptic</span></th></tr></thead><tbody><tr><td class="rowh">Technical SEO</td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Security code + prod</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Performance / CWV</td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Accessibility</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">GDPR / cookies</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c2">&#10003;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">UX / conversion</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c2">&#10003;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">AI visibility</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr><tr><td class="rowh">Cause at the code line</td><td><span class="cell c0">&middot;</span></td><td><span class="cell c1">&#177;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td><span class="cell c0">&middot;</span></td><td class="usc"><span class="cell c2">&#10003;</span></td></tr></tbody></table></div>
+    <div class="cmp-l"><span><span class="cell c2">&#10003;</span> covered</span><span><span class="cell c1">&#177;</span> partial</span><span><span class="cell c0">&middot;</span> absent</span></div>
+    <p class="cmpfoot rv">Every separate subscription is also a silo: nobody links a GDPR fine to the line of code that causes it. <b>Panoptic</b> does.</p>
   </section>
 
   <section id="bench">

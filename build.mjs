@@ -272,6 +272,30 @@ const CSS = `
   .fex{font-family:var(--mono);font-size:11px;color:var(--dim);margin-left:auto}
   @media(max-width:880px){.rep{grid-template-columns:1fr;gap:34px}}
 
+  /* COMPARE - matrice de couverture vs pile d'outils */
+  .cmpwrap{overflow-x:auto;border:1px solid var(--line2);border-radius:20px;background:var(--bg2);
+    box-shadow:0 40px 90px -50px rgba(0,0,0,.8)}
+  .cmp{width:100%;border-collapse:collapse;min-width:720px;font-size:14px}
+  .cmp th,.cmp td{padding:15px 12px;text-align:center;border-bottom:1px solid var(--line)}
+  .cmp thead th{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--mut);letter-spacing:.02em;
+    white-space:nowrap;vertical-align:bottom;border-bottom:1px solid var(--line2)}
+  .cmp tbody tr:last-child td{border-bottom:0}
+  .cmp .rowh{text-align:left;font-weight:560;color:var(--ink);font-size:14.5px;white-space:nowrap;padding-left:22px}
+  .cmp thead .rowh{color:var(--dim);font-family:var(--mono);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.1em}
+  .cmp .us{color:#04140c;background:var(--acc);font-weight:700;font-size:13px;border-radius:8px 8px 0 0;padding:12px 14px;letter-spacing:0}
+  .cmp td.usc{background:var(--acc-ghost)}
+  .cmp tbody tr:hover td:not(.usc){background:rgba(255,255,255,.02)}
+  .cell{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;line-height:1}
+  .c2{background:var(--acc);color:#04140c;font-size:12px;font-weight:800}
+  .c1{border:1.5px solid var(--high);color:var(--high);font-size:11px}
+  .c0{color:var(--line2);font-size:15px}
+  .usc .c2{box-shadow:0 0 0 4px var(--acc-ghost)}
+  .cmp-l{display:flex;gap:20px;flex-wrap:wrap;margin-top:22px;font-size:12.5px;color:var(--mut);align-items:center}
+  .cmp-l span{display:inline-flex;align-items:center;gap:8px}
+  .cmpfoot{margin-top:20px;font-size:15.5px;color:var(--mut);max-width:60ch;line-height:1.6}
+  .cmpfoot b{color:var(--ink);font-weight:560}
+  @media(max-width:560px){.cmp .rowh{padding-left:16px}.cmp th,.cmp td{padding:12px 9px}}
+
   /* BENCHMARK */
   .bench{border:1px solid var(--acc-dim);border-radius:22px;padding:clamp(32px,5vw,60px);
     background:radial-gradient(900px 420px at 12% -20%,rgba(79,240,163,.10),transparent 60%),var(--bg2);
@@ -493,6 +517,24 @@ function render(lang) {
   const diffsSmall = t.diffs.slice(1).map((d, i) => `<div class="diff${i === 1 ? " tint" : ""}"><h3>${esc(d[0])}</h3><p>${esc(d[1])}</p></div>`).join("");
   const findRows = t.findRows.map((r) => `<div class="frow"><div class="k">${esc(r[0])}</div><div class="v">${r[1]}</div></div>`).join("");
   const bstats = t.benchStats.map(([b, p]) => `<div><b>${b}</b><span>${esc(p)}</span></div>`).join("");
+
+  // Matrice de couverture: colonnes = outils (noms propres), Panoptic en dernier (surligne).
+  // Coverage par ligne = [SEMrush, Snyk, Lighthouse, Siteimprove, Cookiebot, Hotjar]; 2=couvert 1=partiel 0=absent.
+  const CMP_COLS = ["SEMrush", "Snyk", "Lighthouse", "Siteimprove", "Cookiebot", "Hotjar"];
+  const CMP_COV = [
+    [2, 0, 1, 1, 0, 0], // SEO technique
+    [0, 1, 0, 0, 0, 0], // Securite code + prod
+    [1, 0, 2, 1, 0, 0], // Performance / CWV
+    [0, 0, 1, 2, 0, 0], // Accessibilite
+    [0, 0, 0, 1, 2, 0], // RGPD / cookies
+    [0, 0, 0, 1, 0, 2], // UX / conversion
+    [0, 0, 0, 0, 0, 0], // Visibilite IA
+    [0, 1, 0, 0, 0, 0], // Cause a la ligne de code
+  ];
+  const cell = (v) => v === 2 ? '<span class="cell c2">&#10003;</span>' : v === 1 ? '<span class="cell c1">&#177;</span>' : '<span class="cell c0">&middot;</span>';
+  const cmpHead = `<tr><th class="rowh"></th>${CMP_COLS.map((c) => `<th>${c}</th>`).join("")}<th><span class="us">Panoptic</span></th></tr>`;
+  const cmpBody = t.compareRows.map((label, r) => `<tr><td class="rowh">${esc(label)}</td>${CMP_COV[r].map((v) => `<td>${cell(v)}</td>`).join("")}<td class="usc">${cell(2)}</td></tr>`).join("");
+  const cmpLegend = `<div class="cmp-l"><span>${cell(2)} ${esc(t.compareLegend[0])}</span><span>${cell(1)} ${esc(t.compareLegend[1])}</span><span>${cell(0)} ${esc(t.compareLegend[2])}</span></div>`;
   const faqs = t.faqs.map(([q, a], i) => `<details class="qa" name="faq"${i === 0 ? " open" : ""}><summary><span class="qtag">${esc(t.faqTags[i])}</span><span class="qq">${esc(q)}</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">${esc(a)}</div></details>`).join("");
   const prices = t.prices.map((p, i) => {
     const feats = p[4].map((x) => `<li><span class="tk" aria-hidden="true">&#10003;</span>${esc(x)}</li>`).join("");
@@ -595,6 +637,13 @@ ${jsonLd(t, self)}
         <div class="fb"><h3>${esc(t.findTitle)}</h3>${findRows}</div>
       </div>
     </div>
+  </section>
+
+  <section id="compare">
+    <div class="shead rv"><div class="eyebrow">${esc(t.compareEye)}</div><h2>${esc(t.compareH2)}</h2><p class="lead">${esc(t.compareLead)}</p></div>
+    <div class="cmpwrap rv"><table class="cmp"><thead>${cmpHead}</thead><tbody>${cmpBody}</tbody></table></div>
+    ${cmpLegend}
+    <p class="cmpfoot rv">${t.compareFoot.replace(/(Panoptic)/, "<b>$1</b>")}</p>
   </section>
 
   <section id="bench">
