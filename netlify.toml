@@ -1,6 +1,19 @@
 [build]
   publish = "."
 
+# panoptic.fr = alias de marque -> 301 vers le domaine principal (pas de contenu duplique).
+[[redirects]]
+  from = "https://panoptic.fr/*"
+  to = "https://panopticaudit.com/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "https://www.panoptic.fr/*"
+  to = "https://panopticaudit.com/:splat"
+  status = 301
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
