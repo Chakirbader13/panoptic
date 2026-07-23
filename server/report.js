@@ -101,7 +101,7 @@ export function renderReport(rec, opts = {}) {
       <p>Ce scan gratuit montre <b>ce qui cloche et ce que cela coute</b>. L'<b>Audit complet (490 €)</b> fournit
       chaque correctif detaille, lit votre code source pour remonter a la cause, et notre equipe peut
       <b>appliquer les corrections pour vous</b> : mises a jour, patchs, configuration, jusqu'a la pull request sur votre depot.</p>
-      <a class="upbtn" href="https://panoptic-audit.netlify.app/#prix">Passer a l'Audit complet</a>
+      <a class="upbtn" href="https://panopticaudit.com/#prix">Passer a l'Audit complet</a>
     </div>
   </section>` : "";
 

@@ -2,19 +2,19 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://panoptic-audit.netlify.app/</loc>
-    <xhtml:link rel="alternate" hreflang="fr" href="https://panoptic-audit.netlify.app/"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://panoptic-audit.netlify.app/en/"/>
-    <xhtml:link rel="alternate" hreflang="de" href="https://panoptic-audit.netlify.app/de/"/>
-    <xhtml:link rel="alternate" hreflang="es" href="https://panoptic-audit.netlify.app/es/"/>
-    <xhtml:link rel="alternate" hreflang="it" href="https://panoptic-audit.netlify.app/it/"/>
-    <xhtml:link rel="alternate" hreflang="nl" href="https://panoptic-audit.netlify.app/nl/"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://panoptic-audit.netlify.app/"/>
+    <loc>https://panopticaudit.com/</loc>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://panopticaudit.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://panopticaudit.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="de" href="https://panopticaudit.com/de/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://panopticaudit.com/es/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://panopticaudit.com/it/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://panopticaudit.com/nl/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://panopticaudit.com/"/>
   </url>
-  <url><loc>https://panoptic-audit.netlify.app/en/</loc></url>
-  <url><loc>https://panoptic-audit.netlify.app/de/</loc></url>
-  <url><loc>https://panoptic-audit.netlify.app/es/</loc></url>
-  <url><loc>https://panoptic-audit.netlify.app/it/</loc></url>
-  <url><loc>https://panoptic-audit.netlify.app/nl/</loc></url>
-  <url><loc>https://panoptic-audit.netlify.app/benchmark/</loc></url>
+  <url><loc>https://panopticaudit.com/en/</loc></url>
+  <url><loc>https://panopticaudit.com/de/</loc></url>
+  <url><loc>https://panopticaudit.com/es/</loc></url>
+  <url><loc>https://panopticaudit.com/it/</loc></url>
+  <url><loc>https://panopticaudit.com/nl/</loc></url>
+  <url><loc>https://panopticaudit.com/benchmark/</loc></url>
 </urlset>

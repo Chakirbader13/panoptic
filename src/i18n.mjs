@@ -4,7 +4,7 @@
 // audite justement le contenu des sites). Les frameworks (OWASP, WCAG, GA4...)
 // restent des noms propres techniques partages, non traduits.
 
-export const SITE = "https://panoptic-audit.netlify.app"; // base hreflang, a ajuster au domaine final
+export const SITE = "https://panopticaudit.com"; // base hreflang, a ajuster au domaine final
 
 export const LANGS = [
   { code: "fr", name: "Français", htmllang: "fr", path: "" },     // racine = FR + x-default

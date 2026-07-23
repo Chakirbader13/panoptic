@@ -3,4 +3,4 @@ Allow: /
 Disallow: /console/
 Disallow: /api/
 
-Sitemap: https://panoptic-audit.netlify.app/sitemap.xml
+Sitemap: https://panopticaudit.com/sitemap.xml
