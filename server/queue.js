@@ -6,6 +6,8 @@ import { createOrchestrator } from "../engine/orchestrator.js";
 import { recon } from "../engine/recon.js";
 import { runAgent } from "../engine/registry.js";
 import { verifyFinding } from "../engine/verify.js";
+import { diffFindings } from "../engine/trends.js";
+import { sendSlack, createJiraIssues } from "./notify.js";
 import { store } from "./store.js";
 import { cloneRepo } from "./clone.js";
 
@@ -76,15 +78,49 @@ export class AuditQueue {
     try {
       const result = await orchestrate(audit.target);
       result.generatedAt = new Date().toISOString();
+
+      // TENDANCE + REGRESSION vs l'audit precedent du meme site (deploiement apres
+      // deploiement). Attache trend/regressions au summary, et declenche les alertes.
+      let regressions = [];
+      try {
+        const prevList = audit.tenant ? await store.history(audit.tenant, audit.target, 2) : [];
+        const prev = prevList.find((a) => a.id !== id) || null;   // audit precedent (deja stocke)
+        if (prev) {
+          const prevRec = await store.get(prev.id);
+          const diff = diffFindings(prevRec?.findings || [], result.findings);
+          const prevScore = prev.summary?.weightedScore ?? prev.score ?? null;
+          const curScore = result.summary?.weightedScore ?? result.score ?? null;
+          result.summary.trend = {
+            previousId: prev.id, previousScore: prevScore, scoreDelta: (curScore != null && prevScore != null) ? curScore - prevScore : null,
+            regressions: diff.counts.regressions, fixed: diff.counts.resolved, added: diff.counts.added,
+          };
+          regressions = diff.regressions;
+        }
+      } catch { /* pas d'historique -> baseline, pas de tendance */ }
+
       await store.saveFindings(id, result.findings);
       await store.update(id, { status: "done", score: result.score, summary: result.summary, agents: result.agents, scope: { stack: result.scope?.stack, reachable: result.scope?.reachable } });
       this.emit(id, "done", { score: result.score, total: result.findings.length, summary: result.summary });
+
+      // ALERTES d'integration (offre continue): on notifie SEULEMENT s'il y a des
+      // regressions reelles (severite >= medium apparues depuis le dernier deploiement).
+      if (audit.notify && regressions.length) {
+        this.notifyRegressions(audit.notify, result, regressions).catch((e) => this.emit(id, "log", { msg: `notify: ${e.message}` }));
+      }
     } catch (e) {
       await store.update(id, { status: "error", error: e.message });
       this.emit(id, "error", { message: e.message });
     } finally {
       if (cleanup) cleanup();   // supprime le clone ephemere
     }
+  }
+
+  // Pousse les regressions vers Slack/Jira. Le resultat notifie ne contient QUE les
+  // findings apparus (regressions) pour un signal exploitable, pas tout l'audit.
+  async notifyRegressions(notify, result, regressions) {
+    const payload = { ...result, findings: regressions };
+    if (notify.slack?.webhookUrl) await sendSlack(notify.slack.webhookUrl, payload);
+    if (notify.jira?.baseUrl) await createJiraIssues(notify.jira, payload, { minSeverity: notify.jira.minSeverity || "high" });
   }
 }
 

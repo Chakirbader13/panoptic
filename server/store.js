@@ -97,5 +97,56 @@ export const store = {
     return rows;
   },
 
+  // Historique d'un meme site (tendances par deploiement): audits termines, avec summary.
+  async history(tenant, target, limit = 20) {
+    if (SUPA) return supa(`audits?tenant=eq.${tenant}&target=eq.${encodeURIComponent(target)}&status=eq.done&select=id,score,summary,created_at&order=created_at.desc&limit=${limit}`);
+    ensure();
+    return readdirSync(AUD).filter((f) => f.endsWith(".json"))
+      .map((f) => { try { return JSON.parse(readFileSync(join(AUD, f), "utf8")); } catch { return null; } })
+      .filter((r) => r && r.tenant === tenant && r.target === target && r.status === "done")
+      .sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
+      .slice(0, limit)
+      .map((r) => ({ id: r.id, score: r.score, summary: r.summary, created_at: r.created_at }));
+  },
+
+  // ---------------- Equipes: cles d'API (roles) + membres ----------------
+  // Resout une cle d'API en { tenant, role, label }. Table api_keys si Supabase; sinon
+  // repli hash-derive (retro-compat: une cle seule = owner de son tenant).
+  async resolveKey(key) {
+    const fallback = { tenant: tenantFromKey(key), role: "owner", label: null };
+    if (!key) return { tenant: "public", role: "viewer", label: null };
+    if (SUPA) {
+      try {
+        const rows = await supa(`api_keys?key_hash=eq.${tenantFromKey(key)}&select=tenant,role,label`);
+        if (rows?.length) return rows[0];
+      } catch { /* table absente -> fallback */ }
+    }
+    return fallback;
+  },
+
+  async listApiKeys(tenant) {
+    if (SUPA) { try { return await supa(`api_keys?tenant=eq.${tenant}&select=label,role,created_at`); } catch { return []; } }
+    return [];
+  },
+
+  // Cree une cle d'API pour un tenant (role member/viewer). Retourne la cle EN CLAIR une fois.
+  async createApiKey(tenant, { label, role = "member" }) {
+    const key = "pk_" + Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2);
+    const key_hash = tenantFromKey(key);
+    if (SUPA) await supa("api_keys", { method: "POST", body: JSON.stringify({ key_hash, tenant, role, label: label || null, created_at: new Date().toISOString() }) });
+    return { key, label: label || null, role };   // la cle en clair n'est jamais restockee
+  },
+
+  async listMembers(tenant) {
+    if (SUPA) { try { return await supa(`members?tenant=eq.${tenant}&select=email,role,created_at&order=created_at.asc`); } catch { return []; } }
+    return [];
+  },
+
+  async addMember(tenant, { email, role = "member" }) {
+    const row = { tenant, email, role, created_at: new Date().toISOString() };
+    if (SUPA) await supa("members", { method: "POST", headers: { prefer: "resolution=merge-duplicates,return=representation" }, body: JSON.stringify(row) });
+    return row;
+  },
+
   backend: SUPA ? "supabase" : "local",
 };

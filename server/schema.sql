@@ -52,13 +52,35 @@ create table if not exists public.findings (
 create index if not exists findings_audit_idx on public.findings (audit_id, priority desc);
 create index if not exists findings_sev_idx on public.findings (audit_id, severity);
 
+-- Cles d'API par tenant, avec role (equipes). key_hash = hash court stable de la cle
+-- (la cle en clair n'est jamais stockee). role: owner | member | viewer.
+create table if not exists public.api_keys (
+  key_hash    text primary key,
+  tenant      text not null,
+  label       text,
+  role        text not null default 'member',
+  created_at  timestamptz not null default now()
+);
+create index if not exists api_keys_tenant_idx on public.api_keys (tenant);
+
+-- Membres humains d'un tenant (pour l'affichage/gestion d'equipe).
+create table if not exists public.members (
+  tenant      text not null,
+  email       text not null,
+  role        text not null default 'member',   -- owner | member | viewer
+  created_at  timestamptz not null default now(),
+  primary key (tenant, email)
+);
+
 -- ---------------------------------------------------------------------------
 -- Isolation multi-tenant par Row Level Security.
 -- Le service key du serveur bypass RLS; ces regles protegent les acces cote client
 -- (anon/authenticated) qui doivent porter le claim tenant.
 -- ---------------------------------------------------------------------------
-alter table public.audits   enable row level security;
-alter table public.findings enable row level security;
+alter table public.audits    enable row level security;
+alter table public.findings  enable row level security;
+alter table public.api_keys  enable row level security;
+alter table public.members   enable row level security;
 
 -- Le tenant courant est lu depuis un claim JWT 'tenant' (ou request header configure).
 create or replace function public.current_tenant() returns text
@@ -76,3 +98,11 @@ create policy findings_tenant_isolation on public.findings
     select 1 from public.audits a
     where a.id = findings.audit_id and a.tenant = public.current_tenant()
   ));
+
+drop policy if exists api_keys_tenant_isolation on public.api_keys;
+create policy api_keys_tenant_isolation on public.api_keys
+  using (tenant = public.current_tenant());
+
+drop policy if exists members_tenant_isolation on public.members;
+create policy members_tenant_isolation on public.members
+  using (tenant = public.current_tenant());

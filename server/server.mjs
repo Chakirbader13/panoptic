@@ -6,6 +6,7 @@ import { readFileSync, existsSync } from "node:fs";
 import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { store, tenantFromKey } from "./store.js";
+import { computeTrend, diffFindings } from "../engine/trends.js";
 import { queue } from "./queue.js";
 import { renderReport } from "./report.js";
 import { buildFixBundle, buildPrCommand } from "./fixbundle.js";
@@ -24,12 +25,18 @@ const readBody = (req) => new Promise((r) => { let d = ""; req.on("data", (c) =>
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const p = url.pathname;
-  const tenant = tenantFromKey(req.headers["x-api-key"]);
+  // Equipes: la cle resout tenant + role (owner|member|viewer). Retro-compat: une cle
+  // seule reste owner de son tenant (store.resolveKey fallback).
+  const auth = await store.resolveKey(req.headers["x-api-key"]);
+  const tenant = auth.tenant;
+  const canWrite = auth.role === "owner" || auth.role === "member";
+  const isOwner = auth.role === "owner";
   if (req.method === "OPTIONS") return send(res, 204, "");
 
   try {
     // --- API ---
     if (p === "/api/audits" && req.method === "POST") {
+      if (!canWrite) return send(res, 403, { error: "role insuffisant (lecture seule)" });
       const body = await readBody(req);
       const target = body.target;
       if (!target) return send(res, 400, { error: "target requis" });
@@ -41,13 +48,48 @@ const server = http.createServer(async (req, res) => {
       // Surcharge navigateur par audit (axe/Lighthouse): true force ON meme en prod-only
       // (offre premium boite-noire / benchmark), false force OFF. Sinon defaut = code+prod.
       const browserScan = typeof body.browserScan === "boolean" ? body.browserScan : undefined;
+      // Multi-pages + scan authentifie (offre payante) + integrations d'alerte.
+      const maxPages = body.maxPages;
+      const authScan = body.auth || null;
+      const notify = body.notify || null;   // { slack?, jira? } -> alertes sur regression
       const rec = await store.create(tenant, { target, repoPath, repoUrl, businessParams });
-      queue.enqueue({ id: rec.id, target, repoPath, repoUrl, businessParams, browserScan });
+      queue.enqueue({ id: rec.id, tenant, target, repoPath, repoUrl, businessParams, browserScan, maxPages, auth: authScan, notify });
       return send(res, 201, { id: rec.id, status: "queued" });
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "cspdefault-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "teams-trends-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", role: auth.role, audits: await store.list(tenant) });
+    }
+
+    // Tendances par deploiement pour un site: serie de score + regressions vs precedent.
+    if (p === "/api/trends" && req.method === "GET") {
+      const target = url.searchParams.get("target");
+      if (!target) return send(res, 400, { error: "parametre target requis" });
+      const history = await store.history(tenant, target, 20);
+      const trend = computeTrend(history);
+      // Diff des findings entre les 2 derniers audits complets (regressions).
+      let diff = null;
+      if (trend.latestId && trend.previousId) {
+        const [a, b] = await Promise.all([store.get(trend.latestId), store.get(trend.previousId)]);
+        diff = diffFindings(b?.findings || [], a?.findings || []);
+      }
+      return send(res, 200, { target, trend, diff });
+    }
+
+    // Equipe: membres + cles d'API. Lecture = tout role; ecriture = owner uniquement.
+    if (p === "/api/team" && req.method === "GET") {
+      return send(res, 200, { tenant, role: auth.role, members: await store.listMembers(tenant), apiKeys: await store.listApiKeys(tenant) });
+    }
+    if (p === "/api/team/members" && req.method === "POST") {
+      if (!isOwner) return send(res, 403, { error: "reserve au owner" });
+      const body = await readBody(req);
+      if (!body.email) return send(res, 400, { error: "email requis" });
+      return send(res, 201, await store.addMember(tenant, { email: body.email, role: body.role }));
+    }
+    if (p === "/api/team/keys" && req.method === "POST") {
+      if (!isOwner) return send(res, 403, { error: "reserve au owner" });
+      const body = await readBody(req);
+      return send(res, 201, await store.createApiKey(tenant, { label: body.label, role: body.role }));
     }
 
     const mAudit = p.match(/^\/api\/audits\/([\w]+)$/);
