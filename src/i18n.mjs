@@ -224,7 +224,7 @@ export const T = {
     priceBadge: "Le plus complet",
     prices: [
       ["Scan", "Gratuit", "", "Une page, sans accès au code, pour découvrir la profondeur.", ["Audit d'une URL, production uniquement", "Les 15 domaines, en aperçu", "Score de santé + top 5 des constats", "Réparation par nos soins en option"], "Scanner mon site"],
-      ["Audit complet", "490 &euro;", "/ audit", "Code + production, multi-pages, rapport exécutif chiffré.", ["Lecture du dépôt, en lecture seule", "15 agents, constats contre-vérifiés", "Feuille de route chiffrée en jours et en euros", "Correctifs appliqués par notre équipe", "Comparaison avec 3 concurrents"], "Lancer l'audit complet"],
+      ["Audit complet", "490 &euro;", "/ audit", "Code + production, multi-pages, rapport exécutif chiffré.", ["Lecture du dépôt, en lecture seule", "Multi-pages + scan authentifié (derrière login)", "15 agents, constats contre-vérifiés", "Feuille de route chiffrée en jours et en euros", "Correctifs appliqués par notre équipe", "Comparaison avec 3 concurrents"], "Lancer l'audit complet"],
       ["Continu", "190 &euro;", "/ mois", "Votre site reste surveillé, mise en production après mise en production.", ["Ré-audit à chaque déploiement", "Détection de régression et tendance", "Alertes et historique complet", "Alertes Slack, tickets Jira, PR GitHub", "Benchmark concurrentiel mensuel", "Régressions corrigées par nos soins"], "Activer la surveillance"],
     ],
     faqH2: "Questions fréquentes",
@@ -319,7 +319,7 @@ export const T = {
     priceBadge: "Most complete",
     prices: [
       ["Scan", "Free", "", "One page, no code access, to discover the depth.", ["Audit of one URL, production only", "The 15 domains, as a preview", "Health score + top 5 findings", "Repairs done by us as an option"], "Scan my site"],
-      ["Full audit", "&euro;490", "/ audit", "Code + production, multi-page, priced executive report.", ["Repository read, read-only", "15 agents, counter-verified findings", "Roadmap priced in days and euros", "Fixes applied by our team", "Comparison with 3 competitors"], "Start the full audit"],
+      ["Full audit", "&euro;490", "/ audit", "Code + production, multi-page, priced executive report.", ["Repository read, read-only", "Multi-page + authenticated scan (behind login)", "15 agents, counter-verified findings", "Roadmap priced in days and euros", "Fixes applied by our team", "Comparison with 3 competitors"], "Start the full audit"],
       ["Continuous", "&euro;190", "/ month", "Your site stays monitored, deployment after deployment.", ["Re-audit on every deployment", "Regression detection and trend", "Alerts and full history", "Slack alerts, Jira tickets, GitHub PRs", "Monthly competitive benchmark", "Regressions fixed by us"], "Enable monitoring"],
     ],
     faqH2: "Frequently asked questions",
@@ -414,7 +414,7 @@ export const T = {
     priceBadge: "Am vollständigsten",
     prices: [
       ["Scan", "Kostenlos", "", "Eine Seite, ohne Code-Zugriff, um die Tiefe zu entdecken.", ["Audit einer URL, nur Produktion", "Die 15 Domänen, als Vorschau", "Gesundheitswert + Top 5 Findings", "Reparatur durch uns als Option"], "Website scannen"],
-      ["Vollaudit", "490 &euro;", "/ Audit", "Code + Produktion, mehrseitig, bezifferter Executive-Bericht.", ["Repository-Lesezugriff, nur lesend", "15 Agenten, gegengeprüfte Findings", "Roadmap beziffert in Tagen und Euro", "Fixes von unserem Team umgesetzt", "Vergleich mit 3 Wettbewerbern"], "Vollaudit starten"],
+      ["Vollaudit", "490 &euro;", "/ Audit", "Code + Produktion, mehrseitig, bezifferter Executive-Bericht.", ["Repository-Lesezugriff, nur lesend", "Mehrseitig + authentifizierter Scan (hinter Login)", "15 Agenten, gegengeprüfte Findings", "Roadmap beziffert in Tagen und Euro", "Fixes von unserem Team umgesetzt", "Vergleich mit 3 Wettbewerbern"], "Vollaudit starten"],
       ["Kontinuierlich", "190 &euro;", "/ Monat", "Ihre Website bleibt überwacht, Deployment für Deployment.", ["Re-Audit bei jedem Deployment", "Regressionserkennung und Trend", "Alerts und vollständige Historie", "Slack-Alerts, Jira-Tickets, GitHub-PRs", "Monatlicher Wettbewerbs-Benchmark", "Regressionen von uns behoben"], "Überwachung aktivieren"],
     ],
     faqH2: "Häufige Fragen",
@@ -509,7 +509,7 @@ export const T = {
     priceBadge: "El más completo",
     prices: [
       ["Scan", "Gratis", "", "Una página, sin acceso al código, para descubrir la profundidad.", ["Auditoría de una URL, solo producción", "Los 15 dominios, en vista previa", "Puntuación de salud + top 5 de hallazgos", "Reparación por nuestra parte, opcional"], "Escanear mi sitio"],
-      ["Auditoría completa", "490 &euro;", "/ auditoría", "Código + producción, multipágina, informe ejecutivo cifrado.", ["Lectura del repositorio, solo lectura", "15 agentes, hallazgos contraverificados", "Hoja de ruta cifrada en días y en euros", "Correcciones aplicadas por nuestro equipo", "Comparación con 3 competidores"], "Iniciar la auditoría completa"],
+      ["Auditoría completa", "490 &euro;", "/ auditoría", "Código + producción, multipágina, informe ejecutivo cifrado.", ["Lectura del repositorio, solo lectura", "Multipágina + escaneo autenticado (tras login)", "15 agentes, hallazgos contraverificados", "Hoja de ruta cifrada en días y en euros", "Correcciones aplicadas por nuestro equipo", "Comparación con 3 competidores"], "Iniciar la auditoría completa"],
       ["Continuo", "190 &euro;", "/ mes", "Tu sitio queda vigilado, despliegue tras despliegue.", ["Reauditoría en cada despliegue", "Detección de regresión y tendencia", "Alertas e historial completo", "Alertas Slack, tickets Jira, PR GitHub", "Benchmark competitivo mensual", "Regresiones corregidas por nosotros"], "Activar la vigilancia"],
     ],
     faqH2: "Preguntas frecuentes",
@@ -604,7 +604,7 @@ export const T = {
     priceBadge: "Il più completo",
     prices: [
       ["Scan", "Gratis", "", "Una pagina, senza accesso al codice, per scoprire la profondità.", ["Audit di una URL, solo produzione", "I 15 domini, in anteprima", "Punteggio di salute + top 5 dei rilievi", "Riparazione a cura nostra, opzionale"], "Scansiona il mio sito"],
-      ["Audit completo", "490 &euro;", "/ audit", "Codice + produzione, multipagina, report esecutivo quantificato.", ["Lettura del repository, sola lettura", "15 agenti, rilievi controverificati", "Roadmap quantificata in giorni e in euro", "Correzioni applicate dal nostro team", "Confronto con 3 concorrenti"], "Avvia l'audit completo"],
+      ["Audit completo", "490 &euro;", "/ audit", "Codice + produzione, multipagina, report esecutivo quantificato.", ["Lettura del repository, sola lettura", "Multipagina + scansione autenticata (dietro login)", "15 agenti, rilievi controverificati", "Roadmap quantificata in giorni e in euro", "Correzioni applicate dal nostro team", "Confronto con 3 concorrenti"], "Avvia l'audit completo"],
       ["Continuo", "190 &euro;", "/ mese", "Il tuo sito resta sorvegliato, deploy dopo deploy.", ["Re-audit a ogni deploy", "Rilevamento di regressione e tendenza", "Alert e storico completo", "Alert Slack, ticket Jira, PR GitHub", "Benchmark competitivo mensile", "Regressioni corrette da noi"], "Attiva la sorveglianza"],
     ],
     faqH2: "Domande frequenti",
@@ -699,7 +699,7 @@ export const T = {
     priceBadge: "Meest volledig",
     prices: [
       ["Scan", "Gratis", "", "Eén pagina, zonder codetoegang, om de diepte te ontdekken.", ["Audit van één URL, alleen productie", "De 15 domeinen, als voorproef", "Gezondheidsscore + top 5 bevindingen", "Reparatie door ons, optioneel"], "Scan mijn site"],
-      ["Volledige audit", "490 &euro;", "/ audit", "Code + productie, meerdere pagina's, becijferd executive-rapport.", ["Repository lezen, alleen-lezen", "15 agenten, tegengecontroleerde bevindingen", "Roadmap becijferd in dagen en euro's", "Fixes toegepast door ons team", "Vergelijking met 3 concurrenten"], "Start de volledige audit"],
+      ["Volledige audit", "490 &euro;", "/ audit", "Code + productie, meerdere pagina's, becijferd executive-rapport.", ["Repository lezen, alleen-lezen", "Meerdere pagina's + geverifieerde scan (achter login)", "15 agenten, tegengecontroleerde bevindingen", "Roadmap becijferd in dagen en euro's", "Fixes toegepast door ons team", "Vergelijking met 3 concurrenten"], "Start de volledige audit"],
       ["Continu", "190 &euro;", "/ maand", "Je site blijft bewaakt, deployment na deployment.", ["Her-audit bij elke deployment", "Regressiedetectie en trend", "Alerts en volledige historie", "Slack-alerts, Jira-tickets, GitHub-PR's", "Maandelijkse concurrentie-benchmark", "Regressies door ons verholpen"], "Bewaking activeren"],
     ],
     faqH2: "Veelgestelde vragen",

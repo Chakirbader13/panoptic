@@ -3,6 +3,7 @@
 // sitemap, llms.txt et quelques signaux, et on partage ce contexte a tous les agents.
 // Les agents prod ne re-fetchent pas la page: ils lisent scope.home.
 import { httpGet, httpHead, originOf, hostOf, elements, attr } from "./agents/shared.js";
+import { crawl } from "./crawl.js";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -60,12 +61,17 @@ function internalLinks(html, origin) {
   return [...out].slice(0, 100);
 }
 
-export async function recon(target, { repoPath, businessParams, browserScan } = {}) {
+export async function recon(target, { repoPath, businessParams, browserScan, auth, maxPages = 1 } = {}) {
   const origin = originOf(target);
   const host = hostOf(target);
   const url = origin + "/";
 
-  const home = await httpGet(url);
+  // Auth optionnelle (scan derriere login): cookie/bearer/headers propages a la home
+  // ET au crawl. Normalisee une fois pour etre partagee via scope.auth.
+  const authOpts = auth && (auth.cookie || auth.bearer || auth.headers)
+    ? { cookie: auth.cookie, bearer: auth.bearer, headers: auth.headers } : null;
+
+  const home = await httpGet(url, { ...authOpts });
   const reachable = !home.error;
 
   // Recuperations paralleles des ressources de scoping.
@@ -79,10 +85,24 @@ export async function recon(target, { repoPath, businessParams, browserScan } = 
   const html = reachable ? home.body : "";
   const stack = reachable ? detectStack(home.headers, html) : [];
 
+  // UN SEUL CRAWL PARTAGE (promesse produit): quand le multi-pages est demande
+  // (offre payante), on crawl une fois ici, en retenant le HTML, et tous les agents
+  // multi-pages (SEO, a11y, contenu) lisent scope.crawl.pages sans re-fetcher.
+  let sharedCrawl = null;
+  if (reachable && maxPages > 1) {
+    sharedCrawl = await crawl(target, {
+      seedUrl: url, seedHtml: html, seedHeaders: { status: home.status },
+      maxPages, budgetMs: 14000, auth: authOpts, keepHtml: true,
+    });
+  }
+
   return {
     target, url, origin, host,
     reachable,
     repoPath: repoPath || null,
+    auth: authOpts || null,
+    maxPages,
+    crawl: sharedCrawl,   // { pages:[{url,status,...,html}], linkTargets, truncated, stats } ou null
     home: reachable ? { status: home.status, headers: home.headers, body: html, setCookie: home.setCookie, redirected: home.redirected } : { error: home.error },
     robots: robots.ok ? { present: true, body: robots.bodySample } : { present: false },
     sitemap: { present: Boolean(sitemap.ok) },

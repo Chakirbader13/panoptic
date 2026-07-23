@@ -61,7 +61,10 @@ export class AuditQueue {
       }
     }
 
-    const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams, browserScan: audit.browserScan });
+    // Multi-pages + scan authentifie (offre payante): profondeur de crawl et auth
+    // optionnelle (cookie/bearer/headers) passees par la requete d'audit.
+    const maxPages = Math.max(1, Math.min(30, Number(audit.maxPages) || 1));
+    const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams, browserScan: audit.browserScan, auth: audit.auth, maxPages });
     const verify = verifyFinding; // vraie verification adversariale (couche 3)
     const onProgress = (msg) => this.emit(id, "log", { msg });
 

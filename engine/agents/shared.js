@@ -44,13 +44,17 @@ export function makeFinding(agentId, family, raw) {
 }
 
 // --- HTTP -------------------------------------------------------------------------
-export async function httpGet(url, { timeout = 9000, redirect = "follow", method = "GET" } = {}) {
+export async function httpGet(url, { timeout = 9000, redirect = "follow", method = "GET", headers: extra, cookie, bearer } = {}) {
   const ctrl = new AbortController();
   const to = setTimeout(() => ctrl.abort(), timeout);
   try {
+    // Auth optionnelle pour scanner derriere un login: cookie de session, jeton bearer,
+    // ou en-tetes custom. Absente par defaut (scan boite noire public inchange).
+    const reqHeaders = { "user-agent": "PanopticAudit/1.0 (+https://panopticaudit.com)", ...(extra || {}) };
+    if (cookie) reqHeaders["cookie"] = cookie;
+    if (bearer) reqHeaders["authorization"] = `Bearer ${bearer}`;
     const res = await fetch(url, {
-      method, redirect, signal: ctrl.signal,
-      headers: { "user-agent": "PanopticAudit/1.0 (+https://panoptic-audit.netlify.app)" },
+      method, redirect, signal: ctrl.signal, headers: reqHeaders,
     });
     const headers = {};
     res.headers.forEach((v, k) => { headers[k.toLowerCase()] = v; });

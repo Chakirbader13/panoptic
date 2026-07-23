@@ -8,28 +8,31 @@ export function run(scope) {
   const out = [];
 
   if (scope.reachable) {
-    const url = scope.url;
-    const html = scope.home.body;
-    const F = (r) => findings.push(makeFinding("content", "humain", { ...r, url }));
-    const text = visibleText(html);
+    // MULTI-PAGES: analyse chaque page du crawl partage (cap 8), agregation par regle.
+    const crawled = (scope.crawl?.pages || []).filter((p) => p.status === 200 && p.html);
+    const pages = (crawled.length ? crawled : [{ url: scope.url, html: scope.home.body }]).slice(0, 8);
+    const shortUrl = (u) => u.replace(scope.origin, "") || "/";
 
-    // Cles i18n non resolues rendues telles quelles
-    const rawKeys = text.match(/\b[a-z][a-z0-9]*(?:[._][a-z0-9]+){1,}\b/gi) || [];
-    const suspicious = rawKeys.filter((k) => /\.(title|label|description|cta|button|heading|subtitle)$/i.test(k));
-    if (suspicious.length) F({ rule: "unresolved-i18n", severity: "high", effort: 0.3, title: `Cle(s) de traduction non resolue(s) affichee(s): ${suspicious.slice(0, 3).join(", ")}`, fix: "Corriger le chargement des traductions; ne jamais afficher la cle brute.", proof: suspicious.slice(0, 5).join(", ") });
-
-    // Fraicheur: annee ancienne dans le copyright
-    const years = (text.match(/(?:©|copyright|\bcopy\b)[^0-9]{0,10}(20\d{2})/i) || [])[1];
-    if (years && Number(years) < 2025) F({ rule: "stale-copyright", severity: "low", effort: 0.1, title: `Copyright date de ${years}`, fix: "Mettre a jour l'annee (automatiser via le build).", proof: `© ${years}` });
-
-    // Langue declaree vs contenu (heuristique legere)
-    const langAttr = (html.match(/<html[^>]*\blang\s*=\s*["']([a-z-]+)["']/i) || [])[1];
-    if (langAttr && /^fr/i.test(langAttr)) {
-      const enWords = (text.match(/\b(the|and|your|for|with|from|about|price|features)\b/gi) || []).length;
-      const frWords = (text.match(/\b(le|la|les|des|vous|pour|avec|votre|prix)\b/gi) || []).length;
-      if (enWords > 8 && enWords > frWords) F({ rule: "lang-mismatch", severity: "medium", effort: 0.4, title: "Langue declaree (fr) mais contenu majoritairement en anglais", fix: "Aligner lang= avec la langue reelle, ou traduire le contenu.", proof: `${enWords} mots EN vs ${frWords} FR.` });
+    const hits = new Map();   // rule -> { finding, pages:Set }
+    let totalChars = 0;
+    for (const p of pages) {
+      const text = visibleText(p.html);
+      totalChars += text.length;
+      for (const r of contentChecks(p.html, text)) {
+        const g = hits.get(r.rule) || { finding: { ...r, url: p.url }, pages: new Set() };
+        g.pages.add(shortUrl(p.url));
+        hits.set(r.rule, g);
+      }
     }
-    out.push(`prod: ${text.length} car.`);
+    for (const { finding, pages: ps } of hits.values()) {
+      const n = ps.size;
+      findings.push(makeFinding("content", "humain", {
+        ...finding,
+        title: finding.title + (n > 1 ? ` (sur ${n} pages)` : ""),
+        proof: finding.proof + (n > 1 ? ` — pages: ${[...ps].slice(0, 6).join(", ")}` : ""),
+      }));
+    }
+    out.push(`prod: ${pages.length} page(s), ${totalChars} car.`);
   }
 
   // Code: coherence des fichiers de traduction (cles manquantes entre langues)
@@ -47,6 +50,28 @@ export function run(scope) {
   }
 
   return { findings, stats: { notes: out } };
+}
+
+// Verifications editoriales pures sur une page (HTML + texte visible). Sans reseau.
+function contentChecks(html, text) {
+  const out = [];
+  // Cles i18n non resolues rendues telles quelles
+  const rawKeys = text.match(/\b[a-z][a-z0-9]*(?:[._][a-z0-9]+){1,}\b/gi) || [];
+  const suspicious = rawKeys.filter((k) => /\.(title|label|description|cta|button|heading|subtitle)$/i.test(k));
+  if (suspicious.length) out.push({ rule: "unresolved-i18n", severity: "high", effort: 0.3, title: `Cle(s) de traduction non resolue(s) affichee(s): ${suspicious.slice(0, 3).join(", ")}`, fix: "Corriger le chargement des traductions; ne jamais afficher la cle brute.", proof: suspicious.slice(0, 5).join(", ") });
+
+  // Fraicheur: annee ancienne dans le copyright
+  const years = (text.match(/(?:©|copyright|\bcopy\b)[^0-9]{0,10}(20\d{2})/i) || [])[1];
+  if (years && Number(years) < 2025) out.push({ rule: "stale-copyright", severity: "low", effort: 0.1, title: `Copyright date de ${years}`, fix: "Mettre a jour l'annee (automatiser via le build).", proof: `© ${years}` });
+
+  // Langue declaree vs contenu (heuristique legere)
+  const langAttr = (html.match(/<html[^>]*\blang\s*=\s*["']([a-z-]+)["']/i) || [])[1];
+  if (langAttr && /^fr/i.test(langAttr)) {
+    const enWords = (text.match(/\b(the|and|your|for|with|from|about|price|features)\b/gi) || []).length;
+    const frWords = (text.match(/\b(le|la|les|des|vous|pour|avec|votre|prix)\b/gi) || []).length;
+    if (enWords > 8 && enWords > frWords) out.push({ rule: "lang-mismatch", severity: "medium", effort: 0.4, title: "Langue declaree (fr) mais contenu majoritairement en anglais", fix: "Aligner lang= avec la langue reelle, ou traduire le contenu.", proof: `${enWords} mots EN vs ${frWords} FR.` });
+  }
+  return out;
 }
 
 function findLocaleFiles(root) {

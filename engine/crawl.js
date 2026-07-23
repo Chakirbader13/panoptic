@@ -37,7 +37,9 @@ function facts(url, status, headers, html) {
   return { url, status, title, desc, h1, canonical, noindex, words };
 }
 
-export async function crawl(target, { seedUrl, seedHtml, seedHeaders, maxPages = 12, budgetMs = 16000, concurrency = 5 } = {}) {
+// auth: { cookie?, bearer?, headers? } propage a chaque requete (scan authentifie).
+// keepHtml: retient le HTML complet de chaque page (pour les agents multi-pages a11y/content).
+export async function crawl(target, { seedUrl, seedHtml, seedHeaders, maxPages = 12, budgetMs = 16000, concurrency = 5, auth, keepHtml = false } = {}) {
   const origin = originOf(target);
   const start = performance.now();
   const seed = seedUrl || origin + "/";
@@ -45,10 +47,11 @@ export async function crawl(target, { seedUrl, seedHtml, seedHeaders, maxPages =
   const linkTargets = new Set();      // tous les liens internes vus
   const seen = new Set([seed]);
   let queue = [seed];
+  const withHtml = (f, html) => (keepHtml ? { ...f, html } : f);
 
   // Amorce avec le HTML deja recupere par la recon (evite un fetch).
   if (seedHtml != null) {
-    visited.set(seed, facts(seed, seedHeaders?.status || 200, seedHeaders, seedHtml));
+    visited.set(seed, withHtml(facts(seed, seedHeaders?.status || 200, seedHeaders, seedHtml), seedHtml));
     for (const l of extractLinks(seedHtml, seed, origin)) { linkTargets.add(l); if (!seen.has(l)) { seen.add(l); queue.push(l); } }
     queue = queue.filter((u) => u !== seed);
   }
@@ -56,13 +59,13 @@ export async function crawl(target, { seedUrl, seedHtml, seedHeaders, maxPages =
   while (queue.length && visited.size < maxPages && performance.now() - start < budgetMs) {
     const batch = queue.splice(0, concurrency);
     const results = await Promise.all(batch.map(async (url) => {
-      const r = await httpGet(url, { timeout: 6000 });
+      const r = await httpGet(url, { timeout: 6000, ...auth });
       return { url, r };
     }));
     for (const { url, r } of results) {
       if (r.error) { visited.set(url, { url, status: 0, title: null, desc: null, h1: 0, canonical: null, noindex: false, words: 0, error: r.error }); continue; }
       const html = r.body || "";
-      visited.set(url, facts(url, r.status, r, html));
+      visited.set(url, withHtml(facts(url, r.status, r, html), html));
       if (visited.size >= maxPages) break;
       for (const l of extractLinks(html, url, origin)) {
         linkTargets.add(l);

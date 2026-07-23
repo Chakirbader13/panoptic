@@ -12,8 +12,9 @@ export async function run(scope) {
   const home = scope.home.body;
   const F = (r) => findings.push(makeFinding("seo", "visibilite", { url, ...r }));
 
-  // --- Crawl (amorce avec la page deja recuperee par la recon) ---
-  const c = await crawl(scope.target, { seedUrl: url, seedHtml: home, seedHeaders: { status: scope.home.status }, maxPages: 12, budgetMs: 12000 });
+  // --- Crawl: reutilise le crawl PARTAGE de la recon si present (1 seul crawl),
+  // sinon crawl local (mono-agent, retro-compat quand maxPages=1). ---
+  const c = scope.crawl || await crawl(scope.target, { seedUrl: url, seedHtml: home, seedHeaders: { status: scope.home.status }, maxPages: 12, budgetMs: 12000, auth: scope.auth });
   const ok = c.pages.filter((p) => p.status === 200 && !p.error);
   const shortUrl = (u) => u.replace(scope.origin, "") || "/";
 
