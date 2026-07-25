@@ -37,6 +37,7 @@ const CSS = `
   .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;
     padding:10px 18px;border-radius:0 0 10px 0;font-weight:600;font-size:14px}
   .skip:focus{left:0}
+  .sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
   body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
     background:radial-gradient(1100px 620px at 78% -8%,rgba(79,240,163,.10),transparent 60%),
       radial-gradient(760px 520px at -5% 12%,rgba(79,240,163,.05),transparent 55%);opacity:.9}
@@ -532,7 +533,7 @@ function render(lang) {
     [0, 1, 0, 0, 0, 0], // Cause a la ligne de code
   ];
   const cell = (v) => v === 2 ? '<span class="cell c2">&#10003;</span>' : v === 1 ? '<span class="cell c1">&#177;</span>' : '<span class="cell c0">&middot;</span>';
-  const cmpHead = `<tr><th class="rowh"></th>${CMP_COLS.map((c) => `<th>${c}</th>`).join("")}<th><span class="us">Panoptic</span></th></tr>`;
+  const cmpHead = `<tr><th class="rowh" scope="col"><span class="sr">${esc(t.compareEye)}</span></th>${CMP_COLS.map((c) => `<th scope="col">${c}</th>`).join("")}<th scope="col"><span class="us">Panoptic</span></th></tr>`;
   const cmpBody = t.compareRows.map((label, r) => `<tr><td class="rowh">${esc(label)}</td>${CMP_COV[r].map((v) => `<td>${cell(v)}</td>`).join("")}<td class="usc">${cell(2)}</td></tr>`).join("");
   const cmpLegend = `<div class="cmp-l"><span>${cell(2)} ${esc(t.compareLegend[0])}</span><span>${cell(1)} ${esc(t.compareLegend[1])}</span><span>${cell(0)} ${esc(t.compareLegend[2])}</span></div>`;
   const faqs = t.faqs.map(([q, a], i) => `<details class="qa" name="faq"${i === 0 ? " open" : ""}><summary><span class="qtag">${esc(t.faqTags[i])}</span><span class="qq">${esc(q)}</span><span class="pm" aria-hidden="true">+</span></summary><div class="ans">${esc(a)}</div></details>`).join("");
