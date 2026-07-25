@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoptic - Sécurité & conformité</title>
+<meta name="description" content="Comment Panoptic protège votre code et vos données : analyse 100% déterministe (jamais de LLM tiers), accès en lecture seule, clone éphémère, isolation multi-tenant, données hébergées en UE, RGPD. Statut SOC 2 et ISO 27001.">
+<link rel="canonical" href="https://panopticaudit.com/securite/">
+<meta property="og:title" content="Panoptic - Sécurité & conformité">
+<meta property="og:description" content="Analyse déterministe, code en lecture seule et supprimé après l'audit, données en UE. Notre posture de sécurité, en clair.">
+<meta property="og:type" content="website">
+<link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%234ff0a3' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%234ff0a3'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Panoptic - Sécurité & conformité","url":"https://panopticaudit.com/securite/","inLanguage":"fr","isPartOf":{"@type":"WebSite","name":"Panoptic","url":"https://panopticaudit.com/"}}</script>
+<style>
+  @font-face{font-family:Geist;src:url(/fonts/Geist-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  @font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  :root{--bg:#070a08;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#27302a;
+    --ink:#f2f5f2;--mut:#a4aea7;--dim:#8f9990;--acc:#4ff0a3;--acc-dim:#1e6b47;--acc-ghost:rgba(79,240,163,.08);
+    --sans:Geist,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace;--mx:920px;--pad:24px}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv01"}
+  a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;padding:10px 18px;border-radius:0 0 10px 0;font-weight:600}
+  .skip:focus{left:0}
+  .wrap{max-width:var(--mx);margin:0 auto;padding:0 var(--pad)}
+  nav{position:sticky;top:0;z-index:10;backdrop-filter:blur(16px);background:rgba(7,10,8,.74);border-bottom:1px solid var(--line)}
+  .nav{display:flex;align-items:center;gap:16px;height:66px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+  .eye{width:22px;height:22px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center}
+  .eye::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc)}
+  .nav .home{margin-left:auto;font-size:14.5px;color:var(--mut)}.nav .home:hover{color:var(--ink);text-decoration:none}
+  header.hero{padding:72px 0 40px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:16px}
+  h1{font-size:clamp(34px,5vw,52px);line-height:1.03;letter-spacing:-.03em;font-weight:640;margin-bottom:18px}
+  .lead{font-size:19px;color:var(--mut);max-width:60ch}
+  main{padding:8px 0 40px}
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:clamp(23px,3vw,30px);letter-spacing:-.02em;font-weight:620;margin-bottom:8px}
+  .sub{color:var(--mut);margin-bottom:26px;max-width:64ch}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:linear-gradient(180deg,var(--bg2),var(--bg))}
+  .card h3{font-size:17px;font-weight:600;letter-spacing:-.01em;margin-bottom:8px;display:flex;align-items:center;gap:9px}
+  .card h3 .k{width:8px;height:8px;border-radius:2px;background:var(--acc);flex:none}
+  .card p{font-size:14.5px;color:var(--mut);line-height:1.6}
+  .card p b{color:var(--ink);font-weight:560}
+  .status{display:grid;gap:10px;margin-top:6px}
+  .srow{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:16px 20px;border:1px solid var(--line);border-radius:12px;background:var(--bg2)}
+  .srow .n{font-weight:560;font-size:15.5px}
+  .srow .d{font-size:13.5px;color:var(--mut)}
+  @media(max-width:640px){.srow{grid-template-columns:1fr;gap:6px}}
+  .badge{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.03em;text-transform:uppercase;padding:5px 11px;border-radius:100px;white-space:nowrap}
+  .b-live{color:#04140c;background:var(--acc)}
+  .b-prog{color:var(--acc);border:1px solid var(--acc-dim);background:var(--acc-ghost)}
+  .b-plan{color:var(--mut);border:1px solid var(--line2)}
+  .note{font-size:13px;color:var(--dim);margin-top:18px;font-style:italic;max-width:70ch}
+  .contact{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:8px;font-size:15px;color:var(--mut)}
+  .contact code{font-family:var(--mono);color:var(--acc);font-size:14px}
+  .cta{display:inline-flex;align-items:center;gap:8px;font-weight:640;font-size:15px;padding:14px 26px;border-radius:100px;background:var(--acc);color:#04140c;margin-top:8px}
+  .cta:hover{background:#63f4b1;text-decoration:none}
+  footer{padding:36px 0;color:var(--dim);font-size:13.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  footer a{color:var(--mut)}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<nav aria-label="Panoptic"><div class="wrap nav"><a class="logo" href="/"><span class="eye" aria-hidden="true"></span>Panoptic</a><a class="home" href="/">Retour au site</a></div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Sécurité &amp; conformité</div>
+  <h1>Votre code ne quitte jamais notre périmètre.</h1>
+  <p class="lead">Panoptic audite du code source et des sites en production. La confiance est la condition du produit. Voici, sans jargon, ce que nous faisons de vos données et où nous en sommes côté conformité.</p>
+</div></header>
+
+<main id="main">
+  <section><div class="wrap">
+    <h2>Ce que nous faisons de votre code</h2>
+    <p class="sub">Nos garanties techniques, celles qui sont déjà en place et vérifiables.</p>
+    <div class="grid">
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Analyse 100% déterministe</h3><p>Le moteur d'audit repose sur des règles, des scanners statiques et des moteurs standards (semgrep, axe-core, Lighthouse). <b>Votre code source n'est jamais envoyé à un LLM tiers</b> (OpenAI, Anthropic, Google). Aucune donnée d'entraînement, aucune fuite vers un modèle externe.</p></div>
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Accès en lecture seule</h3><p>L'audit du code se fait sur un <b>clone éphémère</b> du dépôt, en lecture seule, <b>supprimé automatiquement</b> à la fin de l'analyse. Nous n'écrivons rien dans votre dépôt sans votre accord explicite (une pull request, jamais un push direct).</p></div>
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Isolation multi-tenant</h3><p>Chaque client est isolé au niveau de la base par des politiques <b>Row Level Security</b> (Postgres). Les clés d'API sont <b>hachées</b>, jamais stockées en clair. Rôles owner / membre / lecteur pour cloisonner les accès d'équipe.</p></div>
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Données hébergées en UE</h3><p>Les rapports et constats sont stockés sur une infrastructure <b>en Union européenne</b> (région eu-west-3, Paris). Pas de transfert hors UE pour l'exploitation du service.</p></div>
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Surface publique durcie</h3><p>Le scan gratuit est protégé par une <b>limitation de débit</b> et une <b>garde anti-SSRF</b> (refus des adresses internes et des métadonnées cloud). En-têtes de sécurité stricts (CSP, HSTS) sur toutes nos surfaces.</p></div>
+      <div class="card"><h3><span class="k" aria-hidden="true"></span>Minimisation</h3><p>Nous ne collectons que ce qui sert l'audit : l'URL cible, le dépôt (le temps de l'analyse), et les constats. Pas de revente, pas de profilage. Vous pouvez demander la suppression de vos audits à tout moment.</p></div>
+    </div>
+  </div></section>
+
+  <section><div class="wrap">
+    <h2>Conformité : où nous en sommes, honnêtement</h2>
+    <p class="sub">Nous n'affichons pas de badge que nous n'avons pas. Voici le statut réel de chaque référentiel.</p>
+    <div class="status">
+      <div class="srow"><span class="badge b-live">En vigueur</span><span><span class="n">RGPD</span><br><span class="d">Données en UE, minimisation, suppression des clones après audit, droit à l'effacement.</span></span><span class="d mono">UE</span></div>
+      <div class="srow"><span class="badge b-live">En vigueur</span><span><span class="n">Chiffrement en transit</span><br><span class="d">HTTPS/TLS partout, HSTS. Aucune donnée d'audit échangée en clair.</span></span><span class="d mono">TLS</span></div>
+      <div class="srow"><span class="badge b-prog">En cours</span><span><span class="n">SOC 2 Type II</span><br><span class="d">Démarche de certification engagée : contrôles d'accès, journalisation, gestion des incidents, revue des fournisseurs. Rapport visé sous 6 à 12 mois.</span></span><span class="d mono">2026</span></div>
+      <div class="srow"><span class="badge b-plan">Planifié</span><span><span class="n">ISO/IEC 27001</span><br><span class="d">Système de management de la sécurité de l'information, après la certification SOC 2.</span></span><span class="d mono">—</span></div>
+    </div>
+    <p class="note">Panoptic n'est pas encore certifié SOC 2 ni ISO 27001. Nous décrivons ci-dessus une démarche en cours, pas une certification acquise. Les grands comptes en cours d'évaluation peuvent demander notre questionnaire de sécurité et le détail de nos contrôles.</p>
+  </div></section>
+
+  <section><div class="wrap">
+    <h2>Signaler une vulnérabilité</h2>
+    <p class="sub">Vous avez trouvé une faille sur nos services ? Écrivez-nous, nous répondons vite et nous ne poursuivons pas la recherche de sécurité de bonne foi.</p>
+    <div class="contact"><span>Contact sécurité :</span><code>security@panopticaudit.com</code></div>
+    <p style="margin-top:26px"><a class="cta" href="/console/">Lancer un scan gratuit</a></p>
+  </div></section>
+</main>
+
+<footer><div class="wrap" style="display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;width:100%">
+  <span>&copy; 2026 Panoptic</span>
+  <span><a href="/">Accueil</a> &middot; <a href="/console/">Console</a> &middot; <a href="/.well-known/security.txt">security.txt</a></span>
+</div></footer>
+</body>
+</html>
