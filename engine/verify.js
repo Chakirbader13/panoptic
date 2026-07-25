@@ -23,6 +23,22 @@ function V(verdict, votes, refuters, reason) { return { verdict, votes, refuters
 
 const hasLdJson = (body) => /application\/ld\+json/i.test(body || "");
 
+// --- Re-derivation DOM pour les constats "absence de X" ---------------------------
+// Lecon /avis (GPT-5+Gemini): un constat "aucun X" ne doit JAMAIS etre confirme sur la
+// seule parole de l'agent. On cherche X dans le DOM reel; si on le trouve -> faux positif.
+const CTA_CLASS = /class\s*=\s*["'][^"']*\b(btn|cta|button)\b/i;
+const CTA_WORDS = /(acheter|commander|inscri|essa|reserver|contact|devis|demarrer|lancer|scan|analys|audit|activer|obtenir|decouvrir|commencer|get started|sign up|buy|try|book|start|subscribe|launch|download|telecharger)/i;
+function hasCta(body) {
+  if (!body) return false;
+  if (CTA_CLASS.test(body)) return true;
+  const tags = body.match(/<(a|button)\b[^>]*>[\s\S]*?<\/\1>/gi) || [];
+  return tags.some((t) => CTA_WORDS.test(t.replace(/<[^>]+>/g, " ")));
+}
+function strongH1(body) {
+  const m = /<h1\b[^>]*>([\s\S]*?)<\/h1>/i.exec(body || "");
+  return Boolean(m && m[1].replace(/<[^>]+>/g, "").trim().length >= 8);
+}
+
 // rule -> predicate(scope): true = la condition tient (finding valide, reproduit),
 //                           false = recon CONTREDIT (faux positif a rejeter),
 //                           null  = recon ne peut pas trancher (on passe aux gardes).
@@ -32,6 +48,10 @@ const REDERIVE = {
   "no-sitemap":      (s) => (s.sitemap?.present ? false : true),
   "no-robots":       (s) => (s.robots?.present ? false : true),
   "no-llms-txt":     (s) => (s.llmsTxt?.present ? false : true),
+  // CTA / proposition de valeur: on cherche l'element dans le DOM avant de confirmer.
+  // (Attrape le faux positif "aucun CTA" sur un site qui en a: cf. /avis GPT-5+Gemini.)
+  "no-cta":          (s) => (hasCta(s.home?.body) ? false : true),
+  "weak-value-prop": (s) => (strongH1(s.home?.body) ? false : true),
   // Donnees structurees (SEO): n'importe quel JSON-LD suffit a contredire.
   "no-structured-data": (s) => (hasLdJson(s.home?.body) ? false : true),
   // JSON-LD geo specifiquement: si AUCUN JSON-LD -> forcement pas de geo (confirme);

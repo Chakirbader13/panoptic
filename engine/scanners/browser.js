@@ -19,7 +19,11 @@
 export function browserAllowed(scope = {}) {
   if (process.env.PANOPTIC_BROWSER === "off") return false;
   if (typeof scope.browserScan === "boolean") return scope.browserScan;
-  return Boolean(scope.repo || scope.repoPath);
+  // Audit PAYANT = navigateur reel (axe-core WCAG + Lighthouse CWV), pas les heuristiques.
+  // Signal payant: depot connecte (code+prod) OU crawl multi-pages (maxPages>1). Le scan
+  // gratuit mono-page (maxPages=1) reste leger. Corrige la critique /avis "pas de WCAG/CWV
+  // reels": un audit prod-only multi-pages activait les heuristiques au lieu d'axe/Lighthouse.
+  return Boolean(scope.repo || scope.repoPath || (scope.maxPages || 1) > 1);
 }
 
 let _pw; // undefined = pas encore essaye, null = indisponible, objet = module Playwright

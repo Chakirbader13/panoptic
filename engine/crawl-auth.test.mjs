@@ -38,14 +38,14 @@ let pass = 0, fail = 0;
 const ok = (c, m) => { c ? pass++ : (fail++, console.error("FAIL:", m)); };
 
 // --- 1. Scan SANS auth: /private redirige (302) -> pas lue en 200 ---
-const bare = await recon(base, { maxPages: 5 });
+const bare = await recon(base, { maxPages: 5, browserScan: false });
 const barePriv = (bare.crawl?.pages || []).find((p) => p.url.endsWith("/private"));
 ok(bare.crawl != null, "crawl partage present quand maxPages>1");
 ok(bare.crawl.pages.length >= 2, "crawl a trouve plusieurs pages");
 ok(!barePriv || barePriv.status !== 200, "sans cookie, /private non lue en 200");
 
 // --- 2. Scan AVEC auth: /private lue en 200 ---
-const authed = await recon(base, { maxPages: 5, auth: { cookie: COOKIE } });
+const authed = await recon(base, { maxPages: 5, browserScan: false, auth: { cookie: COOKIE } });
 ok(authed.auth != null, "scope.auth expose");
 const authPriv = (authed.crawl.pages || []).find((p) => p.url.endsWith("/private"));
 ok(authPriv && authPriv.status === 200, "avec cookie, /private lue en 200");

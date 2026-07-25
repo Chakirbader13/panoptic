@@ -55,7 +55,30 @@ export async function run(scope) {
   // --- Homepage / site: signaux uniques (une seule verification pertinente) ---
   if (!meta(home, 'name=["\']viewport')) F({ rule: "missing-viewport", severity: "high", effort: 0.1, title: "Meta viewport absente (non mobile-friendly)", fix: "Ajouter <meta name=viewport content='width=device-width, initial-scale=1'>.", proof: "Accueil sans viewport." });
   if (!meta(home, 'property=["\']og:title')) F({ rule: "missing-og", severity: "low", effort: 0.2, title: "Open Graph absent (partage social degrade)", fix: "Ajouter og:title, og:description, og:image.", proof: "Accueil sans og:title." });
-  if (!/application\/ld\+json/i.test(home)) F({ rule: "no-structured-data", severity: "low", effort: 0.4, title: "Aucune donnee structuree (Schema.org)", fix: "Ajouter du JSON-LD (Organization, WebSite, BreadcrumbList).", proof: "Accueil sans ld+json." });
+  // --- Donnees structurees: presence ET validite (un JSON-LD casse est rejete par
+  // Google, pire que rien). On parse chaque bloc ld+json de l'accueil. ---
+  const ldBlocks = home.match(/<script\b[^>]*type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi) || [];
+  if (ldBlocks.length === 0) {
+    F({ rule: "no-structured-data", severity: "low", effort: 0.4, title: "Aucune donnee structuree (Schema.org)", fix: "Ajouter du JSON-LD (Organization, WebSite, BreadcrumbList).", proof: "Accueil sans ld+json." });
+  } else {
+    const invalid = ldBlocks.filter((b) => {
+      const json = b.replace(/^[\s\S]*?>/, "").replace(/<\/script>\s*$/i, "").trim();
+      try { JSON.parse(json); return false; } catch { return true; }
+    });
+    if (invalid.length) F({ rule: "invalid-jsonld", severity: "medium", effort: 0.2, title: `${invalid.length}/${ldBlocks.length} bloc(s) JSON-LD invalide(s)`, fix: "Corriger la syntaxe JSON: un bloc invalide est ignore par les moteurs (rich results perdus).", proof: `${invalid.length} bloc(s) ld+json non parsable(s) sur l'accueil.` });
+  }
+
+  // --- hreflang: coherence internationale (erreur n1 des sites multilingues). On
+  // detecte un site multilingue via des pages sous prefixe de langue, puis on verifie
+  // la presence des alternates hreflang + x-default sur l'accueil. ---
+  const LANGP = /^\/(en|fr|de|es|it|nl|pt|ar)(\/|$)/i;
+  const multilingual = c.pages.some((p) => LANGP.test(shortUrl(p.url)));
+  const hreflangs = [...home.matchAll(/<link\b[^>]*hreflang\s*=\s*["']([^"']+)["'][^>]*>/gi)].map((m) => m[1].toLowerCase());
+  if (multilingual && hreflangs.length === 0) {
+    F({ rule: "missing-hreflang", severity: "medium", effort: 0.4, title: "Site multilingue sans balises hreflang", fix: "Declarer <link rel=alternate hreflang> pour chaque langue + un x-default.", proof: `Pages de langue detectees (${c.pages.filter((p) => LANGP.test(shortUrl(p.url))).length}) mais aucun hreflang sur l'accueil.` });
+  } else if (hreflangs.length > 0 && !hreflangs.includes("x-default")) {
+    F({ rule: "hreflang-no-xdefault", severity: "low", effort: 0.1, title: "hreflang sans x-default", fix: "Ajouter <link rel=alternate hreflang=x-default> vers la version par defaut.", proof: `${hreflangs.length} hreflang, aucun x-default.` });
+  }
   if (!scope.sitemap.present) F({ rule: "no-sitemap", severity: "medium", effort: 0.3, title: "sitemap.xml absent", fix: "Generer et referencer un sitemap.xml.", proof: "sitemap.xml introuvable." });
   if (!scope.robots.present) F({ rule: "no-robots", severity: "low", effort: 0.1, title: "robots.txt absent", fix: "Ajouter un robots.txt referencant le sitemap.", proof: "robots.txt introuvable." });
 
