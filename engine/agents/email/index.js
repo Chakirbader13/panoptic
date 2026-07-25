@@ -11,11 +11,17 @@ export async function run(scope) {
 
   const mx = await dnsQuery(domain, "MX");
   const txt = await dnsQuery(domain, "TXT");
+  // Calibrage de severite: si le domaine a un MX (mail actif), l'absence de SPF/DMARC
+  // compromet une delivrabilite reelle = HIGH. Sans MX (ex. site statique), le risque
+  // se limite a l'usurpation de la marque = MEDIUM. Evite de sur-alarmer un site vitrine.
+  const hasMx = !mx.error && (mx.answers || []).length > 0;
+  const spamSev = hasMx ? "high" : "medium";
+  const mxNote = hasMx ? "" : " Domaine sans MX: risque d'usurpation de marque (spoofing), pas d'impact d'envoi.";
 
   // SPF: seulement si la requete TXT a abouti.
   if (!txt.error) {
     const spf = (txt.answers || []).find((r) => /v=spf1/i.test(r));
-    if (!spf) F({ rule: "no-spf", severity: "high", effort: 0.2, title: "Aucun enregistrement SPF", fix: "Publier un TXT v=spf1 ... -all pour autoriser vos serveurs d'envoi.", proof: "Requete TXT aboutie, aucun v=spf1." });
+    if (!spf) F({ rule: "no-spf", severity: spamSev, effort: 0.2, title: "Aucun enregistrement SPF", fix: "Publier un TXT v=spf1 -all (verrouille l'envoi) meme sans email, pour bloquer l'usurpation." + mxNote, proof: "Requete TXT aboutie, aucun v=spf1." });
     else if (/[?~]all/i.test(spf) && !/-all/i.test(spf)) F({ rule: "weak-spf", severity: "medium", effort: 0.1, title: "SPF permissif (~all/?all au lieu de -all)", fix: "Passer en -all une fois les sources d'envoi validees.", proof: spf.slice(0, 90) });
   }
 
@@ -23,7 +29,7 @@ export async function run(scope) {
   const dmarc = await dnsQuery(`_dmarc.${domain}`, "TXT");
   if (!dmarc.error) {
     const dmarcRec = (dmarc.answers || []).find((r) => /v=DMARC1/i.test(r));
-    if (!dmarcRec) F({ rule: "no-dmarc", severity: "high", effort: 0.2, title: "Aucun enregistrement DMARC", fix: "Publier _dmarc TXT v=DMARC1; p=quarantine (puis reject).", proof: "Requete DMARC aboutie, aucun v=DMARC1." });
+    if (!dmarcRec) F({ rule: "no-dmarc", severity: spamSev, effort: 0.2, title: "Aucun enregistrement DMARC", fix: "Publier _dmarc TXT v=DMARC1; p=quarantine (puis reject)." + mxNote, proof: "Requete DMARC aboutie, aucun v=DMARC1." });
     else if (/p=none/i.test(dmarcRec)) F({ rule: "dmarc-none", severity: "medium", effort: 0.2, title: "DMARC en p=none (aucune protection appliquee)", fix: "Passer a p=quarantine puis p=reject apres analyse des rapports.", proof: dmarcRec.slice(0, 90) });
   }
 
