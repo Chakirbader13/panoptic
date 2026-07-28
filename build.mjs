@@ -529,7 +529,15 @@ function render(lang) {
     [0, 0, 1, 2, 0, 0], // Accessibilite
     [0, 0, 0, 1, 2, 0], // RGPD / cookies
     [0, 0, 0, 1, 0, 2], // UX / conversion
-    [0, 0, 0, 0, 0, 0], // Visibilite IA
+    // SEMrush a un "AI Visibility Toolkit" (ChatGPT, AI Overviews, Perplexity,
+    // Gemini): la ligne etait a zero, c'etait faux. Un tableau comparatif qui
+    // sous-estime un concurrent se retourne contre celui qui le publie.
+    [1, 0, 0, 0, 0, 0], // Visibilite IA
+    // SEMrush propose un Log File Analyzer (module Enterprise).
+    [1, 0, 0, 0, 0, 0], // Logs serveur
+    // Aucun de ces outils ne RAPPORTE l'ecart entre HTML servi et DOM rendu.
+    // Lighthouse rend le JavaScript, mais ne compare pas les deux etats.
+    [0, 0, 0, 0, 0, 0], // HTML servi contre DOM rendu
     [0, 1, 0, 0, 0, 0], // Cause a la ligne de code
   ];
   const cell = (v) => v === 2 ? '<span class="cell c2">&#10003;</span>' : v === 1 ? '<span class="cell c1">&#177;</span>' : '<span class="cell c0">&middot;</span>';
