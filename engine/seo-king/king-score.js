@@ -142,8 +142,65 @@ function isMeasurable(key, context, own) {
 }
 
 // Ce que le score NE couvre pas, a afficher tel quel dans le rapport.
-// Pretendre noter l'autorite off-page sans index de liens serait le point faible
-// de credibilite du produit: on l'annonce au lieu de le maquiller.
+//
+// Cette liste est DYNAMIQUE depuis que le moteur sait consommer des sources externes:
+// annoncer "positions non mesurees" alors que la Search Console est branchee serait
+// aussi faux que l'inverse. notMeasuredFor() ne renvoie que ce qui manque REELLEMENT
+// pour cet audit-la.
+export function notMeasuredFor(ctx = {}) {
+  const out = [];
+  const has = (x) => Boolean(x);
+  if (!has(ctx.backlinks)) out.push(BASE_NOT_MEASURED.offpage);
+  else if (ctx.backlinks?.sample) {
+    out.push({
+      key: "offpage-discovery",
+      label: "Decouverte de liens entrants non declares",
+      reason: `${ctx.backlinks.sample.checked} lien(s) fournis ont ete verifies en direct, mais aucun index du web ne permet d'en decouvrir d'autres.`,
+      unlocks: "Profil de liens complet, comparaison concurrentielle, detection d'attaques de liens.",
+    });
+  }
+  if (!has(ctx.positions)) out.push(BASE_NOT_MEASURED.serp);
+  else {
+    out.push({
+      key: "serp-competitors",
+      label: "Positions des concurrents",
+      reason: "La Search Console ne donne que les donnees du site audite.",
+      unlocks: "Part de voix, comparaison de positions, requetes ou un concurrent passe devant.",
+    });
+  }
+  if (!has(ctx.citations)) out.push(BASE_NOT_MEASURED.citations);
+  if (!has(ctx.logs)) out.push(BASE_NOT_MEASURED.logs);
+  return out;
+}
+
+const BASE_NOT_MEASURED = {
+  offpage: {
+    key: "offpage",
+    label: "Autorite off-page (backlinks, mentions de marque)",
+    reason: "Aucun export de liens entrants fourni. Panoptic verifie des liens declares, il n'en decouvre pas.",
+    unlocks: "Etat reel des liens declares: disparus, en nofollow, sur des pages desindexees.",
+  },
+  serp: {
+    key: "serp",
+    label: "Positions et volumes de recherche reels",
+    reason: "Search Console non connectee a cet audit.",
+    unlocks: "Pages a portee de main, titles tronques qui coutent des clics, pages sans aucune impression.",
+  },
+  citations: {
+    key: "citations",
+    label: "Citations effectives dans les reponses IA",
+    reason: "Mesure des citations non activee (necessite une cle de moteur de reponse).",
+    unlocks: "Taux de citation par moteur, concurrents cites a votre place, homonymie de marque.",
+  },
+  logs: {
+    key: "logs",
+    label: "Exploration reelle par les moteurs",
+    reason: "Aucun fichier de logs serveur fourni.",
+    unlocks: "Budget d'exploration gaspille, orphelines actives, 5xx furtifs, passage effectif des crawlers IA.",
+  },
+};
+
+// Conserve pour compatibilite: liste statique du cas ou rien n'est branche.
 export const NOT_MEASURED = [
   {
     key: "offpage",

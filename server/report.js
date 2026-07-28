@@ -16,6 +16,68 @@ const TIERS = [
 const sectionNo = (king, upsell) => String((king ? 3 : 2) + (upsell ? 2 : 1)).padStart(2, "0");
 const scoreColor = (n) => (n >= 80 ? "#15803d" : n >= 50 ? "#b8860b" : "#c0392b");
 
+// Logs serveur: la seule source qui dit ce que les moteurs ont REELLEMENT fait.
+function logsHtml(l) {
+  if (!l?.stats?.parsed) return "";
+  const bots = Object.values(l.byBot || {}).sort((a, b) => b.hits - a.hits).slice(0, 6);
+  const rows = bots.map((b) => {
+    const v = l.verdicts?.[Object.keys(l.byBot).find((k) => l.byBot[k] === b)] || {};
+    const tag = v.verdict === "authentique" ? '<span class="pstat p-pret">authentifie</span>'
+      : v.verdict === "usurpe" ? '<span class="pstat p-bloque">usurpe</span>'
+      : v.verdict ? `<span class="pstat p-partiel">${esc(v.verdict)}</span>` : "";
+    return `<tr><td><b>${esc(b.label)}</b> ${tag}</td><td class="mono">${b.hits.toLocaleString("fr-FR")}</td>
+      <td class="mono">${b.uniquePaths}</td><td class="mono">${b.errors}</td></tr>`;
+  }).join("");
+  return `<div class="cit">
+    <div class="cit-h"><b>Ce que les moteurs ont reellement explore</b>
+      <span>${l.stats.parsed.toLocaleString("fr-FR")} requetes &middot; ${esc(l.period)} &middot; format ${esc(l.stats.format)}</span></div>
+    <div class="cit-k">
+      <div><span class="cit-n" style="color:${scoreColor(100 - (l.cross?.wasteRatio ?? 0))}">${l.cross?.wasteRatio ?? 0}%</span><small>du budget d'exploration gaspille</small></div>
+      <div><span class="cit-n">${l.cross?.coverage ?? "-"}%</span><small>du sitemap reellement explore</small></div>
+      <div><span class="cit-n">${(l.cross?.activeOrphans || []).length}</span><small>orphelines encore visitees</small></div>
+    </div>
+    ${rows ? `<div class="tscroll"><table class="ktab"><thead><tr><th>Robot</th><th>Visites</th><th>URL distinctes</th><th>Erreurs</th></tr></thead><tbody>${rows}</tbody></table></div>` : ""}
+    <p class="cit-note">Le user-agent est declaratif: chaque robot est confirme par double controle DNS (inverse puis direct). Un robot non authentifie n'est pas compte comme un moteur.</p>
+  </div>`;
+}
+
+// Positions reelles issues de la Search Console du proprietaire.
+function positionsHtml(p) {
+  if (!p?.pages?.length) return "";
+  const rows = p.pages.slice(0, 6).map((x) => `<tr>
+    <td>${esc(String(x.page).replace(/^https?:\/\/[^/]+/, "") || "/")}</td>
+    <td class="mono">${x.impressions.toLocaleString("fr-FR")}</td><td class="mono">${x.clicks}</td>
+    <td class="mono">${(x.ctr * 100).toFixed(1)}%</td><td class="mono">${x.position ?? "-"}</td></tr>`).join("");
+  return `<div class="cit">
+    <div class="cit-h"><b>Positions reelles (Search Console)</b>
+      <span>${esc(p.property)} &middot; ${p.period.days} jours</span></div>
+    <div class="cit-k">
+      <div><span class="cit-n">${p.totals.impressions.toLocaleString("fr-FR")}</span><small>impressions</small></div>
+      <div><span class="cit-n">${p.totals.clicks.toLocaleString("fr-FR")}</span><small>clics</small></div>
+      <div><span class="cit-n">${p.totals.impressions ? ((p.totals.clicks / p.totals.impressions) * 100).toFixed(1) : 0}%</span><small>taux de clic</small></div>
+    </div>
+    <div class="tscroll"><table class="ktab"><thead><tr><th>Page</th><th>Impressions</th><th>Clics</th><th>CTR</th><th>Position</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <p class="cit-note">Donnee du proprietaire, pas une estimation. Elle ne couvre que ce site: aucune comparaison concurrentielle n'est possible par ce canal.</p>
+  </div>`;
+}
+
+// Liens entrants: verification, pas decouverte.
+function backlinksHtml(b) {
+  if (!b?.counts) return "";
+  const c = b.counts;
+  return `<div class="cit">
+    <div class="cit-h"><b>Liens entrants verifies un a un</b>
+      <span>${b.sample.checked} verifies sur ${b.sample.declared} declares</span></div>
+    <div class="cit-k">
+      <div><span class="cit-n" style="color:#15803d">${c.dofollow}</span><small>liens vivants transmettant l'autorite</small></div>
+      <div><span class="cit-n">${c.nofollow}</span><small>en nofollow</small></div>
+      <div><span class="cit-n" style="color:${c.lost + c.sourceGone ? "#c0392b" : "#15803d"}">${c.lost + c.sourceGone}</span><small>disparus</small></div>
+      <div><span class="cit-n">${c.unverifiable}</span><small>non verifiables</small></div>
+    </div>
+    <p class="cit-note">Panoptic verifie les liens fournis, il n'en decouvre pas: cela demanderait un index du web. Un lien non verifiable (pare-feu, interstitiel) n'est compte ni comme valide ni comme perdu.</p>
+  </div>`;
+}
+
 // Deux lectures du meme site: ce que sert le serveur, ce que voit un navigateur.
 // Le lecteur n'a pas a connaitre la difference entre HTML brut et DOM rendu: on lui
 // dit qui voit quoi, et ce que ca lui coute.
@@ -205,6 +267,9 @@ export function renderReport(rec, opts = {}) {
         <td><span class="pstat p-${p.status}">${esc(p.status)}</span></td>
         <td>${esc(p.reason)}</td></tr>`).join("")}
     </tbody></table></div>` : ""}
+    ${logsHtml(k.logs)}
+    ${positionsHtml(k.positions)}
+    ${backlinksHtml(k.backlinks)}
     ${renderDeltaHtml(k.render, k.renderDelta)}
     ${citationsHtml(k.citations)}
     ${Array.isArray(k.notMeasured) && k.notMeasured.length ? `

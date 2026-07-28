@@ -12,7 +12,7 @@
 import { activeAgents } from "./agents.js";
 import { priorityScore, dedupeKey, healthScore, domainScore, SEVERITY } from "./schema.js";
 import { applyBusiness } from "./business.js";
-import { kingScore, NOT_MEASURED } from "./seo-king/king-score.js";
+import { kingScore, notMeasuredFor } from "./seo-king/king-score.js";
 import { readShared } from "./seo-king/index.js";
 
 /**
@@ -72,7 +72,11 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
       geo: kingCtx?.geo || null,
       entityScore: kingCtx?.entityScore ?? null,
     });
-    king.notMeasured = NOT_MEASURED;
+    // Ce qui n'a pas pu etre mesure DEPEND de ce qui a ete branche sur cet audit.
+    king.notMeasured = notMeasuredFor({
+      backlinks: kingCtx?.backlinks, positions: kingCtx?.positions,
+      citations: kingCtx?.citations, logs: kingCtx?.logs,
+    });
     king.lanes = kingCtx?.lanes || null;
     king.platforms = kingCtx?.platforms || null;
     king.crawlerMatrix = kingCtx?.crawlerMatrix || null;
@@ -85,6 +89,9 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
     // difference entre ce qu'indexe Google et ce que lisent les moteurs de reponse.
     king.render = kingCtx?.render || null;
     king.renderDelta = kingCtx?.renderDelta || null;
+    king.logs = kingCtx?.logs || null;
+    king.positions = kingCtx?.positions || null;
+    king.backlinks = kingCtx?.backlinks || null;
     king.budget = kingCtx?.budget || null;
 
     onProgress(`synthese: sante ${score}/100, ${merged.length} findings retenus${king.score != null ? `, KING ${king.score}/100 (${king.band})` : ""}`);

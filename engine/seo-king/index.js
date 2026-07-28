@@ -28,6 +28,9 @@ import * as ecommerce from "./lanes/ecommerce.js";
 import * as geo from "./lanes/geo.js";
 import * as citations from "./lanes/citations.js";
 import * as renderDelta from "./lanes/render-delta.js";
+import * as logs from "./lanes/logs.js";
+import * as positions from "./lanes/positions.js";
+import * as backlinks from "./lanes/backlinks.js";
 
 // Ordre significatif: schema alimente entite, entite alimente la note GEO, et la
 // mesure de citations passe en dernier parce qu'elle reutilise la marque et la
@@ -35,7 +38,7 @@ import * as renderDelta from "./lanes/render-delta.js";
 // local, ecommerce et citations sont CONDITIONNELLES: elles se taisent (avec un
 // motif) quand le site n'a ni realite physique, ni vente en ligne, ni cle de moteur
 // de reponse configuree.
-const LANES = [technical, onpage, schema, sitemap, hreflang, linking, content, local, ecommerce, entity, sxo, renderDelta, geo, citations];
+const LANES = [technical, onpage, schema, sitemap, hreflang, linking, content, local, ecommerce, entity, sxo, renderDelta, logs, positions, backlinks, geo, citations];
 
 // Dimension principale -> agent proprietaire du finding dans le rapport.
 const GEO_OWNED = new Set(["geo", "entity"]);
@@ -118,6 +121,9 @@ async function execute(scope, options) {
     __nodes: graph.nodes,
     render: render ? { available: render.available, stats: render.stats, attached: render.attached, reason: render.reason, error: render.error } : null,
     renderDelta: ctx.renderDelta || null,
+    logs: ctx.logs || null,
+    positions: ctx.positions || null,
+    backlinks: ctx.backlinks || null,
     entityScore: ctx.entityScore ?? null,
     platforms: ctx.geoPlatforms || null,
     crawlerMatrix: ctx.crawlerMatrix || null,
