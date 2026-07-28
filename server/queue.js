@@ -65,7 +65,9 @@ export class AuditQueue {
 
     // Multi-pages + scan authentifie (offre payante): profondeur de crawl et auth
     // optionnelle (cookie/bearer/headers) passees par la requete d'audit.
-    const maxPages = Math.max(1, Math.min(30, Number(audit.maxPages) || 1));
+    // Plafond releve pour le mode grande echelle (extraction en flux, HTML libere:
+    // 900 pages tiennent en ~13 Mo). Le defaut reste 1: le scan gratuit ne crawle pas.
+    const maxPages = Math.max(1, Math.min(500, Number(audit.maxPages) || 1));
     const scan = (t) => recon(t, { repoPath, businessParams: audit.businessParams, browserScan: audit.browserScan, auth: audit.auth, maxPages });
     const verify = verifyFinding; // vraie verification adversariale (couche 3)
     const onProgress = (msg) => this.emit(id, "log", { msg });

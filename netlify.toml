@@ -1,6 +1,65 @@
 [build]
   publish = "."
 
+# --- Le moteur n'est PAS un fichier public ------------------------------------------
+# publish = "." sert la racine du depot: sans ces regles, engine/, server/ et les
+# sources des fonctions sont telechargeables. C'est le coeur du produit, et un site
+# audite qui lit les regles peut les contourner. force = true fait passer la redirection
+# AVANT le fichier statique, sinon Netlify servirait le fichier.
+[[redirects]]
+  from = "/engine/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/server/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/src/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/package-lock.json"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/Dockerfile"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/render.yaml"
+  to = "/404.html"
+  status = 404
+  force = true
+
+[[redirects]]
+  from = "/fly.toml"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # panoptic.fr = alias de marque -> 301 vers le domaine principal (pas de contenu duplique).
 [[redirects]]
   from = "https://panoptic.fr/*"
