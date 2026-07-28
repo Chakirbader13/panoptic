@@ -58,7 +58,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     if (p === "/api/audits" && req.method === "GET") {
-      return send(res, 200, { backend: store.backend, version: "teams-trends-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", role: auth.role, audits: await store.list(tenant) });
+      return send(res, 200, { backend: store.backend, version: "seo-king-1", browser: process.env.PANOPTIC_BROWSER === "off" ? "off" : "on", role: auth.role, audits: await store.list(tenant) });
     }
 
     // Tendances par deploiement pour un site: serie de score + regressions vs precedent.
