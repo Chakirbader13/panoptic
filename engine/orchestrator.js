@@ -81,6 +81,10 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
     // Mesure reelle des citations IA (si elle a tourne): a distinguer de l'aptitude
     // a etre cite, qui est une deduction.
     king.citations = kingCtx?.citations || null;
+    // Ecart entre ce que sert le serveur et ce que voit un navigateur: c'est la
+    // difference entre ce qu'indexe Google et ce que lisent les moteurs de reponse.
+    king.render = kingCtx?.render || null;
+    king.renderDelta = kingCtx?.renderDelta || null;
     king.budget = kingCtx?.budget || null;
 
     onProgress(`synthese: sante ${score}/100, ${merged.length} findings retenus${king.score != null ? `, KING ${king.score}/100 (${king.band})` : ""}`);

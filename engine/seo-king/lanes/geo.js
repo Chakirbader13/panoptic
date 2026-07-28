@@ -13,6 +13,23 @@ import { isAllowed, CRAWLERS } from "../robots.js";
 
 export const id = "geo";
 
+// Vue d'un crawler de moteur de reponse: le HTML SERVI, jamais le DOM rendu.
+// Apres un rendu navigateur, les valeurs principales d'un noeud basculent sur le DOM
+// (c'est la verite pour Google). La citabilite IA, elle, doit continuer de se juger
+// sur ce que le serveur envoie: GPTBot, PerplexityBot et ClaudeBot n'executent pas JS.
+function aiView(node) {
+  if (!node) return null;
+  return node.raw || node.facts || null;
+}
+function aiText(node) {
+  const v = aiView(node);
+  return v ? v.textSample : (node?.text || "");
+}
+function aiHeadings(node) {
+  const v = aiView(node);
+  return v ? v.headings : (node?.headings || []);
+}
+
 export function run(ctx) {
   const { scope, deep, graph } = ctx;
   const out = [];
@@ -23,7 +40,7 @@ export function run(ctx) {
 
   const pages = graph.crawledPages().filter((p) => !p.noindex && p.text);
   const home = graph.get(scope.url);
-  const lang = detectLang(home?.text || "").lang || "fr";
+  const lang = detectLang(aiText(home)).lang || "fr";
   const components = {};
 
   // --- 1. Accessibilite technique (20) --------------------------------------------------
@@ -35,7 +52,8 @@ export function run(ctx) {
   if (parsed) {
     for (const bot of aiSearchBots) if (!isAllowed(parsed, bot.ua, "/").allowed) aiBlocked++;
   }
-  const homeWords = wordsOf(home?.text || "").length;
+  // Nombre de mots REELLEMENT servis, hors execution JavaScript.
+  const homeWords = wordsOf(aiText(home)).length;
   const ssrOk = homeWords >= 300;
   components.technical = clamp(
     100
@@ -76,16 +94,17 @@ export function run(ctx) {
   let totalQuestions = 0, totalCitable = 0, totalStats = 0, totalDefs = 0;
   const perPageCitability = [];
   for (const p of pages) {
-    const ab = answerBlocks(p.headings || [], p.text);
-    const sd = statDensity(p.text);
-    const defs = definitionPatterns(p.text);
+    const t = aiText(p);
+    const ab = answerBlocks(aiHeadings(p), t);
+    const sd = statDensity(t);
+    const defs = definitionPatterns(t);
     totalQuestions += ab.total;
     totalCitable += ab.citable;
     totalStats += sd.stats;
     totalDefs += defs.length;
     perPageCitability.push({ p, ab, sd, defs });
   }
-  const contentPages = perPageCitability.filter(({ p }) => wordsOf(p.text).length > 250);
+  const contentPages = perPageCitability.filter(({ p }) => wordsOf(aiText(p)).length > 250);
 
   components.citability = clamp(
     (totalCitable > 0 ? 40 : 0)
@@ -131,13 +150,13 @@ export function run(ctx) {
   const readableScores = [];
   let longSentencePages = 0;
   for (const p of pages) {
-    const r = readability(p.text, lang);
+    const r = readability(aiText(p), lang);
     if (r.score == null) continue;
     readableScores.push(r.score);
     if (r.longSentences >= 3) longSentencePages++;
   }
   const avgRead = readableScores.length ? Math.round(readableScores.reduce((a, b) => a + b, 0) / readableScores.length) : null;
-  const structured = pages.filter((p) => (p.headings || []).filter((h) => h.level >= 2).length >= 3).length;
+  const structured = pages.filter((p) => aiHeadings(p).filter((h) => h.level >= 2).length >= 3).length;
   components.readability = clamp(
     (avgRead == null ? 60 : Math.min(60, avgRead))
     + (pages.length ? (structured / pages.length) * 40 : 0)
@@ -154,20 +173,20 @@ export function run(ctx) {
     });
   } else if (avgRead != null && avgRead >= 50) strengths.push(`Lisibilite correcte (${avgRead}/100), phrases extractibles`);
 
-  const flat = pages.filter((p) => wordsOf(p.text).length > 600 && (p.headings || []).filter((h) => h.level >= 2).length < 3);
+  const flat = pages.filter((p) => wordsOf(aiText(p)).length > 600 && aiHeadings(p).filter((h) => h.level >= 2).length < 3);
   if (flat.length) {
     F({
       rule: "unstructured-long-content", severity: "medium", effort: 0.4,
       title: `${flat.length} page(s) longue(s) sans decoupage en sections`,
       url: flat[0].url,
-      proof: flat.slice(0, 4).map((p) => `${short(p.url)}: ${wordsOf(p.text).length} mots pour ${(p.headings || []).filter((h) => h.level >= 2).length} titre(s) de section`).join(" | ") + ". Sans titres intermediaires, il n'y a pas de passage delimite a citer.",
+      proof: flat.slice(0, 4).map((p) => `${short(p.url)}: ${wordsOf(aiText(p)).length} mots pour ${aiHeadings(p).filter((h) => h.level >= 2).length} titre(s) de section`).join(" | ") + ". Sans titres intermediaires, il n'y a pas de passage delimite a citer.",
       fix: "Decouper en sections de 150 a 300 mots, chacune sous un h2 ou h3 explicite.",
       verifiability: "self-evident",
     });
   }
 
   // --- 5. Fraicheur et multi-modal (15) ---------------------------------------------------
-  const fresh = freshnessSignals(home?.html || "", home?.text || "");
+  const fresh = freshnessSignals(aiView(home)?.jsonld?.join("") || home?.html || "", aiText(home));
   const hasTables = pages.some((p) => /<table\b/i.test(p.html || ""));
   const hasLists = pages.filter((p) => /<(ul|ol)\b/i.test(p.html || "")).length;
   const hasMedia = pages.some((p) => /<(video|audio|iframe)\b/i.test(p.html || ""));

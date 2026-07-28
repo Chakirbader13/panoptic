@@ -149,6 +149,56 @@ export function sameOrigin(url, origin) {
   try { return new URL(url).origin === origin; } catch { return false; }
 }
 
+// Attache le DOM rendu aux noeuds deja construits.
+//
+// Choix structurant: quand une page a ete rendue, ses valeurs PRINCIPALES deviennent
+// celles du DOM rendu, et le HTML servi reste accessible en `n.raw`. Raison: Googlebot
+// execute le JavaScript, donc le rendu EST la verite pour tout le SEO classique. Sans
+// ce basculement, une application monopage recevrait une pluie de faux positifs
+// ("titre absent", "aucune donnee structuree") sur des elements parfaitement presents.
+//
+// L'inverse reste vrai pour les moteurs de reponse IA, qui ne rendent pas: c'est la
+// lane render-delta qui exploite `n.raw` pour dire ce qu'ils ne voient pas.
+export function attachRendered(graph, renderResult, origin) {
+  if (!renderResult?.available) return 0;
+  let attached = 0;
+  for (const [url, res] of renderResult.pages) {
+    if (!res?.html) continue;
+    const n = graph.get(url);
+    if (!n) continue;
+    const rf = extractFacts(url, res.html, { status: res.status ?? n.status ?? 200, origin, keepFullText: true });
+    n.raw = n.facts || null;          // ce que sert le serveur
+    n.rendered = rf;                  // ce que voit un navigateur
+    n.renderMs = res.ms;
+    n.consoleErrors = res.consoleErrors || [];
+
+    // Bascule des valeurs principales sur le rendu.
+    n.facts = rf;
+    n.title = rf.title ?? n.title;
+    n.desc = rf.desc ?? n.desc;
+    n.headings = rf.headings;
+    n.text = rf.textSample;
+    n.textLength = rf.textLength;
+    n.derived = rf.derived;
+    n.sketch = rf.sketch;
+    n.topTerms = rf.topTerms;
+    n.metas = rf.metas;
+    n.images = rf.images;
+    n.jsonld = rf.jsonld;
+    n.allLinks = rf.allLinks;
+    n.words = rf.words || n.words;
+    n.h1Count = rf.h1 ?? n.h1Count;
+    n.noindex = rf.noindex;
+    n.canonicalCount = rf.canonicalCount;
+    if (rf.canonical) {
+      n.canonical = rf.canonical;
+      n.canonicalNormalized = normalizeUrl(rf.canonical, url);
+    }
+    attached++;
+  }
+  return attached;
+}
+
 // Enrichissement depuis les faits deja extraits (grand regime). Doit produire
 // exactement les memes champs que enrichFromHtml, sinon une lane se comporterait
 // differemment selon la taille de l'audit, ce qui serait un piege a bugs.

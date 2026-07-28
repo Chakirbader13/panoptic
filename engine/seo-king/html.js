@@ -174,7 +174,16 @@ export function robotsDirectives(html = "") {
   };
 }
 
-const ENTITIES = { amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", apos: "'", nbsp: " ", eacute: "e", egrave: "e", ecirc: "e", agrave: "a", ccedil: "c", ugrave: "u", ocirc: "o", icirc: "i", acirc: "a", euml: "e", rsquo: "'", laquo: '"', raquo: '"', hellip: "..." };
+// Vrais caracteres, pas des approximations ASCII: un navigateur decode &rsquo; en
+// apostrophe typographique. Si on decodait en apostrophe droite, comparer le HTML
+// servi au DOM rendu signalerait un changement de titre sur tout site typographie.
+const ENTITIES = {
+  amp: "&", lt: "<", gt: ">", quot: '"', "#39": "'", apos: "'", nbsp: " ",
+  eacute: "\u00e9", egrave: "\u00e8", ecirc: "\u00ea", agrave: "\u00e0", ccedil: "\u00e7",
+  ugrave: "\u00f9", ocirc: "\u00f4", icirc: "\u00ee", acirc: "\u00e2", euml: "\u00eb",
+  rsquo: "\u2019", lsquo: "\u2018", ldquo: "\u201c", rdquo: "\u201d",
+  laquo: "\u00ab", raquo: "\u00bb", hellip: "\u2026", ndash: "\u2013", mdash: "\u2014",
+};
 export function decodeEntities(s = "") {
   return s.replace(/&([a-z#0-9]+);/gi, (m, e) => ENTITIES[e.toLowerCase()] ?? ENTITIES[e] ?? " ");
 }

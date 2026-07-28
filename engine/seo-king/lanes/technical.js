@@ -289,7 +289,9 @@ export function run(ctx) {
     const words = (noScriptText.match(/\S+/g) || []).length;
     const scriptBytes = (raw.match(/<script\b[^>]*>[\s\S]*?<\/script>/gi) || []).join("").length;
     const ratio = raw.length ? Math.round((scriptBytes / raw.length) * 100) : 0;
-    if (words < 120 && scriptBytes > 5000) {
+    // Quand le rendu navigateur a tourne, c'est la lane render-delta qui mesure
+    // l'ecart pour de vrai. On ne double pas le constat avec une heuristique.
+    if (words < 120 && scriptBytes > 5000 && !ctx.render?.available) {
       F({
         rule: "client-side-rendering", severity: "critical", effort: 1.5,
         title: "Contenu rendu cote client: invisible sans JavaScript",

@@ -10,7 +10,9 @@
 // dimension principale. Les 15 agents et l'UI restent inchanges.
 
 import { deepReconShared } from "./deep-recon.js";
-import { buildGraph } from "./graph.js";
+import { buildGraph, attachRendered } from "./graph.js";
+import { renderShared } from "./render.js";
+import { browserAllowed } from "../scanners/browser.js";
 
 import * as technical from "./lanes/technical.js";
 import * as onpage from "./lanes/onpage.js";
@@ -25,6 +27,7 @@ import * as local from "./lanes/local.js";
 import * as ecommerce from "./lanes/ecommerce.js";
 import * as geo from "./lanes/geo.js";
 import * as citations from "./lanes/citations.js";
+import * as renderDelta from "./lanes/render-delta.js";
 
 // Ordre significatif: schema alimente entite, entite alimente la note GEO, et la
 // mesure de citations passe en dernier parce qu'elle reutilise la marque et la
@@ -32,7 +35,7 @@ import * as citations from "./lanes/citations.js";
 // local, ecommerce et citations sont CONDITIONNELLES: elles se taisent (avec un
 // motif) quand le site n'a ni realite physique, ni vente en ligne, ni cle de moteur
 // de reponse configuree.
-const LANES = [technical, onpage, schema, sitemap, hreflang, linking, content, local, ecommerce, entity, sxo, geo, citations];
+const LANES = [technical, onpage, schema, sitemap, hreflang, linking, content, local, ecommerce, entity, sxo, renderDelta, geo, citations];
 
 // Dimension principale -> agent proprietaire du finding dans le rapport.
 const GEO_OWNED = new Set(["geo", "entity"]);
@@ -62,7 +65,23 @@ async function execute(scope, options) {
 
   const deep = await deepReconShared(scope, options.deep);
   const graph = buildGraph(scope, deep);
-  const ctx = { scope, deep, graph, options, alias: detectAlias(graph, scope) };
+
+  // Rendu navigateur: on execute le JavaScript sur un echantillon representatif pour
+  // pouvoir dire ce que Googlebot voit EN PLUS des moteurs de reponse IA, qui eux ne
+  // rendent pas. Gate sur browserAllowed (capacite premium, ~1 Go de Chromium).
+  let render = null;
+  if (options.render !== false && browserAllowed(scope)) {
+    const targets = renderTargets(graph, scope, options.renderPages || 8);
+    if (targets.length) {
+      render = await renderShared(scope, targets, {
+        maxPages: options.renderPages || 8,
+        auth: scope.auth || null,
+      });
+      render.attached = attachRendered(graph, render, scope.origin);
+    }
+  }
+
+  const ctx = { scope, deep, graph, options, render, alias: detectAlias(graph, scope) };
 
   const findings = [];
   const strengths = [];
@@ -94,6 +113,11 @@ async function execute(scope, options) {
     findings, strengths, lanes,
     geo: ctx.geo || null,
     citations: ctx.citations || null,
+    // Noeuds du graphe: permet aux tests et au rapport d'inspecter les deux vues
+    // (HTML servi / DOM rendu) sans reconstruire le graphe.
+    __nodes: graph.nodes,
+    render: render ? { available: render.available, stats: render.stats, attached: render.attached, reason: render.reason, error: render.error } : null,
+    renderDelta: ctx.renderDelta || null,
     entityScore: ctx.entityScore ?? null,
     platforms: ctx.geoPlatforms || null,
     crawlerMatrix: ctx.crawlerMatrix || null,
@@ -109,6 +133,25 @@ async function execute(scope, options) {
   };
   out.alias = ctx.alias;
   scope.__seoKingResult = out;
+  return out;
+}
+
+// Pages a rendre: l'accueil, puis UN representant par type de page. Rendre deux fiches
+// produit du meme gabarit coute deux secondes pour repeter le meme diagnostic; rendre
+// une page de chaque type revele les gabarits ou le JavaScript casse quelque chose.
+function renderTargets(graph, scope, cap) {
+  const pages = graph.crawledPages().filter((p) => p.status === 200);
+  const out = [];
+  const seen = new Set();
+  const home = graph.get(scope.url);
+  if (home) { out.push(home.url); seen.add(home.template || home.url); }
+  for (const p of pages) {
+    if (out.length >= cap) break;
+    const t = p.template || p.path || p.url;
+    if (seen.has(t) || out.includes(p.url)) continue;
+    seen.add(t);
+    out.push(p.url);
+  }
   return out;
 }
 

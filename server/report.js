@@ -16,6 +16,36 @@ const TIERS = [
 const sectionNo = (king, upsell) => String((king ? 3 : 2) + (upsell ? 2 : 1)).padStart(2, "0");
 const scoreColor = (n) => (n >= 80 ? "#15803d" : n >= 50 ? "#b8860b" : "#c0392b");
 
+// Deux lectures du meme site: ce que sert le serveur, ce que voit un navigateur.
+// Le lecteur n'a pas a connaitre la difference entre HTML brut et DOM rendu: on lui
+// dit qui voit quoi, et ce que ca lui coute.
+function renderDeltaHtml(render, delta) {
+  if (!render?.available || !delta) return "";
+  const pct = delta.visibleRatio;
+  const col = pct >= 90 ? "#15803d" : pct >= 50 ? "#b8860b" : "#c0392b";
+  const issues = [
+    [delta.jsonldJsOnly, "page(s) dont les donnees structurees n'existent qu'apres JavaScript"],
+    [delta.canonChanged, "page(s) dont la canonical change entre le serveur et le navigateur"],
+    [delta.titleChanged, "page(s) dont le titre est reecrit par JavaScript"],
+    [delta.linkGap, "page(s) dont le maillage interne n'existe qu'apres JavaScript"],
+    [delta.noindexInjected, "page(s) qui se desindexent apres JavaScript"],
+  ].filter(([n]) => n > 0);
+  return `<div class="cit">
+    <div class="cit-h"><b>Ce que Google voit, ce que les moteurs de reponse IA ne voient pas</b>
+      <span>${delta.pages} page(s) rendues dans Chromium</span></div>
+    <div class="cit-k">
+      <div><span class="cit-n" style="color:${col}">${pct}%</span><small>du contenu present sans JavaScript</small></div>
+      <div><span class="cit-n">${delta.rawWords.toLocaleString("fr-FR")}</span><small>mots servis par le serveur</small></div>
+      <div><span class="cit-n">${delta.renderedWords.toLocaleString("fr-FR")}</span><small>mots apres rendu</small></div>
+      <div><span class="cit-n">${delta.rawLinks} / ${delta.renderedLinks}</span><small>liens internes servis / rendus</small></div>
+    </div>
+    ${issues.length
+      ? `<ul class="cit-list">${issues.map(([n, l]) => `<li><b>${n}</b> ${esc(l)}</li>`).join("")}</ul>`
+      : `<p class="cit-note">Aucun signal SEO ne depend de l'execution du JavaScript : le site est lisible a l'identique par les moteurs de recherche et par les moteurs de reponse.</p>`}
+    <p class="cit-note">Googlebot execute JavaScript, les crawlers des moteurs de reponse (GPTBot, PerplexityBot, ClaudeBot) ne l'executent pas. Tout ce qui n'apparait qu'apres rendu est invisible pour eux.</p>
+  </div>`;
+}
+
 // Citations IA REELLEMENT mesurees. Presente comme une mesure datee et echantillonnee,
 // jamais comme une verite stable: une reponse d'IA n'est pas reproductible.
 function citationsHtml(c) {
@@ -175,6 +205,7 @@ export function renderReport(rec, opts = {}) {
         <td><span class="pstat p-${p.status}">${esc(p.status)}</span></td>
         <td>${esc(p.reason)}</td></tr>`).join("")}
     </tbody></table></div>` : ""}
+    ${renderDeltaHtml(k.render, k.renderDelta)}
     ${citationsHtml(k.citations)}
     ${Array.isArray(k.notMeasured) && k.notMeasured.length ? `
     <div class="knot"><b>Hors perimetre de cet audit</b>
@@ -255,6 +286,8 @@ export function renderReport(rec, opts = {}) {
   .cit-k>div{display:flex;flex-direction:column}
   .cit-n{font-family:ui-monospace,monospace;font-size:26px;font-weight:700;line-height:1.1}
   .cit-k small{font-size:11.5px;color:var(--mut);margin-top:2px}
+  .cit-list{margin:14px 0 0 18px;font-size:12.5px;color:var(--mut);line-height:1.7}
+  .cit-list b{color:var(--ink);font-family:ui-monospace,monospace}
   .cit-note{font-size:11.5px;color:var(--dim);margin-top:12px;line-height:1.5}
   .mono{font-family:ui-monospace,monospace}
   .knot{margin-top:18px;border-left:3px solid var(--line);padding:2px 0 2px 14px}

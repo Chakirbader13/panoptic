@@ -82,7 +82,11 @@ export function extractFacts(url, html = "", { status = 200, origin, lang, keepF
     title: allTitles[0] || null,
     titleCount: allTitles.length,
     desc: metas.name.description || null,
-    canonical: canonRels[0]?.href || null,
+    // URL ABSOLUE des l'extraction. Le navigateur resout les URLs relatives tout seul:
+    // sans normalisation ici, comparer le HTML brut au DOM rendu annoncerait "la
+    // canonical a change pendant le rendu" sur tout site qui la declare en relatif.
+    canonical: canonRels[0]?.href ? safeAbs(canonRels[0].href, url) : null,
+    canonicalRaw: canonRels[0]?.href || null,
     canonicalCount: canonRels.length,
     noindex: rd.noindex,
     nofollow: rd.nofollow,
