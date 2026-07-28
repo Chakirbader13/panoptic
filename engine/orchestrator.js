@@ -12,6 +12,8 @@
 import { activeAgents } from "./agents.js";
 import { priorityScore, dedupeKey, healthScore, domainScore, SEVERITY } from "./schema.js";
 import { applyBusiness } from "./business.js";
+import { kingScore, NOT_MEASURED } from "./seo-king/king-score.js";
+import { readShared } from "./seo-king/index.js";
 
 /**
  * @param {Object} deps
@@ -59,15 +61,38 @@ export function createOrchestrator({ scan, runAgent, verify, onProgress = () => 
 
     // Couche 5 - Synthese.
     const score = healthScore(merged, agents);
-    onProgress(`synthese: sante ${score}/100, ${merged.length} findings retenus`);
+
+    // Score KING: vue SEO+GEO transversale, calculee ICI et pas dans le serveur de
+    // rapport, parce que c'est une verite metier du moteur. Elle a besoin de
+    // findings de plusieurs agents (seo, geo, perf), donc elle ne peut vivre dans
+    // aucun agent pris isolement.
+    const kingCtx = readShared(scope);
+    const king = kingScore(merged, {
+      ranAgents: agents.map((a) => a.id),
+      geo: kingCtx?.geo || null,
+      entityScore: kingCtx?.entityScore ?? null,
+    });
+    king.notMeasured = NOT_MEASURED;
+    king.lanes = kingCtx?.lanes || null;
+    king.platforms = kingCtx?.platforms || null;
+    king.crawlerMatrix = kingCtx?.crawlerMatrix || null;
+    king.strengths = kingCtx?.strengths || [];
+    king.coverageDetail = kingCtx?.coverage || null;
+    // Mesure reelle des citations IA (si elle a tourne): a distinguer de l'aptitude
+    // a etre cite, qui est une deduction.
+    king.citations = kingCtx?.citations || null;
+    king.budget = kingCtx?.budget || null;
+
+    onProgress(`synthese: sante ${score}/100, ${merged.length} findings retenus${king.score != null ? `, KING ${king.score}/100 (${king.band})` : ""}`);
 
     return {
       target,
       scope,
       score,
+      king,
       agents: agents.map((a) => a.id),
       findings: merged,
-      summary: synthesize(merged, score, agents, totals, Boolean(scope?.repo)),
+      summary: { ...synthesize(merged, score, agents, totals, Boolean(scope?.repo)), king },
       generatedAt: null, // stampe par l'appelant (pas de Date.now ici)
     };
   };

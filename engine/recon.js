@@ -4,6 +4,76 @@
 // Les agents prod ne re-fetchent pas la page: ils lisent scope.home.
 import { httpGet, httpHead, originOf, hostOf, elements, attr } from "./agents/shared.js";
 import { crawl } from "./crawl.js";
+import { extractFacts, urlTemplate } from "./seo-king/pagefacts.js";
+import { parseUrlset } from "./seo-king/xml.js";
+
+// Bascule entre le petit regime (HTML conserve, comportement historique) et le grand
+// regime (faits extraits a la volee, HTML libere). 60 pages x ~100 Ko tient largement
+// en memoire; 2000 pages non.
+const LARGE_THRESHOLD = 60;
+// Pages dont on conserve le HTML brut en grand regime: l'accueil plus un representant
+// par gabarit d'URL. Au-dela, on decrit le meme gabarit une deuxieme fois pour rien.
+const DETAIL_CAP = 50;
+// Plancher du nombre de pages crawlees par gabarit d'URL. Le plafond reel est
+// proportionnel au budget de pages (voir l'appel a crawl).
+const TEMPLATE_CAP_MIN = 8;
+// Nombre de pages dont on garde le HTML brut PAR type de page.
+const DETAIL_PER_TEMPLATE = 4;
+
+// Repartit le budget de crawl entre les types de pages du site.
+//
+// Ni "les N premieres du sitemap" (on ne verrait qu'une section), ni un tourniquet a
+// parts egales (une section de 1500 fiches pese alors autant qu'une page isolee).
+// Deux temps: un PLANCHER pour que chaque type soit represente, puis le reste au
+// PRORATA du volume reel. Un type qui fait 70 % du site recoit ~70 % du budget restant.
+function allocateByTemplate(urls, limit, floor = 8) {
+  const buckets = new Map();
+  for (const u of urls) {
+    const t = urlTemplate(u);
+    if (!buckets.has(t)) buckets.set(t, []);
+    buckets.get(t).push(u);
+  }
+  const entries = [...buckets.entries()];
+  const quota = new Map();
+  let used = 0;
+
+  // 1. Plancher: chaque type a droit a un echantillon minimal.
+  for (const [t, list] of entries) {
+    const q = Math.min(list.length, floor);
+    quota.set(t, q);
+    used += q;
+  }
+  // 2. Reste au prorata du volume non encore couvert.
+  let remaining = Math.max(0, limit - used);
+  if (remaining > 0) {
+    const rest = entries.map(([t, list]) => [t, list.length - quota.get(t)]).filter(([, n]) => n > 0);
+    const totalRest = rest.reduce((a, [, n]) => a + n, 0);
+    if (totalRest > 0) {
+      for (const [t, n] of rest) {
+        const extra = Math.min(n, Math.floor((n / totalRest) * remaining));
+        quota.set(t, quota.get(t) + extra);
+      }
+    }
+  }
+
+  // 3. Construction de la liste, en tourniquet pour que le debut du crawl couvre
+  //    deja tous les types (si le budget temps coupe avant la fin, on a du diversifie).
+  const out = [];
+  const cursors = new Map(entries.map(([t]) => [t, 0]));
+  let progressed = true;
+  while (out.length < limit && progressed) {
+    progressed = false;
+    for (const [t, list] of entries) {
+      const c = cursors.get(t);
+      if (c >= quota.get(t) || c >= list.length) continue;
+      out.push(list[c]);
+      cursors.set(t, c + 1);
+      progressed = true;
+      if (out.length >= limit) break;
+    }
+  }
+  return out;
+}
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
@@ -61,7 +131,20 @@ function internalLinks(html, origin) {
   return [...out].slice(0, 100);
 }
 
-export async function recon(target, { repoPath, businessParams, browserScan, auth, maxPages = 1 } = {}) {
+// Un serveur qui repond 200 sur toutes les routes (SPA, fallback Netlify mal
+// configure) fait croire que robots.txt, llms.txt ou sitemap.xml existent alors
+// qu'il sert son shell HTML. On exige donc que le corps ne soit PAS du HTML:
+// sinon la verification adversariale rejetterait a tort les constats d'absence.
+function isTextFile(res) {
+  if (!res?.ok) return false;
+  return !/<html[\s>]/i.test(res.bodySample || "");
+}
+function isXmlFile(res) {
+  if (!res?.ok) return false;
+  return /<(urlset|sitemapindex)\b/i.test(res.bodySample || "");
+}
+
+export async function recon(target, { repoPath, businessParams, browserScan, auth, maxPages = 1, seoKing } = {}) {
   const origin = originOf(target);
   const host = hostOf(target);
   const url = origin + "/";
@@ -86,13 +169,67 @@ export async function recon(target, { repoPath, businessParams, browserScan, aut
   const stack = reachable ? detectStack(home.headers, html) : [];
 
   // UN SEUL CRAWL PARTAGE (promesse produit): quand le multi-pages est demande
-  // (offre payante), on crawl une fois ici, en retenant le HTML, et tous les agents
-  // multi-pages (SEO, a11y, contenu) lisent scope.crawl.pages sans re-fetcher.
+  // (offre payante), on crawl une fois ici et tous les agents multi-pages lisent
+  // scope.crawl.pages sans re-fetcher.
+  //
+  // Deux regimes, parce qu'ils n'ont pas les memes contraintes:
+  //   - PETIT (<= 60 pages): on garde le HTML de chaque page. Simple, et les agents
+  //     historiques (a11y, contenu) continuent de fonctionner tels quels.
+  //   - GRAND (> 60 pages): garder 2000 HTML en memoire fait tomber l'instance. On
+  //     extrait les faits de chaque page a la volee et on LIBERE le HTML aussitot,
+  //     en n'en conservant qu'un echantillon detaille borne.
   let sharedCrawl = null;
+  let facts = null;
+  let detailHtml = null;
   if (reachable && maxPages > 1) {
+    const large = maxPages > LARGE_THRESHOLD;
+    let priorityUrls = null;
+    let onPage = null;
+
+    if (large) {
+      // En grand regime, on lit le sitemap AVANT de crawler: ses URLs passent devant.
+      // C'est la liste que le proprietaire declare importante; sur un site de 5000
+      // pages, l'ordre de traitement decide de ce qu'on voit reellement.
+      const full = await httpGet(origin + "/sitemap.xml", { timeout: 9000, ...authOpts });
+      if (!full.error && /<urlset\b/i.test(full.body || "")) {
+        // Repartition par type de page. Un sitemap liste les URLs groupees par
+        // section: 1500 fiches d'affilee, puis 40 articles. En les prenant dans
+        // l'ordre, le budget part entierement dans les fiches et on ne voit jamais
+        // le blog.
+        priorityUrls = allocateByTemplate(parseUrlset(full.body).map((e) => e.loc), maxPages, TEMPLATE_CAP_MIN);
+      }
+      facts = new Map();
+      detailHtml = new Map();
+      const seenTemplates = new Map();
+      onPage = (pageUrl, pageHtml, status) => {
+        const f = extractFacts(pageUrl, pageHtml, { status, origin });
+        facts.set(pageUrl, f);
+        // Echantillon detaille: l'accueil, puis quelques representants par TYPE de
+        // page. Les lanes qui ont besoin du HTML brut (schema, entite, e-commerce)
+        // travaillent dessus. Plusieurs par type, pas un seul: une seule fiche produit
+        // ne dit pas si le balisage est constant sur toute la section.
+        const seenForTemplate = seenTemplates.get(f.template) || 0;
+        if (detailHtml.size < DETAIL_CAP && (pageUrl === url || seenForTemplate < DETAIL_PER_TEMPLATE)) {
+          seenTemplates.set(f.template, seenForTemplate + 1);
+          detailHtml.set(pageUrl, pageHtml);
+        }
+      };
+    }
+
     sharedCrawl = await crawl(target, {
       seedUrl: url, seedHtml: html, seedHeaders: { status: home.status },
-      maxPages, budgetMs: 14000, auth: authOpts, keepHtml: true,
+      maxPages,
+      budgetMs: large ? 60000 : 14000,
+      concurrency: large ? 8 : 5,
+      auth: authOpts,
+      keepHtml: !large,
+      onPage: large ? onPage : null,
+      priorityUrls,
+      // Sur une boutique, 800 fiches produit donnent le meme diagnostic. On en garde
+      // assez pour juger le gabarit, pas assez pour saturer le budget.
+      // Plafond de securite pour les URLs DECOUVERTES PAR LIEN (hors sitemap, donc
+      // hors quota). Genereux: la repartition par type est deja faite en amont.
+      templateCap: large ? Math.max(TEMPLATE_CAP_MIN, Math.floor(maxPages / 2)) : 0,
     });
   }
 
@@ -102,12 +239,21 @@ export async function recon(target, { repoPath, businessParams, browserScan, aut
     repoPath: repoPath || null,
     auth: authOpts || null,
     maxPages,
+    // Options transmises aux lanes SEO KING (mesure de citations et ses budgets).
+    // Elles voyagent sur le scope parce que les agents seo et geo partagent une
+    // execution unique et doivent donc voir exactement la meme configuration.
+    seoKing: seoKing || {},
     crawl: sharedCrawl,   // { pages:[{url,status,...,html}], linkTargets, truncated, stats } ou null
+    // Grand regime uniquement: faits extraits par page (HTML deja libere) et
+    // echantillon detaille qui conserve le HTML brut.
+    facts,                // Map<url, PageFacts> ou null
+    detailHtml,           // Map<url, html> ou null
+    large: Boolean(facts),
     home: reachable ? { status: home.status, headers: home.headers, body: html, setCookie: home.setCookie, redirected: home.redirected } : { error: home.error },
-    robots: robots.ok ? { present: true, body: robots.bodySample } : { present: false },
-    sitemap: { present: Boolean(sitemap.ok) },
-    llmsTxt: { present: Boolean(llms.ok) },
-    securityTxt: { present: Boolean(security.ok) },
+    robots: isTextFile(robots) ? { present: true, body: robots.bodySample } : { present: false },
+    sitemap: { present: isXmlFile(sitemap) },
+    llmsTxt: { present: isTextFile(llms) },
+    securityTxt: { present: isTextFile(security) },
     stack,
     pages: reachable ? internalLinks(html, origin) : [],
     businessParams: businessParams || null,

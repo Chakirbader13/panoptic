@@ -13,7 +13,30 @@ const TIERS = [
   { key: "P2", label: "A planifier", sub: "sous 30 jours", sevs: ["medium"] },
   { key: "P3", label: "Backlog", sub: "faible priorite", sevs: ["low", "info"] },
 ];
+const sectionNo = (king, upsell) => String((king ? 3 : 2) + (upsell ? 2 : 1)).padStart(2, "0");
 const scoreColor = (n) => (n >= 80 ? "#15803d" : n >= 50 ? "#b8860b" : "#c0392b");
+
+// Citations IA REELLEMENT mesurees. Presente comme une mesure datee et echantillonnee,
+// jamais comme une verite stable: une reponse d'IA n'est pas reproductible.
+function citationsHtml(c) {
+  if (!c || c.state !== "observed") return "";
+  const s = c.sample || {};
+  const rows = (c.topSources || []).slice(0, 6).map((r) => `<tr>
+    <td><b>${esc(r.domain)}</b>${r.isSite ? ' <span class="pstat p-pret">votre site</span>' : ""}</td>
+    <td class="mono">${r.count}</td><td class="mono">${r.share}%</td></tr>`).join("");
+  return `<div class="cit">
+    <div class="cit-h"><b>Citations mesurees dans les moteurs de reponse IA</b>
+      <span>${esc((s.providers || []).join(", "))} &middot; ${s.prompts} question(s) &middot; ${s.successful} reponse(s)</span></div>
+    <div class="cit-k">
+      <div><span class="cit-n" style="color:${scoreColor(c.citationRate)}">${c.citationRate}%</span><small>reponses citant le site</small></div>
+      <div><span class="cit-n">${c.mentionRate}%</span><small>mentions verifiees de la marque</small></div>
+      ${c.ambiguousRate ? `<div><span class="cit-n" style="color:#b8860b">${c.ambiguousRate}%</span><small>mentions hors sujet (homonymie)</small></div>` : ""}
+      <div><span class="cit-n">${c.aheadCount ?? 0}</span><small>sources citees plus souvent</small></div>
+    </div>
+    ${rows ? `<div class="tscroll"><table class="ktab"><thead><tr><th>Source citee</th><th>Citations</th><th>Part</th></tr></thead><tbody>${rows}</tbody></table></div>` : ""}
+    <p class="cit-note">Mesure par echantillon a la date de l'audit. Les moteurs de reponse ne sont pas deterministes : ces taux se comparent d'un audit a l'autre, ils ne se lisent pas comme une part de marche.</p>
+  </div>`;
+}
 
 function verdict(score) {
   if (score >= 85) return "Solide. Quelques finitions.";
@@ -66,6 +89,10 @@ export function renderReport(rec, opts = {}) {
   const gScore = s.weightedScore ?? rec.score ?? 0;
   const date = new Date(rec.generatedAt || rec.created_at || Date.now()).toLocaleDateString("fr-FR", { day: "2-digit", month: "long", year: "numeric" });
   const domains = s.byDomain || [];
+  // Score KING (SEO + GEO transversal). Declare tot: il decale la numerotation des
+  // sections suivantes.
+  const k = s.king || rec.king || null;
+  const hasKing = Boolean(k && k.score != null);
   const evald = domains.filter((d) => d.evaluated !== false && d.score != null);
   // Points forts: uniquement des domaines pleinement evalues (pas les "partiels").
   const strengths = domains.filter((d) => d.evaluated !== false && !d.partial && d.score >= 85);
@@ -96,7 +123,7 @@ export function renderReport(rec, opts = {}) {
 
   const upsellHtml = locked && f.length ? `
   <section>
-    <h2><span class="n">03</span>Debloquer les correctifs</h2>
+    <h2><span class="n">${hasKing ? "04" : "03"}</span>Debloquer les correctifs</h2>
     <div class="upsell">
       <p>Ce scan gratuit montre <b>ce qui cloche et ce que cela coute</b>. L'<b>Audit complet (490 €)</b> fournit
       chaque correctif detaille, lit votre code source pour remonter a la cause, et notre equipe peut
@@ -107,10 +134,53 @@ export function renderReport(rec, opts = {}) {
 
   const strengthsHtml = strengths.length ? `
     <section>
-      <h2><span class="n">${locked && f.length ? "04" : "03"}</span>Ce qui est deja excellent</h2>
+      <h2><span class="n">${sectionNo(hasKing, locked && f.length)}</span>Ce qui est deja excellent</h2>
       <p class="lead">Verifie et mesure, a preserver lors des correctifs.</p>
       <div class="sgrid">${strengths.map((d) => `<div class="scard"><div class="stitle"><span class="dot"></span>${esc(d.label)} <b>${d.score}/100</b></div><p>${esc(d.note)}</p></div>`).join("")}</div>
     </section>` : "";
+
+  // --- Bloc KING: vue SEO + GEO transversale ------------------------------------------
+  // Affiche le score, sa COUVERTURE, et ce qui n'a pas pu etre mesure. Un score
+  // sans sa couverture laisse croire a une evaluation complete: on refuse ca.
+  const kingHtml = hasKing ? `
+  <section>
+    <h2><span class="n">02</span>Visibilite : score KING</h2>
+    <p class="lead">Vue transversale SEO et moteurs de reponse IA, composee sur neuf axes ponderes.
+    Seuls les constats verifies comptent ; un axe non mesure vaut <i>n/a</i> et son poids est redistribue.</p>
+    <div class="kinghead">
+      <div class="kingnum" style="color:${scoreColor(k.score)}">${k.score}<small>/100</small></div>
+      <div class="kingband">
+        <b>${esc(k.band)}</b>
+        <p>${esc(k.meaning)}</p>
+        <span class="kingcov">Couverture de la mesure : ${k.coverage}%${k.redistributed ? ` &middot; ${k.lostWeight} points de ponderation redistribues` : ""}</span>
+      </div>
+    </div>
+    <div class="kgrid">${k.subscores.map((d) => {
+      if (!d.measured) {
+        return `<div class="kcard kna"><div class="ktop"><span>${esc(d.label)}</span><span class="kna-lab">n/a</span></div>
+          <div class="kbar"><i style="width:0"></i></div><p>${esc(d.reason || "non mesure")}</p></div>`;
+      }
+      const col = scoreColor(d.score);
+      return `<div class="kcard"><div class="ktop"><span>${esc(d.label)}</span><b style="color:${col}">${d.score}</b></div>
+        <div class="kbar"><i style="width:${d.score}%;background:${col}"></i></div>
+        <p>poids ${d.weight}% &middot; ${esc(d.detail || "aucun finding")}</p></div>`;
+    }).join("")}</div>
+    ${k.geo?.components ? `<div class="kgeo"><b>Detail citabilite IA</b> ${Object.entries({
+      citability: "citabilite", readability: "lisibilite structurelle", multimodal: "blocs extractibles",
+      authority: "autorite et marque", technical: "accessibilite technique",
+    }).map(([key, lab]) => k.geo.components[key] == null ? "" : `<span class="chip">${lab} <b>${k.geo.components[key]}</b></span>`).join("")}</div>` : ""}
+    ${Array.isArray(k.platforms) && k.platforms.length ? `
+    <div class="tscroll"><table class="ktab"><thead><tr><th>Moteur de reponse</th><th>Etat</th><th>Pourquoi</th></tr></thead><tbody>
+      ${k.platforms.map((p) => `<tr><td><b>${esc(p.platform)}</b></td>
+        <td><span class="pstat p-${p.status}">${esc(p.status)}</span></td>
+        <td>${esc(p.reason)}</td></tr>`).join("")}
+    </tbody></table></div>` : ""}
+    ${citationsHtml(k.citations)}
+    ${Array.isArray(k.notMeasured) && k.notMeasured.length ? `
+    <div class="knot"><b>Hors perimetre de cet audit</b>
+      <ul>${k.notMeasured.map((n) => `<li><b>${esc(n.label)}</b> : ${esc(n.reason)} Debloquerait : ${esc(n.unlocks)}</li>`).join("")}</ul>
+    </div>` : ""}
+  </section>` : "";
 
   const bySeverity = s.bySeverity || {};
   const sevChips = Object.entries(bySeverity).filter(([, v]) => v).map(([k, v]) => { const [lab, col] = SEV[k]; return `<span class="chip"><b style="color:${col}">${v}</b> ${lab.toLowerCase()}</span>`; }).join("");
@@ -153,6 +223,43 @@ export function renderReport(rec, opts = {}) {
   .dbar i{display:block;height:100%;border-radius:3px}
   .dnote{font-size:11.5px;color:var(--mut);line-height:1.45}
   .weighting{font-family:ui-monospace,monospace;font-size:11px;color:var(--dim);margin-top:16px}
+  /* KING: score transversal SEO + GEO */
+  .kinghead{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:#fff;margin-bottom:18px}
+  .kingnum{font-family:ui-monospace,monospace;font-size:52px;font-weight:700;line-height:1;letter-spacing:-.03em}
+  .kingnum small{font-size:17px;color:var(--dim);font-weight:400}
+  .kingband b{display:block;font-size:16px;letter-spacing:-.01em}
+  .kingband p{color:var(--mut);font-size:13.5px;margin:3px 0 7px;max-width:62ch}
+  .kingcov{font-family:ui-monospace,monospace;font-size:11px;color:var(--dim)}
+  .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  @media(max-width:820px){.kgrid{grid-template-columns:repeat(2,1fr)}.kinghead{grid-template-columns:1fr}}
+  .kcard{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:#fff}
+  .ktop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;margin-bottom:8px}
+  .ktop b{font-family:ui-monospace,monospace;font-size:15px}
+  .kbar{height:5px;background:#eef1ee;border-radius:3px;overflow:hidden}
+  .kbar i{display:block;height:100%}
+  .kcard p{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--dim);margin-top:7px;line-height:1.45}
+  .kna{background:#fafbfa}.kna-lab{font-family:ui-monospace,monospace;font-size:12px;color:#9aa39c}
+  .kgeo{margin-top:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:12.5px}
+  .kgeo>b{margin-right:4px}
+  .tscroll{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+  .ktab{width:100%;min-width:420px;border-collapse:collapse;margin-top:18px;font-size:12.5px}
+  .ktab th{text-align:left;font-family:ui-monospace,monospace;font-size:10.5px;letter-spacing:.09em;color:var(--dim);text-transform:uppercase;padding:0 10px 7px 0;border-bottom:1px solid var(--line)}
+  .ktab td{padding:8px 10px 8px 0;border-bottom:1px solid var(--line);vertical-align:top;color:var(--mut)}
+  .ktab td b{color:var(--ink)}
+  .pstat{font-family:ui-monospace,monospace;font-size:10.5px;padding:2px 8px;border-radius:100px;white-space:nowrap}
+  .p-pret{color:#15803d;background:#e8f5ee}.p-partiel{color:#b8860b;background:#fbf6e3}.p-bloque{color:#c0392b;background:#fdecea}
+  .cit{margin-top:20px;border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+  .cit-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .cit-h span{font-family:ui-monospace,monospace;font-size:10.5px;color:var(--dim)}
+  .cit-k{display:flex;gap:26px;flex-wrap:wrap}
+  .cit-k>div{display:flex;flex-direction:column}
+  .cit-n{font-family:ui-monospace,monospace;font-size:26px;font-weight:700;line-height:1.1}
+  .cit-k small{font-size:11.5px;color:var(--mut);margin-top:2px}
+  .cit-note{font-size:11.5px;color:var(--dim);margin-top:12px;line-height:1.5}
+  .mono{font-family:ui-monospace,monospace}
+  .knot{margin-top:18px;border-left:3px solid var(--line);padding:2px 0 2px 14px}
+  .knot b{font-size:12.5px}
+  .knot ul{margin:6px 0 0 16px;color:var(--mut);font-size:12.5px;line-height:1.6}
   .chips{display:flex;gap:12px;flex-wrap:wrap;margin-top:16px}
   .chip{border:1px solid var(--line);border-radius:100px;padding:4px 12px;font-size:12.5px;color:var(--mut)}
   /* TIERS / FINDINGS */
@@ -192,7 +299,7 @@ export function renderReport(rec, opts = {}) {
   @media print{
     body{background:#fff}.dl{display:none}
     .hero,.tier-tag,.sev,.dbar i,.dot{-webkit-print-color-adjust:exact;print-color-adjust:exact}
-    .fcard,.dcard,.scard{break-inside:avoid}
+    .fcard,.dcard,.scard,.kcard,.kinghead{break-inside:avoid}
   }
 </style></head><body>
 <header class="hero"><div class="hero-in">
@@ -217,8 +324,10 @@ export function renderReport(rec, opts = {}) {
     ${weighting ? `<div class="weighting">Ponderation : ${weighting}</div>` : ""}
   </section>
 
+  ${kingHtml}
+
   <section>
-    <h2><span class="n">02</span>Findings par priorite</h2>
+    <h2><span class="n">${hasKing ? "03" : "02"}</span>Findings par priorite</h2>
     <p class="lead">Dedupliques sur les ${domains.length} domaines, classes par risque reel. Effort et impact estimes par finding.</p>
     ${tiersHtml || '<p class="lead">Aucun finding.</p>'}
   </section>

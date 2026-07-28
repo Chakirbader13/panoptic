@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // Panoptic - CLI d'audit complet. Recon (1 crawl) -> 15 agents -> verif -> dedup -> synthese.
-//   node run-audit.mjs <url> [--repo <chemin>] [--pages N] [--cookie "s=..."] [--bearer <token>]
+//   node run-audit.mjs <url> [--repo <chemin>] [--pages N] [--citations] [--cookie "s=..."] [--bearer <token>]
+// --citations: interroge REELLEMENT les moteurs de reponse IA (appels payants,
+//   necessite PERPLEXITY_API_KEY et/ou GEMINI_API_KEY). Desactive par defaut.
 // Exemples:
 //   node run-audit.mjs https://example.com --repo . --pages 12
 //   node run-audit.mjs https://app.exemple.fr/dashboard --cookie "session=abc123" --pages 8
@@ -10,23 +12,24 @@ import { runAgent } from "./registry.js";
 import { verifyFinding } from "./verify.js";
 
 const args = process.argv.slice(2);
-let target = null, repoPath = null, maxPages = 1, cookie = null, bearer = null;
+let target = null, repoPath = null, maxPages = 1, cookie = null, bearer = null, citations = false;
 const headers = {};
 for (let i = 0; i < args.length; i++) {
   if (args[i] === "--repo") repoPath = args[++i];
-  else if (args[i] === "--pages") maxPages = Math.max(1, Math.min(30, parseInt(args[++i], 10) || 1));
+  else if (args[i] === "--pages") maxPages = Math.max(1, Math.min(5000, parseInt(args[++i], 10) || 1));
+  else if (args[i] === "--citations") citations = true;
   else if (args[i] === "--cookie") cookie = args[++i];
   else if (args[i] === "--bearer") bearer = args[++i];
   else if (args[i] === "--header") { const h = args[++i]; const idx = h.indexOf(":"); if (idx > 0) headers[h.slice(0, idx).trim()] = h.slice(idx + 1).trim(); }
   else if (!args[i].startsWith("--")) target = args[i];
 }
-if (!target) { console.error("usage: node run-audit.mjs <url> [--repo <chemin>] [--pages N] [--cookie ...] [--bearer ...] [--header 'K: V']"); process.exit(2); }
+if (!target) { console.error("usage: node run-audit.mjs <url> [--repo <chemin>] [--pages N] [--citations] [--cookie ...] [--bearer ...] [--header 'K: V']"); process.exit(2); }
 const auth = (cookie || bearer || Object.keys(headers).length) ? { cookie, bearer, headers: Object.keys(headers).length ? headers : undefined } : null;
 
 const c = { r: "\x1b[0m", d: "\x1b[2m", b: "\x1b[1m", red: "\x1b[31m", org: "\x1b[33m", yel: "\x1b[93m", blue: "\x1b[34m", gry: "\x1b[90m", grn: "\x1b[32m" };
 const SEV = { critical: c.red, high: c.org, medium: c.yel, low: c.blue, info: c.gry };
 
-const scan = (t) => recon(t, { repoPath, auth, maxPages });
+const scan = (t) => recon(t, { repoPath, auth, maxPages, seoKing: { citations } });
 const audit = createOrchestrator({ scan, runAgent, verify: verifyFinding, onProgress: (m) => process.stdout.write(`${c.gry}.${c.r} ${m}\n`) });
 
 const authNote = auth ? ` ${c.gry}[authentifie]${c.r}` : "";

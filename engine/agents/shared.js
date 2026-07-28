@@ -39,6 +39,18 @@ export function makeFinding(agentId, family, raw) {
     },
     fix: { summary: raw.fix, opens_pr: false },
     effort: raw.effort ?? 0.3,
+    // Axes du score KING alimentes par ce finding. Un finding peut en alimenter
+    // plusieurs (un rendu cote client pese sur la technique ET sur la citabilite IA).
+    dimensions: raw.dimensions || null,
+    lane: raw.lane || null,
+    // Niveau de verifiabilite declare par la regle. C'est ce que la couche
+    // adversariale utilise pour appliquer ses gardes generiques sans avoir besoin
+    // d'une table de re-derivation regle par regle.
+    //   self-evident  = la preuve EST l'observation (balise absente d'un HTML qu'on tient)
+    //   cross-checked = deduit d'au moins deux observations independantes
+    //   sampled       = vrai sur l'echantillon observe, ne se generalise pas
+    //   inconclusive  = signal, pas preuve: ne peut jamais etre confirme
+    verifiability: raw.verifiability || null,
     check: raw.check || { verdict: "confirmed", votes: 3, refuters: 0, reason: raw.reason || "Observe directement." },
   };
 }

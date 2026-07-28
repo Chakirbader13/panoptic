@@ -73,6 +73,30 @@ function metaPresent(scope, key) {
 const rank = (f) => SEVERITY[f.severity]?.rank ?? 1;
 const hasEvidence = (f) => Boolean(f.evidence?.proof || f.location?.file || f.location?.url || f.evidence?.artifact);
 
+// --- Gardes generiques par niveau de verifiabilite ---------------------------------
+// Une regle declare ce qu'elle est capable de prouver (voir makeFinding). Le
+// verificateur applique alors une garde generique, plutot qu'une entree de table
+// par regle: avec ~90 regles SEO/GEO, une table exhaustive serait impossible a
+// maintenir et deviendrait le vrai point de faux positifs.
+const VERIFIABILITY = {
+  // La preuve EST l'observation: la balise manque dans un HTML qu'on tient.
+  "self-evident": (f) => (f.evidence?.proof
+    ? V("confirmed", 3, 0, "Constat direct sur l'artefact recupere, preuve citee.")
+    : V("plausible", 1, 2, "Regle auto-portante mais aucune preuve attachee.")),
+  // Deduit d'au moins deux observations independantes (ex: on a recupere la page
+  // cible d'un hreflang et lu ce qu'elle declare en retour).
+  "cross-checked": (f) => (f.evidence?.proof
+    ? V("confirmed", 3, 0, "Recoupe sur au moins deux observations independantes.")
+    : V("plausible", 2, 1, "Recoupement annonce sans preuve citee.")),
+  // Vrai sur l'echantillon observe. Ne se generalise pas au site entier: on ne
+  // laisse jamais ce niveau produire une certitude.
+  sampled: (f) => (f.evidence?.proof
+    ? V("confirmed", 2, 1, "Verifie sur l'echantillon observe; ne se generalise pas au site entier.")
+    : V("plausible", 1, 2, "Echantillon sans preuve citee.")),
+  // Signal, pas preuve. Ne peut jamais etre confirme.
+  inconclusive: () => V("plausible", 1, 2, "Signal interpretable: confirmation humaine requise."),
+};
+
 // Verdict par defaut pose par makeFinding (aucune verification propre de l'agent).
 const isDefaultCheck = (f) => {
   const r = f.check?.reason;
@@ -97,6 +121,12 @@ export function verifyFinding(finding, scope = {}) {
   if (!hasEvidence(finding) && rank(finding) >= 4) {
     return { ...finding, check: V("plausible", 1, 2, "Gravite elevee mais aucune preuve attachee: a confirmer.") };
   }
+
+  // 2 bis. Garde generique selon le niveau de verifiabilite declare par la regle.
+  // Passe APRES la re-derivation (qui reste autoritaire pour rejeter un faux
+  // positif) et AVANT les gardes historiques.
+  const guard = VERIFIABILITY[finding.verifiability];
+  if (guard) return { ...finding, check: guard(finding) };
 
   // 3. Explicitement non reproductible.
   if (finding.evidence?.reproducible === false) {
