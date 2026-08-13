@@ -7,6 +7,7 @@ import { join, dirname, extname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { store, tenantFromKey } from "./store.js";
 import { computeTrend, diffFindings } from "../engine/trends.js";
+import { authEnabled, signup, login, resolveBearer } from "./auth.js";
 import { queue } from "./queue.js";
 import { renderReport } from "./report.js";
 import { buildFixBundle, buildPrCommand } from "./fixbundle.js";
@@ -17,7 +18,7 @@ const PORT = process.env.PORT || 8787;
 const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".svg": "image/svg+xml" };
 
 const send = (res, code, body, type = "application/json") => {
-  res.writeHead(code, { "content-type": type, "access-control-allow-origin": "*", "access-control-allow-headers": "content-type,x-api-key" });
+  res.writeHead(code, { "content-type": type, "access-control-allow-origin": "*", "access-control-allow-headers": "content-type,x-api-key,authorization" });
   res.end(typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 };
 const readBody = (req) => new Promise((r) => { let d = ""; req.on("data", (c) => (d += c)); req.on("end", () => { try { r(d ? JSON.parse(d) : {}); } catch { r({}); } }); });
@@ -25,15 +26,34 @@ const readBody = (req) => new Promise((r) => { let d = ""; req.on("data", (c) =>
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const p = url.pathname;
-  // Equipes: la cle resout tenant + role (owner|member|viewer). Retro-compat: une cle
-  // seule reste owner de son tenant (store.resolveKey fallback).
-  const auth = await store.resolveKey(req.headers["x-api-key"]);
+  if (req.method === "OPTIONS") return send(res, 204, "");
+
+  // --- Auth: compte utilisateur (Supabase) prioritaire, cle API en repli (CLI/MCP). ---
+  const bearer = (req.headers["authorization"] || "").replace(/^Bearer\s+/i, "").trim();
+  let auth = bearer ? await resolveBearer(bearer) : null;
+  if (!auth) auth = await store.resolveKey(req.headers["x-api-key"]);
   const tenant = auth.tenant;
   const canWrite = auth.role === "owner" || auth.role === "member";
   const isOwner = auth.role === "owner";
-  if (req.method === "OPTIONS") return send(res, 204, "");
 
   try {
+    // --- Auth endpoints (proxy GoTrue, la service key reste cote serveur) ---
+    if (p === "/api/auth/signup" && req.method === "POST") {
+      if (!authEnabled()) return send(res, 501, { error: "auth non configuree sur ce serveur" });
+      const b = await readBody(req);
+      try { return send(res, 201, await signup(b.email, b.password)); }
+      catch (e) { return send(res, 400, { error: e.message }); }
+    }
+    if (p === "/api/auth/login" && req.method === "POST") {
+      if (!authEnabled()) return send(res, 501, { error: "auth non configuree sur ce serveur" });
+      const b = await readBody(req);
+      try { return send(res, 200, await login(b.email, b.password)); }
+      catch (e) { return send(res, 401, { error: e.message }); }
+    }
+    if (p === "/api/me" && req.method === "GET") {
+      return send(res, 200, { authEnabled: authEnabled(), authenticated: Boolean(auth.email), email: auth.email || null, tenant, role: auth.role });
+    }
+
     // --- API ---
     if (p === "/api/audits" && req.method === "POST") {
       if (!canWrite) return send(res, 403, { error: "role insuffisant (lecture seule)" });

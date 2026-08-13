@@ -89,10 +89,25 @@
 <div class="top">
   <span class="logo"><span class="eye"></span>Panoptic</span>
   <span class="tag">Console d'audit</span>
-  <span class="tag" id="backend" style="margin-left:auto">...</span>
+  <span id="authbar" style="margin-left:auto;display:flex;gap:8px;align-items:center"></span>
+  <span class="tag" id="backend">...</span>
 </div>
 
-<div class="wrap">
+<!-- Ecran de connexion (masque une fois authentifie) -->
+<div class="wrap" id="authGate" style="display:none;max-width:420px;margin-top:48px">
+  <div class="card">
+    <h3 id="authTitle">Connexion</h3>
+    <input id="authEmail" type="email" placeholder="email" style="margin-top:10px">
+    <input id="authPass" type="password" placeholder="mot de passe (>= 8 caracteres)" style="margin-top:8px">
+    <div class="err" id="authErr" style="color:var(--crit);font-size:13px;min-height:18px;margin-top:8px"></div>
+    <button class="btn" id="authBtn" style="width:100%;margin-top:4px">Se connecter</button>
+    <div class="muted" style="margin-top:12px;text-align:center">
+      <a href="#" id="authToggle" style="color:var(--acc)">Pas de compte ? Creer un compte</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap" id="appWrap">
   <div class="bar">
     <input id="url" placeholder="https://votre-site.fr" value="https://example.com">
     <input id="repo" placeholder="URL repo git (optionnel) pour audit code + prod">
@@ -157,8 +172,13 @@ const AGENTS = [
 ];
 const SEVS = ["critical","high","medium","low","info"];
 const $ = (id) => document.getElementById(id);
-const api = (path, opts={}) => fetch(path, { ...opts, headers: { "content-type":"application/json", ...(key()? {"x-api-key":key()}:{}) , ...(opts.headers||{}) } });
-const key = () => $("key").value.trim();
+// Auth par compte (token Supabase en localStorage) prioritaire; cle API en repli (avance).
+const token = () => localStorage.getItem("panoptic_token") || "";
+const api = (path, opts={}) => fetch(path, { ...opts, headers: {
+  "content-type":"application/json",
+  ...(token()? { "authorization": "Bearer "+token() } : (key()? {"x-api-key":key()}:{})),
+  ...(opts.headers||{}) } });
+const key = () => { const el=$("key"); return el? el.value.trim() : ""; };
 const eur = (n) => Math.round(n||0).toLocaleString("fr-FR");
 function businessParams(){
   const mv=parseFloat($("mv").value), cv=parseFloat($("cv").value), cr=parseFloat($("cr").value);
@@ -167,7 +187,52 @@ function businessParams(){
 }
 let current = null, findings = [], filter = "all";
 
-fetch("/api/audits").then(r=>r.json()).then(d=>{ $("backend").textContent = "stockage: "+d.backend; renderRecent(d.audits); }).catch(()=>{});
+// ---------- Auth (comptes utilisateurs) ----------
+let authMode = "login"; // login | signup
+function renderAuthbar(me){
+  const bar = $("authbar");
+  if(me && me.authenticated){
+    bar.innerHTML = `<span class="tag">${me.email}</span><a href="#" id="logout" class="tag" style="cursor:pointer">Deconnexion</a>`;
+    $("logout").onclick = (e)=>{ e.preventDefault(); localStorage.removeItem("panoptic_token"); location.reload(); };
+  } else { bar.innerHTML = ""; }
+}
+function showApp(show){ $("appWrap").style.display = show?"":"none"; $("authGate").style.display = show?"none":""; }
+function toggleAuthMode(){
+  authMode = authMode==="login"?"signup":"login";
+  $("authTitle").textContent = authMode==="login"?"Connexion":"Creer un compte";
+  $("authBtn").textContent = authMode==="login"?"Se connecter":"Creer mon compte";
+  $("authToggle").textContent = authMode==="login"?"Pas de compte ? Creer un compte":"Deja un compte ? Se connecter";
+  $("authErr").textContent="";
+}
+async function doAuth(){
+  const email=$("authEmail").value.trim(), password=$("authPass").value;
+  $("authErr").textContent=""; $("authBtn").disabled=true;
+  try{
+    const r = await fetch("/api/auth/"+(authMode==="signup"?"signup":"login"), { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({email,password}) });
+    const d = await r.json();
+    if(!r.ok) throw new Error(d.error||"Echec");
+    localStorage.setItem("panoptic_token", d.access_token);
+    location.reload();
+  }catch(e){ $("authErr").textContent = e.message; $("authBtn").disabled=false; }
+}
+// Boot: determine l'etat d'auth avant d'afficher l'app.
+(async function boot(){
+  let me = null;
+  try { me = await (await api("/api/me")).json(); } catch {}
+  const needAuth = me && me.authEnabled;   // le serveur a l'auth activee
+  if(needAuth && !(me && me.authenticated)){
+    showApp(false); renderAuthbar(null);
+    $("authBtn").onclick = doAuth;
+    $("authToggle").onclick = (e)=>{ e.preventDefault(); toggleAuthMode(); };
+    $("authPass").addEventListener("keydown", e=>{ if(e.key==="Enter") doAuth(); });
+    $("backend").textContent = "";
+    return;
+  }
+  // Authentifie OU auth non configuree (mode cle API historique) -> app visible.
+  showApp(true); renderAuthbar(me);
+  fetch("/api/audits", token()? { headers:{ "authorization":"Bearer "+token() } } : {})
+    .then(r=>r.json()).then(d=>{ $("backend").textContent = "stockage: "+d.backend; renderRecent(d.audits||[]); }).catch(()=>{});
+})();
 
 $("go").onclick = start;
 $("url").addEventListener("keydown", e=>{ if(e.key==="Enter") start(); });
