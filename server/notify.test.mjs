@@ -1,4 +1,4 @@
-import { buildSlackMessage, buildJiraIssue, createJiraIssues, sendSlack } from "/Users/chakirbader/chakirbader/panoptic-audit/server/notify.js";
+import { buildSlackMessage, buildJiraIssue, createJiraIssues, sendSlack } from "./notify.js";
 
 const audit = {
   target: "https://lebonprompt.com/", score: 74,
