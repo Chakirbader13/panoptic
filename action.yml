@@ -1,0 +1,36 @@
+# Panoptic - action GitHub reutilisable. Audite un site a chaque deploiement et
+# casse le build si des problemes de severite >= seuil apparaissent.
+#
+# Usage dans un workflow client:
+#   - uses: Chakirbader13/panoptic@main
+#     with:
+#       url: https://mon-site.fr
+#       pages: 10
+#       fail-on: high
+name: "Panoptic Audit"
+description: "Audit de site (securite, SEO, perf, a11y, RGPD, conversion) qui peut casser le build sur regression."
+branding: { icon: "eye", color: "green" }
+inputs:
+  url:
+    description: "URL du site a auditer"
+    required: true
+  pages:
+    description: "Profondeur de crawl (1-30)"
+    required: false
+    default: "1"
+  fail-on:
+    description: "Casse le build si un finding atteint cette severite (critical|high|medium|low). Vide = ne casse jamais."
+    required: false
+    default: ""
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Panoptic scan
+      shell: bash
+      run: |
+        node "${{ github.action_path }}/cli/panoptic.mjs" scan "${{ inputs.url }}" \
+          --pages "${{ inputs.pages }}" \
+          ${{ inputs.fail-on && format('--fail-on {0}', inputs.fail-on) || '' }}

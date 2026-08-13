@@ -133,6 +133,15 @@ Ordre de bataille : **1 → 2 → 3** d'abord (transforme un moteur en produit v
 
 ---
 
+## Suivi post-audit (mises à jour vérifiées)
+
+_L'auditeur consigne ce qui a bougé depuis la remise du rapport, avec preuve._
+
+- **Action #4 (CI) — FAITE.** `.github/workflows/ci.yml` : les 431 tests tournent à chaque push, + parse-check des fonctions Netlify. Run GitHub **vert** vérifié (`gh run list` → success). Corrige le reproche « vend l'audit à chaque deploy sans CI ». Effet grille : Fiabilité 6→7.
+- **Action #3 (UI de tendances) — FAITE.** Carte « Tendance » dans `server/dashboard/index.html` : sparkline SVG du score par déploiement + verdict + régressions/résolus, alimentée par `/api/trends`. Vérifié live : le dashboard Render sert le composant, et `/api/trends?target=panopticaudit.com` renvoie une vraie série `[84, 82]` (2 régressions / 2 résolus). Le chantier 3 a enfin une surface visible. Effet grille : UX 4→5.
+- **Intégrité** : fichier mort `engine/demo-orchestrated.mjs` supprimé.
+- **Score global recalculé : ~5,3/10** (Fiabilité +1, UX +1 sur leurs poids). Le verdict de fond (pas vendable : ni paiement, ni compte, ni clients) reste inchangé.
+
 ## Ce que j'ai dû supposer faute de preuve
 
 - **Segment, cible et nom** n'étaient pas renseignés dans le mandat (placeholders `[NOM + URL]` laissés vides). Je les ai inférés du repo et du site : Panoptic / panopticaudit.com, audit de site tout-en-un, cible PME/agences/CTO. Si la cible réelle est différente (ex. grands comptes uniquement), les pondérations changent.

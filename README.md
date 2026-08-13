@@ -4,6 +4,37 @@ L'audit de site le plus complet du marche: quinze auditeurs specialises sur le c
 
 Nom de travail (changeable). Positionnement: battre SEMrush Site Audit, Ahrefs, Screaming Frog, Lighthouse, Snyk et OWASP ZAP reunis, parce qu'aucun ne fait code + prod + business verifie sous un seul toit.
 
+## CLI
+
+```bash
+# Depuis le repo (ou `npx panoptic` une fois publie sur npm)
+node cli/panoptic.mjs scan https://exemple.fr --pages 10
+node cli/panoptic.mjs scan https://exemple.fr --repo . --json > audit.json
+node cli/panoptic.mjs scan https://exemple.fr --fail-on high   # exit 1 en CI si finding >= high
+```
+
+Options: `--pages N` (crawl multi-pages, >1 active axe/Lighthouse), `--repo <chemin>` (audite le code), `--cookie/--bearer` (scan authentifie), `--json` (sortie brute), `--fail-on <sev>` (code de sortie CI), `--quiet`.
+
+## MCP (Claude Code, Cursor)
+
+Panoptic s'expose comme outil MCP: un agent de code lance l'audit puis corrige les findings lui-meme. Le moteur reste deterministe (jamais de LLM tiers sur votre code).
+
+```bash
+claude mcp add panoptic -- node /chemin/panoptic-audit/mcp/server.mjs
+```
+
+L'agent dispose alors de l'outil `panoptic_scan({ url, maxPages?, repoPath?, failOn? })` qui renvoie les findings verifies (severite, localisation, correctif).
+
+## GitHub Action (audit a chaque deploiement)
+
+```yaml
+- uses: Chakirbader13/panoptic@main
+  with:
+    url: https://mon-site.fr
+    pages: 10
+    fail-on: high
+```
+
 ## Structure
 
 ```

@@ -5,7 +5,7 @@
   "description": "L'audit de site le plus complet: 15 agents sur le code et la production.",
   "scripts": {
     "start": "node server/server.mjs",
-    "test": "for f in engine/*.test.mjs engine/seo-king/*.test.mjs server/*.test.mjs; do echo \"== $f\"; node \"$f\" || exit 1; done",
+    "test": "for f in engine/*.test.mjs engine/seo-king/*.test.mjs server/*.test.mjs cli/*.test.mjs; do echo \"== $f\"; node \"$f\" || exit 1; done",
     "audit": "node engine/run-audit.mjs",
     "security": "node engine/run-security.mjs",
     "build:site": "node build.mjs"
@@ -19,5 +19,16 @@
     "chrome-launcher": "^1.2.1",
     "lighthouse": "^13.4.0",
     "playwright": "^1.61.1"
-  }
+  },
+  "bin": {
+    "panoptic": "cli/panoptic.mjs",
+    "panoptic-mcp": "mcp/server.mjs"
+  },
+  "files": [
+    "engine",
+    "mcp",
+    "cli",
+    "server",
+    "netlify"
+  ]
 }
