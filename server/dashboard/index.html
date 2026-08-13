@@ -51,6 +51,13 @@
   .sevrow span{font-family:var(--mono)}
   .kpis{display:flex;justify-content:space-around;gap:10px;margin-top:14px;padding-top:14px;border-top:1px solid var(--line);font-size:12px;text-align:center;color:var(--mut)}
   .kpis b{display:block;font-size:16px;color:var(--ink);font-family:var(--mono)}
+  #trendVerdict{font-family:var(--mono);font-size:12px}
+  #spark path{fill:none;stroke:var(--acc);stroke-width:2;vector-effect:non-scaling-stroke}
+  #spark circle{fill:var(--acc)}
+  #spark .base{stroke:var(--line);stroke-width:1}
+  .tdiff{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;font-family:var(--mono)}
+  .tdiff b{font-size:15px}
+  .t-reg b{color:var(--crit)}.t-fix b{color:var(--acc)}.t-per b{color:var(--mut)}
   .actions{display:flex;gap:8px;margin-top:14px}
   .actions a{flex:1;text-align:center;padding:10px;border-radius:9px;font-size:13px;font-weight:600}
   /* log */
@@ -129,6 +136,11 @@
         <div class="kpis" id="kpis"></div>
         <div class="actions" id="actions"></div>
       </div>
+      <div class="card" id="trendCard" style="display:none;margin-top:18px">
+        <h3>Tendance <span id="trendVerdict" class="muted"></span></h3>
+        <svg id="spark" width="100%" height="64" viewBox="0 0 280 64" preserveAspectRatio="none" style="display:block;margin:6px 0 12px"></svg>
+        <div id="trendDiff" class="tdiff"></div>
+      </div>
       <div class="card recent" style="margin-top:18px">
         <h3>Audits recents</h3>
         <div id="recent"><div class="muted">Chargement...</div></div>
@@ -205,8 +217,43 @@ async function finish(id){
   $("go").disabled=false; $("go").textContent="Lancer l'audit";
   const rec = await (await api("/api/audits/"+id)).json();
   findings = rec.findings || [];
-  renderScore(rec); renderFindings();
+  renderScore(rec); renderFindings(); loadTrend(rec.target);
   fetch("/api/audits").then(r=>r.json()).then(d=>renderRecent(d.audits));
+}
+
+// Tendance par deploiement: sparkline du score + regressions/resolus vs l'audit precedent.
+async function loadTrend(target){
+  if(!target) return;
+  try{
+    const d = await (await api("/api/trends?target="+encodeURIComponent(target))).json();
+    const t = d.trend || {};
+    const pts = (t.series||[]).map(s=>s.score).filter(v=>v!=null);
+    if(pts.length < 2){ $("trendCard").style.display="none"; return; }
+    $("trendCard").style.display="";
+    // Verdict
+    const vmap = { regression:["Regression","var(--crit)"], amelioration:["Amelioration","var(--acc)"], stable:["Stable","var(--mut)"], baseline:["Reference","var(--dim)"] };
+    const [vl,vc] = vmap[t.verdict] || vmap.stable;
+    const delta = t.scoreDelta!=null ? (t.scoreDelta>0?"+":"")+t.scoreDelta : "";
+    $("trendVerdict").innerHTML = `<span style="color:${vc}">${vl} ${delta?`(${delta} pts)`:""}</span> · ${pts.length} audits`;
+    // Sparkline SVG (0-100 mappe sur la hauteur)
+    const W=280,H=64,pad=6, n=pts.length;
+    const x=i=> pad + i*(W-2*pad)/(n-1);
+    const y=v=> H-pad - (v/100)*(H-2*pad);
+    const dPath = pts.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(" ");
+    const last = pts[n-1];
+    $("spark").innerHTML =
+      `<line class="base" x1="0" y1="${y(80).toFixed(1)}" x2="${W}" y2="${y(80).toFixed(1)}"></line>`+
+      `<path d="${dPath}"></path>`+
+      `<circle cx="${x(n-1).toFixed(1)}" cy="${y(last).toFixed(1)}" r="3"></circle>`;
+    // Diff des findings (regressions/resolus)
+    const df = d.diff;
+    if(df && df.counts){
+      $("trendDiff").innerHTML =
+        `<span class="t-reg"><b>${df.counts.regressions}</b> regressions</span>`+
+        `<span class="t-fix"><b>${df.counts.resolved}</b> resolus</span>`+
+        `<span class="t-per"><b>${df.counts.persisting}</b> persistants</span>`;
+    } else { $("trendDiff").innerHTML=""; }
+  }catch{ $("trendCard").style.display="none"; }
 }
 
 function renderScore(rec){
@@ -250,7 +297,7 @@ async function openAudit(id){
   const rec = await (await api("/api/audits/"+id)).json();
   if(rec.status!=="done"){ current=id; $("empty").style.display="none"; $("agentsCard").style.display=""; resetAgents(); listen(id); return; }
   current=id; findings=rec.findings||[]; $("empty").style.display="none"; $("agentsCard").style.display="none";
-  renderScore(rec); renderFindings();
+  renderScore(rec); renderFindings(); loadTrend(rec.target);
 }
 
 function shorten(u){ return u.replace(/^https?:\/\//,"").slice(0,34); }
