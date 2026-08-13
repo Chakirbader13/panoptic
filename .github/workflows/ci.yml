@@ -1,0 +1,45 @@
+name: CI
+
+# On teste a chaque push et PR sur main. Un produit qui vend "audit a chaque
+# deploiement" doit lui-meme faire tourner ses tests a chaque deploiement.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests moteur + serveur
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Les scanners lourds (playwright/lighthouse/axe) sont importes dynamiquement
+      # et absents des tests -> --ignore-scripts evite le telechargement de Chromium.
+      - name: Install (sans scripts)
+        run: npm install --ignore-scripts --no-audit --no-fund
+
+      - name: Suite de tests (431 assertions)
+        run: npm test
+
+  syntax:
+    name: Parse-check des fonctions serverless
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Verifier que chaque fonction Netlify parse
+        run: |
+          for f in netlify/functions/*.mjs; do
+            echo "== $f"
+            node --check "$f"
+          done
