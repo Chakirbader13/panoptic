@@ -4,6 +4,7 @@
 // Les agents prod ne re-fetchent pas la page: ils lisent scope.home.
 import { httpGet, httpHead, originOf, hostOf, elements, attr } from "./agents/shared.js";
 import { crawl } from "./crawl.js";
+import { makeRenderer, looksLikeSpa, browserAllowed } from "./scanners/browser.js";
 import { extractFacts, urlTemplate } from "./seo-king/pagefacts.js";
 import { parseUrlset } from "./seo-king/xml.js";
 
@@ -165,7 +166,23 @@ export async function recon(target, { repoPath, businessParams, browserScan, aut
     httpHead(origin + "/.well-known/security.txt"),
   ]);
 
-  const html = reachable ? home.body : "";
+  let html = reachable ? home.body : "";
+
+  // RENDU JS (sites SPA): si l'accueil est une coquille (React/Vue/Angular) et que le
+  // navigateur est autorise (audit payant), on execute le JS pour recuperer le VRAI
+  // contenu. Un seul navigateur, PARTAGE avec le crawl (rendu de chaque page decouverte).
+  // Sans ca, tous les agents voient un <div id="root"></div> vide.
+  let renderer = null;
+  const renderAllowed = reachable && browserAllowed({ repo: Boolean(repoPath), repoPath, maxPages, browserScan });
+  if (renderAllowed && looksLikeSpa(html)) {
+    const r = await makeRenderer({ auth: authOpts });
+    if (r.available) {
+      const rendered = await r.render(url);
+      if (rendered.html && rendered.html.length > html.length) { html = rendered.html; renderer = r; }
+      else await r.close();   // le rendu n'a rien apporte: on relache le navigateur
+    }
+  }
+
   const stack = reachable ? detectStack(home.headers, html) : [];
 
   // UN SEUL CRAWL PARTAGE (promesse produit): quand le multi-pages est demande
@@ -230,8 +247,13 @@ export async function recon(target, { repoPath, businessParams, browserScan, aut
       // Plafond de securite pour les URLs DECOUVERTES PAR LIEN (hors sitemap, donc
       // hors quota). Genereux: la repartition par type est deja faite en amont.
       templateCap: large ? Math.max(TEMPLATE_CAP_MIN, Math.floor(maxPages / 2)) : 0,
+      // Rendu JS des pages du crawl uniquement en petit regime (le grand regime,
+      // 60+ pages, rendrait le cout du navigateur prohibitif). Le renderer est le meme
+      // que celui de l'accueil: un seul navigateur pour tout l'audit.
+      renderFn: (renderer && !large) ? renderer.render : null,
     });
   }
+  if (renderer) await renderer.close();   // relache le navigateur partage
 
   return {
     target, url, origin, host,

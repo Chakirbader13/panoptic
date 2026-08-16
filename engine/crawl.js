@@ -57,9 +57,11 @@ const breathe = () => new Promise((r) => setImmediate(r));
 //   d'extraire ses faits et de LIBERER le HTML immediatement (mode grande echelle).
 // priorityUrls: URLs traitees en premier (typiquement celles du sitemap).
 // templateCap: nombre maximal de pages par gabarit d'URL (0 = pas de plafond).
+// renderFn: si fournie, chaque page est RENDUE (JS execute, sites SPA) au lieu d'un
+//   httpGet -> renderFn(url) => { html, status } | { error }. Un seul navigateur partage.
 export async function crawl(target, {
   seedUrl, seedHtml, seedHeaders, maxPages = 12, budgetMs = 16000, concurrency = 5,
-  auth, keepHtml = false, onPage = null, priorityUrls = null, templateCap = 0,
+  auth, keepHtml = false, onPage = null, priorityUrls = null, templateCap = 0, renderFn = null,
 } = {}) {
   const origin = originOf(target);
   const start = performance.now();
@@ -125,6 +127,11 @@ export async function crawl(target, {
     if (!batch.length) continue;
 
     const results = await Promise.all(batch.map(async (url) => {
+      // Rendu JS (SPA) si un renderer est fourni, sinon fetch HTML brut.
+      if (renderFn) {
+        const rr = await renderFn(url);
+        return { url, r: rr.error ? { error: rr.error } : { status: rr.status ?? 200, body: rr.html || "", headers: {} } };
+      }
       const r = await httpGet(url, { timeout: 6000, ...auth });
       return { url, r };
     }));

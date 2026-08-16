@@ -26,6 +26,57 @@ export function browserAllowed(scope = {}) {
   return Boolean(scope.repo || scope.repoPath || (scope.maxPages || 1) > 1);
 }
 
+// --- RENDU JS (sites SPA) --------------------------------------------------------
+// Un site React/Vue/Angular sert un HTML quasi vide (ex. <div id="root"></div>): sans
+// executer le JS, tous les agents voient du vide. makeRenderer ouvre UN navigateur et
+// rend plusieurs pages (le crawl decouvre les URLs au fil de l'eau -> browser partage).
+// Degradation gracieuse: pas de Chromium -> available:false, l'appelant retombe sur le
+// HTML brut. auth = { cookie?, bearer?, headers? } propage aux requetes (scan authentifie).
+export async function makeRenderer({ auth, timeoutMs = 20000 } = {}) {
+  const pw = await getPlaywright();
+  if (!pw) return { available: false, render: async () => ({ error: "no-browser" }), close: async () => {} };
+  let browser = null, context = null;
+  const ensure = async () => {
+    if (context) return;
+    browser = await pw.chromium.launch({ headless: true, args: ["--no-sandbox", "--disable-dev-shm-usage"] });
+    const extraHTTPHeaders = { ...(auth?.headers || {}) };
+    if (auth?.cookie) extraHTTPHeaders["cookie"] = auth.cookie;
+    if (auth?.bearer) extraHTTPHeaders["authorization"] = `Bearer ${auth.bearer}`;
+    context = await browser.newContext({
+      userAgent: "PanopticAudit/1.0 (+https://panopticaudit.com)",
+      ...(Object.keys(extraHTTPHeaders).length ? { extraHTTPHeaders } : {}),
+    });
+  };
+  return {
+    available: true,
+    async render(url) {
+      try {
+        await ensure();
+        const page = await context.newPage();
+        try {
+          const resp = await page.goto(url, { waitUntil: "domcontentloaded", timeout: timeoutMs });
+          // Laisse le framework hydrater, sans bloquer si une connexion reste ouverte.
+          await page.waitForLoadState("networkidle", { timeout: 3500 }).catch(() => {});
+          const html = await page.content();
+          return { html, status: resp ? resp.status() : 200 };
+        } finally { await page.close().catch(() => {}); }
+      } catch (e) { return { error: String(e.message || e).slice(0, 160) }; }
+    },
+    async close() { try { if (context) await context.close(); if (browser) await browser.close(); } catch { /* deja ferme */ } },
+  };
+}
+
+// Heuristique: ce HTML brut est-il une coquille SPA (contenu injecte par JS) ?
+// Signature de root SPA connue OU tres peu de texte visible -> vaut le rendu.
+export function looksLikeSpa(html) {
+  if (!html) return false;
+  const hasRoot = /<div\s+id=["'](root|app|__next|__nuxt|app-root|q-app)["']/i.test(html)
+    || /\bdata-reactroot\b/i.test(html) || /\bng-version=/i.test(html) || /id=["']svelte\b/i.test(html);
+  const text = html.replace(/<script[\s\S]*?<\/script>/gi, " ").replace(/<style[\s\S]*?<\/style>/gi, " ").replace(/<[^>]+>/g, " ");
+  const words = (text.match(/\S+/g) || []).length;
+  return (hasRoot && words < 120) || words < 25;
+}
+
 let _pw; // undefined = pas encore essaye, null = indisponible, objet = module Playwright
 async function getPlaywright() {
   if (_pw !== undefined) return _pw;
