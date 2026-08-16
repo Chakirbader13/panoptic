@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoptic vs squirrelscan : comparatif d'audit de site (2026)</title>
+<meta name="description" content="Panoptic vs squirrelscan : où chacun est meilleur, tableau de comparaison honnête, quand choisir l'un ou l'autre, et tarifs. Audit de site tout-en-un, code + production.">
+<link rel="canonical" href="https://panopticaudit.com/comparatif/squirrelscan/">
+<meta property="og:title" content="Panoptic vs squirrelscan : comparatif d'audit de site (2026)">
+<meta property="og:description" content="Panoptic vs squirrelscan : où chacun est meilleur, tableau de comparaison honnête, quand choisir l'un ou l'autre, et tarifs. Audit de site tout-en-un, code + production.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://panopticaudit.com/benchmark/og.png">
+<link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%234ff0a3' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%234ff0a3'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Quelle différence avec squirrelscan ?","acceptedAnswer":{"@type":"Answer","text":"Les deux sont dev-native (CLI + MCP). Panoptic lit en plus le code source et relie la prod à la ligne de code, applique une vérification déterministe anti-faux-positif, et n'envoie jamais votre code à un LLM tiers. squirrelscan reste centré sur la production et délègue les correctifs à un agent IA."}}]}</script>
+<style>
+  @font-face{font-family:Geist;src:url(/fonts/Geist-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  @font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  :root{--bg:#070a08;--bg2:#0c0f0d;--line:#1b221d;--line2:#27302a;--ink:#f2f5f2;--mut:#a4aea7;--dim:#8f9990;
+    --acc:#4ff0a3;--acc-dim:#1e6b47;--acc-ghost:rgba(79,240,163,.08);--crit:#ff6b6b;--high:#ffa53d;
+    --sans:Geist,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,Menlo,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv01"}
+  a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+  code{font-family:var(--mono)}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;padding:10px 18px;border-radius:0 0 10px 0;font-weight:600}
+  .skip:focus{left:0}
+  .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(7,10,8,.78);border-bottom:1px solid var(--line)}
+  .navin{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:14px;height:64px;padding:0 24px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+  .eye{width:22px;height:22px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center}
+  .eye::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc)}
+  .navin .cta{margin-left:auto;background:var(--acc);color:#04140c;font-weight:600;font-size:14px;padding:9px 18px;border-radius:100px}
+  .navin .cta:hover{text-decoration:none;background:#63f4b1}
+  header.hero{padding:64px 0 34px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:14px}
+  h1{font-size:clamp(32px,5vw,48px);line-height:1.03;letter-spacing:-.03em;font-weight:640;margin-bottom:16px}
+  .lede{font-size:19px;color:var(--mut);max-width:64ch}
+  section{padding:36px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:26px;letter-spacing:-.02em;font-weight:620;margin-bottom:16px}
+  h3{font-size:16px;font-weight:600;margin-bottom:8px}
+  p{color:var(--mut);margin-bottom:12px;max-width:70ch}
+  p b,li b{color:var(--ink);font-weight:560}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:640px){.two{grid-template-columns:1fr}}
+  .card{border:1px solid var(--line);border-radius:14px;padding:20px 22px;background:var(--bg2)}
+  .card.us{border-color:var(--acc-dim);background:linear-gradient(180deg,var(--acc-ghost),transparent),var(--bg2)}
+  .card ul{margin:0 0 0 18px;color:var(--mut);font-size:14.5px}.card li{margin-bottom:7px}
+  .cmpwrap{overflow-x:auto;border:1px solid var(--line2);border-radius:16px;background:var(--bg2)}
+  table{width:100%;border-collapse:collapse;min-width:520px;font-size:14.5px}
+  th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:center}
+  tbody tr:last-child td{border-bottom:0}
+  th{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);font-weight:500;white-space:nowrap;vertical-align:bottom}
+  .rowh{text-align:left;color:var(--ink);font-weight:550;white-space:nowrap}
+  thead .rowh{color:var(--dim);font-weight:500}
+  .usc{background:var(--acc-ghost)}
+  th.us{color:#04140c;background:var(--acc);border-radius:8px 8px 0 0;padding:11px 14px;font-weight:700;letter-spacing:0}
+  .c{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;line-height:1}
+  .c.v{background:var(--acc);color:#04140c;font-size:12px;font-weight:800}
+  .c.p{border:1.5px solid var(--high);color:var(--high);font-size:11px}
+  .c.x{color:var(--dim);font-size:15px}
+  .pricing{border:1px solid var(--line);border-radius:12px;padding:16px 18px;font-size:14.5px;color:var(--mut)}
+  .pricing b{color:var(--ink)}
+  .qa summary{cursor:pointer;font-size:17px;font-weight:560;list-style:none;padding:6px 0}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa .ans{color:var(--mut);padding:4px 0 8px;max-width:70ch}
+  .final{text-align:center;padding:52px 0;border-bottom:0}
+  .final .btn{display:inline-block;background:var(--acc);color:#04140c;font-weight:640;font-size:16px;padding:15px 30px;border-radius:100px;margin-top:8px}
+  .final .btn:hover{text-decoration:none;background:#63f4b1}
+  footer{padding:28px 0}
+  .footin{max-width:900px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:13.5px}
+  .footin a{color:var(--mut)}
+  .others{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .others a{font-size:13.5px;border:1px solid var(--line2);border-radius:100px;padding:6px 13px;color:var(--mut)}
+  .others a:hover{border-color:var(--acc-dim);color:var(--ink);text-decoration:none}</style>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<nav class="top"><div class="navin"><a class="logo" href="/"><span class="eye" aria-hidden="true"></span>Panoptic</a><a class="cta" href="/console/">Scanner mon site</a></div></nav>
+
+<header class="hero"><div class="wrap">
+  <div class="eyebrow">Comparatif</div>
+  <h1>Panoptic vs squirrelscan</h1>
+  <p class="lede">squirrelscan est un outil d'audit IA orienté développeur (CLI, MCP, beaucoup de règles). Panoptic partage cette approche dev-native, mais lit en plus le code source et vérifie chaque constat de façon déterministe.</p>
+</div></header>
+<main id="main">
+  <section><div class="wrap">
+    <h2>En bref</h2>
+    <div class="two">
+      <div class="card"><h3>squirrelscan excelle à</h3><p style="margin:0">Audit orienté ligne de commande et agents de code, large couverture de règles côté production, intégration native CI/CD et MCP.</p></div>
+      <div class="card us"><h3>Panoptic ajoute</h3><p style="margin:0">Un audit unique sur 15 domaines dont la sécurité, la lecture du code source (fichier:ligne), une vérification anti-faux-positif et un chiffrage en euros.</p></div>
+    </div>
+  </div></section>
+  <section><div class="wrap">
+    <h2>Comparaison</h2>
+    <div class="cmpwrap"><table>
+      <thead><tr><th class="rowh" scope="col">Capacité</th><th scope="col">squirrelscan</th><th class="us" scope="col">Panoptic</th></tr></thead>
+      <tbody><tr><td class="rowh">Audit SEO technique</td><td><span class="c v">&#10003;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Performance / Core Web Vitals</td><td><span class="c v">&#10003;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Sécurité applicative (code + prod)</td><td><span class="c p">&#177;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Accessibilité (WCAG / axe-core)</td><td><span class="c v">&#10003;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">RGPD / cookies / juridique</td><td><span class="c x">&middot;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">UX / conversion</td><td><span class="c x">&middot;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Visibilité IA (GEO, llms.txt)</td><td><span class="c p">&#177;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Lit le code source (fichier:ligne)</td><td><span class="c x">&middot;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Vérification anti-faux-positif</td><td><span class="c p">&#177;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Impact chiffré en euros</td><td><span class="c x">&middot;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">Correctifs appliqués (jusqu'à la PR)</td><td><span class="c p">&#177;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr><tr><td class="rowh">CLI + MCP (Claude Code, Cursor)</td><td><span class="c v">&#10003;</span></td><td class="usc"><span class="c v">&#10003;</span></td></tr></tbody>
+    </table></div>
+    <p style="font-size:13px;color:var(--dim);margin-top:10px">&#10003; couvert &nbsp; &#177; partiel &nbsp; &middot; absent. Comparaison sur les capacités documentées ; nous ne fabriquons aucun chiffre concurrent.</p>
+  </div></section>
+  <section><div class="wrap">
+    <h2>Quand choisir quoi</h2>
+    <div class="two">
+      <div class="card"><h3>Choisissez squirrelscan si</h3><ul><li>Vous voulez un scan production piloté par CLI et un agent de code.</li><li>Vous privilégiez la largeur de règles côté production.</li><li>Vous n'avez pas besoin d'analyser le code source ni d'un service de réparation.</li></ul></div>
+      <div class="card us"><h3>Choisissez Panoptic si</h3><ul><li>Vous voulez que l'outil lise votre code source (secrets, CVE, architecture), pas seulement la prod.</li><li>Vous voulez une vérification déterministe qui tue les faux positifs (pas un jugement de LLM).</li><li>Vous voulez la garantie que votre code n'est jamais envoyé à un LLM tiers.</li></ul></div>
+    </div>
+  </div></section>
+  <section><div class="wrap">
+    <h2>Tarifs</h2>
+    <div class="pricing"><b>squirrelscan</b> : Modèle à crédits cloud (tarif non communiqué publiquement).<br><b>Panoptic</b> : scan gratuit, audit complet 490 &euro;, surveillance continue 190 &euro;/mois.</div>
+  </div></section>
+  <section><div class="wrap">
+    <h2>Question fréquente</h2>
+    <details class="qa" open><summary>Quelle différence avec squirrelscan ?</summary><div class="ans">Les deux sont dev-native (CLI + MCP). Panoptic lit en plus le code source et relie la prod à la ligne de code, applique une vérification déterministe anti-faux-positif, et n'envoie jamais votre code à un LLM tiers. squirrelscan reste centré sur la production et délègue les correctifs à un agent IA.</div></details>
+  </div></section>
+  <section class="final"><div class="wrap">
+    <h2>Auditez votre site en une minute</h2>
+    <p style="margin:0 auto">Scan gratuit sur les 15 domaines. Aucun compte requis.</p>
+    <a class="btn" href="/console/">Scanner mon site</a>
+    <div class="others" style="justify-content:center;margin-top:22px"><a href="/comparatif/semrush/">vs Semrush Site Audit</a><a href="/comparatif/screaming-frog/">vs Screaming Frog</a><a href="/comparatif/lumar/">vs Lumar</a></div>
+  </div></section>
+</main>
+<footer><div class="footin"><span>&copy; 2026 Panoptic</span><span><a href="/">Accueil</a> &middot; <a href="/comparatif/">Comparatifs</a> &middot; <a href="/docs/">Docs</a> &middot; <a href="/console/">Console</a></span></div></footer>
+</body>
+</html>
