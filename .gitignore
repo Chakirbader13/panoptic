@@ -9,3 +9,6 @@ engine/agents/security/__fixtures__/
 .netlify/
 bun.lockb
 bun.lock
+
+# Brouillons outbound generes (par-run, non versionnes)
+outbound/out/

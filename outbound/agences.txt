@@ -1,0 +1,9 @@
+# Liste d'agences a auditer pour l'outbound Panoptic.
+# Un domaine par ligne. Tout ce qui suit # est ignore. www et https:// optionnels.
+#
+# Remplis cette liste avec des agences web / SEO / marketing / creatives que tu cibles,
+# puis lance :   node outbound/agences.mjs --file outbound/agences.txt --from "Ton nom <ton@email>"
+# Ajoute --share pour joindre un lien de rapport public /r/:id a chaque mail.
+#
+# exemple-agence.fr
+# studio-creatif.com

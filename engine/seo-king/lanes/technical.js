@@ -4,7 +4,7 @@
 // pour personne.
 
 import { crawlerMatrix, isAllowed } from "../robots.js";
-import { canonicalChains } from "../graph.js";
+import { canonicalChains, sameSite } from "../graph.js";
 import { textOf, stripNoise } from "../html.js";
 
 export const id = "technical";
@@ -166,7 +166,10 @@ export function run(ctx) {
     });
   }
 
-  const crossOrigin = pages.filter((p) => p.canonicalNormalized && !p.canonicalNormalized.startsWith(origin));
+  // Cross-origin = canonical vers un autre DOMAINE ENREGISTRABLE. apex<->www et
+  // sous-domaines d'un meme domaine sont du meme site (consolidation standard),
+  // pas une fuite d'indexation: sameSite les exclut pour tuer le faux positif.
+  const crossOrigin = pages.filter((p) => p.canonicalNormalized && !sameSite(p.canonicalNormalized, origin));
   if (ctx.alias) {
     // Toutes les pages pointent vers le meme autre domaine: configuration d'alias
     // deliberee, pas un defaut. On l'expose pour que le lecteur sache que ce

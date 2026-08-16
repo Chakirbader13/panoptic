@@ -149,6 +149,33 @@ export function sameOrigin(url, origin) {
   try { return new URL(url).origin === origin; } catch { return false; }
 }
 
+// Suffixes publics a deux niveaux les plus courants (pas de PSL embarquee, on couvre
+// le gros du trafic; a defaut on retombe sur "deux derniers labels").
+const MULTI_TLD = new Set([
+  "co.uk", "org.uk", "gov.uk", "ac.uk", "co.jp", "co.nz", "com.au", "org.au", "net.au",
+  "co.za", "com.br", "com.mx", "co.in", "com.tr", "com.sg", "com.hk",
+]);
+
+// Domaine enregistrable (eTLD+1), www. et casse ignores. www.seo.fr et seo.fr -> seo.fr.
+export function registrableDomain(host) {
+  host = String(host || "").toLowerCase().replace(/^www\./, "");
+  const parts = host.split(".");
+  if (parts.length <= 2) return host;
+  const last2 = parts.slice(-2).join(".");
+  return MULTI_TLD.has(last2) ? parts.slice(-3).join(".") : last2;
+}
+
+// Deux URLs sont "du meme site" si elles partagent le meme domaine enregistrable.
+// Un canonical apex<->www (ou entre sous-domaines d'un meme domaine) est une
+// configuration standard de consolidation, PAS une fuite d'indexation inter-domaine.
+export function sameSite(a, b) {
+  try {
+    const ha = new URL(a, a.startsWith("http") ? undefined : "https://x").host;
+    const hb = new URL(b, b.startsWith("http") ? undefined : "https://x").host;
+    return registrableDomain(ha) === registrableDomain(hb) && !!registrableDomain(ha);
+  } catch { return false; }
+}
+
 // Attache le DOM rendu aux noeuds deja construits.
 //
 // Choix structurant: quand une page a ete rendue, ses valeurs PRINCIPALES deviennent

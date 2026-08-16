@@ -10,7 +10,7 @@
 // dimension principale. Les 15 agents et l'UI restent inchanges.
 
 import { deepReconShared } from "./deep-recon.js";
-import { buildGraph, attachRendered } from "./graph.js";
+import { buildGraph, attachRendered, sameSite } from "./graph.js";
 import { renderShared } from "./render.js";
 import { browserAllowed } from "../scanners/browser.js";
 
@@ -171,7 +171,7 @@ function renderTargets(graph, scope, cap) {
 function detectAlias(graph, scope) {
   const pages = graph.crawledPages().filter((p) => !p.noindex && p.canonicalNormalized);
   if (pages.length < 2) return null;
-  const foreign = pages.filter((p) => !p.canonicalNormalized.startsWith(scope.origin));
+  const foreign = pages.filter((p) => !sameSite(p.canonicalNormalized, scope.origin));
   if (foreign.length < 2) return null;
 
   const origins = new Set();
