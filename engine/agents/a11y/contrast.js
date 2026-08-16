@@ -123,10 +123,31 @@ function fontWeight(el, rules) {
 
 const hex = ([r, g, b]) => "#" + [r, g, b].map((x) => x.toString(16).padStart(2, "0")).join("");
 
+// Extrait les proprietes custom (--x: valeur) du CSS BRUT. parseStylesheet les jette
+// (hors WANT), donc sans ca un site dark-mode qui pose ses couleurs par variables
+// retombe sur un fond blanc par defaut -> faux positifs de contraste. Dernier gagne.
+function extractVars(cssTexts) {
+  const vars = {};
+  const re = /(--[a-z0-9_-]+)\s*:\s*([^;}]+)\s*[;}]/gi;
+  for (const css of cssTexts) { let m; while ((m = re.exec(css || ""))) vars[m[1].trim()] = m[2].trim(); }
+  return vars;
+}
+// Remplace var(--x) / var(--x, repli) par la valeur resolue (recursif, borne).
+function deVar(val, vars, depth = 0) {
+  if (!val || depth > 6 || !val.includes("var(")) return val;
+  const next = val.replace(/var\(\s*(--[a-z0-9_-]+)\s*(?:,\s*([^)]+))?\)/gi, (_, name, fb) => (vars[name] ?? (fb || "").trim()));
+  return next === val ? val : deVar(next, vars, depth + 1);
+}
+
 // Retourne { violations:[...], stats }. cssTexts = tableau de blocs CSS (style + linked).
 export function analyzeContrast(html, cssTexts) {
   const rules = cssTexts.flatMap((c) => parseStylesheet(c || ""));
+  const vars = extractVars(cssTexts);
+  // Resout les var() dans les valeurs de regles une bonne fois: parseColor voit du hex.
+  for (const r of rules) for (const k of Object.keys(r.decls)) r.decls[k] = deVar(r.decls[k], vars);
   const root = buildTree(html);
+  // Resout aussi les var() dans les styles inline (rare mais possible).
+  (function resolveInline(n) { for (const k of Object.keys(n.style || {})) n.style[k] = deVar(n.style[k], vars); for (const ch of n.children) resolveInline(ch); })(root);
 
   // Base: fond du body/html si pose explicitement, sinon blanc (fiable).
   let bodyEl = null;

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoptic - Documentation</title>
+<meta name="description" content="Documentation Panoptic : scan gratuit, CLI, serveur MCP (Claude Code, Cursor), action GitHub, audit complet code + production, comptes, référence API et auto-hébergement.">
+<link rel="canonical" href="https://panopticaudit.com/docs/">
+<meta property="og:title" content="Panoptic - Documentation">
+<meta property="og:description" content="CLI, MCP, action GitHub, API et auto-hébergement de l'audit de site Panoptic.">
+<meta property="og:type" content="website">
+<link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='none' stroke='%234ff0a3' stroke-width='3'/%3E%3Ccircle cx='16' cy='16' r='5' fill='%234ff0a3'/%3E%3C/svg%3E">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"TechArticle","headline":"Documentation Panoptic","url":"https://panopticaudit.com/docs/","inLanguage":"fr","isPartOf":{"@type":"WebSite","name":"Panoptic","url":"https://panopticaudit.com/"}}</script>
+<style>
+  @font-face{font-family:Geist;src:url(/fonts/Geist-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  @font-face{font-family:"Geist Mono";src:url(/fonts/GeistMono-Variable.woff2) format("woff2");font-weight:100 900;font-display:swap}
+  :root{--bg:#070a08;--bg2:#0c0f0d;--panel:#0f1310;--line:#1b221d;--line2:#27302a;
+    --ink:#f2f5f2;--mut:#a4aea7;--dim:#8f9990;--acc:#4ff0a3;--acc-dim:#1e6b47;--acc-ghost:rgba(79,240,163,.08);
+    --sans:Geist,-apple-system,BlinkMacSystemFont,system-ui,sans-serif;--mono:"Geist Mono",ui-monospace,"SF Mono",Menlo,monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.65;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","cv01"}
+  a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+  a:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:3px;border-radius:4px}
+  code,pre,.mono{font-family:var(--mono)}
+  .skip{position:absolute;left:-9999px;top:0;z-index:100;background:var(--acc);color:#04140c;padding:10px 18px;border-radius:0 0 10px 0;font-weight:600}
+  .skip:focus{left:0}
+  nav.top{position:sticky;top:0;z-index:20;backdrop-filter:blur(16px);background:rgba(7,10,8,.78);border-bottom:1px solid var(--line)}
+  .topin{max-width:1180px;margin:0 auto;display:flex;align-items:center;gap:16px;height:64px;padding:0 24px}
+  .logo{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.02em;font-size:18px;color:var(--ink)}
+  .eye{width:22px;height:22px;border-radius:50%;border:2px solid var(--acc);display:grid;place-items:center}
+  .eye::after{content:"";width:7px;height:7px;border-radius:50%;background:var(--acc)}
+  .topin .sp{margin-left:auto}
+  .topin a.home{color:var(--mut);font-size:14.5px}.topin a.home:hover{color:var(--ink);text-decoration:none}
+  .shell{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:230px 1fr;gap:44px;padding:0 24px}
+  aside{position:sticky;top:64px;align-self:start;height:calc(100dvh - 64px);overflow-y:auto;padding:30px 0 40px}
+  aside h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:18px 0 8px}
+  aside a{display:block;color:var(--mut);font-size:14px;padding:5px 0;border-left:2px solid transparent;padding-left:12px;margin-left:-2px}
+  aside a:hover{color:var(--ink);text-decoration:none}
+  aside a.on{color:var(--acc);border-left-color:var(--acc)}
+  main{padding:36px 0 100px;min-width:0}
+  main h1{font-size:clamp(32px,4vw,44px);letter-spacing:-.03em;font-weight:640;margin-bottom:10px}
+  main .lede{font-size:18px;color:var(--mut);max-width:60ch;margin-bottom:12px}
+  section{padding:34px 0;border-top:1px solid var(--line)}
+  section:first-of-type{border-top:0}
+  h2{font-size:26px;letter-spacing:-.02em;font-weight:620;margin-bottom:12px;scroll-margin-top:80px}
+  h3{font-size:17px;font-weight:600;margin:22px 0 8px}
+  p{color:var(--mut);margin-bottom:12px;max-width:70ch}
+  p b,li b{color:var(--ink);font-weight:560}
+  ul{color:var(--mut);margin:0 0 12px 22px;max-width:70ch}li{margin-bottom:6px}
+  main a{font-weight:500}
+  pre{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow-x:auto;margin:12px 0;font-size:13.5px;line-height:1.6;color:#e6ece7}
+  pre .c{color:var(--dim)}
+  p code,li code,td code{background:var(--bg2);border:1px solid var(--line);border-radius:6px;padding:2px 6px;font-size:13px;color:var(--acc)}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;display:block;overflow-x:auto}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--dim);font-weight:500;white-space:nowrap}
+  td{color:var(--mut)}td code{white-space:nowrap}
+  .tag{display:inline-block;font-family:var(--mono);font-size:11px;padding:2px 8px;border-radius:5px;border:1px solid var(--line2);color:var(--mut)}
+  .tag.get{color:#63b3ff;border-color:#2a4a6b}.tag.post{color:var(--acc);border-color:var(--acc-dim)}
+  .note{border:1px solid var(--acc-dim);background:var(--acc-ghost);border-radius:10px;padding:12px 16px;font-size:14px;color:var(--mut);margin:14px 0}
+  footer{border-top:1px solid var(--line);margin-top:20px}
+  .footin{max-width:1180px;margin:0 auto;padding:28px 24px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;color:var(--dim);font-size:13.5px}
+  .footin a{color:var(--mut)}
+  @media(max-width:820px){.shell{grid-template-columns:1fr}aside{display:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Aller au contenu</a>
+<nav class="top"><div class="topin">
+  <a class="logo" href="/"><span class="eye" aria-hidden="true"></span>Panoptic</a>
+  <span class="tag">Docs</span>
+  <span class="sp"></span>
+  <a class="home" href="/console/">Scanner mon site</a>
+</div></nav>
+
+<div class="shell">
+  <aside>
+    <h4>Prise en main</h4>
+    <a href="#demarrer">Démarrer</a>
+    <a href="#offres">Gratuit vs complet</a>
+    <h4>Intégrations</h4>
+    <a href="#cli">CLI</a>
+    <a href="#mcp">MCP (Claude Code, Cursor)</a>
+    <a href="#action">Action GitHub</a>
+    <a href="#slack-jira">Slack &amp; Jira</a>
+    <h4>Aller plus loin</h4>
+    <a href="#complet">Audit complet (code)</a>
+    <a href="#comptes">Comptes &amp; équipe</a>
+    <a href="#api">Référence API</a>
+    <a href="#selfhost">Auto-hébergement</a>
+    <h4>Comprendre</h4>
+    <a href="#agents">Les 15 agents</a>
+    <a href="#constats">Lire un constat</a>
+  </aside>
+
+  <main id="main">
+    <h1>Documentation</h1>
+    <p class="lede">Panoptic audite un site sur sa <b>production</b> et, si vous connectez le dépôt, sur son <b>code source</b>. Chaque constat est vérifié, chiffré en euros et priorisé. Cette page couvre le scan gratuit, le CLI, le MCP, l'action GitHub, l'API et l'auto-hébergement.</p>
+
+    <section id="demarrer">
+      <h2>Démarrer</h2>
+      <p>Le plus rapide : ouvrez la console et collez l'URL de votre site.</p>
+      <pre><span class="c"># scan gratuit, sans compte</span>
+https://panopticaudit.com/console/</pre>
+      <p>Le scan gratuit analyse une page en boîte noire (production, sans accès au code) sur les 15 domaines et renvoie un score de santé et les constats. Les correctifs détaillés font partie de l'audit complet.</p>
+    </section>
+
+    <section id="offres">
+      <h2>Gratuit vs complet</h2>
+      <table>
+        <thead><tr><th scope="col">Capacité</th><th scope="col">Scan gratuit</th><th scope="col">Audit complet</th></tr></thead>
+        <tbody>
+          <tr><td>Périmètre</td><td>1 page, production</td><td>Multi-pages + code source</td></tr>
+          <tr><td>Agents actifs</td><td>~11 (prod)</td><td>15 (dont sécurité code, dépendances, archi, données)</td></tr>
+          <tr><td>Rendu JS (SPA)</td><td>non</td><td>oui (Chromium)</td></tr>
+          <tr><td>axe-core / Lighthouse réels</td><td>non</td><td>oui</td></tr>
+          <tr><td>Scan authentifié (derrière login)</td><td>non</td><td>oui</td></tr>
+          <tr><td>Correctifs détaillés + PR</td><td>non</td><td>oui</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="cli">
+      <h2>CLI</h2>
+      <p>Auditez depuis le terminal ou une CI. Le CLI exécute le moteur localement.</p>
+      <pre>node cli/panoptic.mjs scan https://exemple.fr
+node cli/panoptic.mjs scan https://exemple.fr --pages 10
+node cli/panoptic.mjs scan https://exemple.fr --repo . --json &gt; audit.json
+node cli/panoptic.mjs scan https://exemple.fr --fail-on high   <span class="c"># exit 1 si finding &gt;= high</span></pre>
+      <table>
+        <thead><tr><th scope="col">Option</th><th scope="col">Effet</th></tr></thead>
+        <tbody>
+          <tr><td><code>--pages N</code></td><td>Crawl multi-pages (1-30). &gt;1 active axe-core / Lighthouse.</td></tr>
+          <tr><td><code>--repo &lt;chemin&gt;</code></td><td>Audite aussi le code source local (secrets, CVE, architecture).</td></tr>
+          <tr><td><code>--cookie / --bearer</code></td><td>Scan authentifié (session derrière un login).</td></tr>
+          <tr><td><code>--json</code></td><td>Sortie JSON brute (pour scripts ou pipe vers un agent IA).</td></tr>
+          <tr><td><code>--fail-on &lt;sev&gt;</code></td><td>Code de sortie ≠ 0 si un finding atteint la sévérité (casse le build en CI).</td></tr>
+          <tr><td><code>--quiet</code></td><td>Sans progression.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="mcp">
+      <h2>MCP — Claude Code, Cursor</h2>
+      <p>Panoptic s'expose comme outil <b>MCP</b> : votre agent de code lance l'audit puis corrige les constats lui-même. Le moteur reste déterministe — votre code n'est jamais envoyé à un LLM tiers.</p>
+      <pre><span class="c"># Claude Code</span>
+claude mcp add panoptic -- node /chemin/panoptic-audit/mcp/server.mjs</pre>
+      <p>L'agent dispose alors de l'outil <code>panoptic_scan</code> :</p>
+      <pre>panoptic_scan({
+  url: "https://exemple.fr",
+  maxPages: 10,          <span class="c">// optionnel</span>
+  repoPath: ".",         <span class="c">// optionnel: audite le code</span>
+  failOn: "high"         <span class="c">// optionnel: renvoie shouldFail</span>
+})</pre>
+      <p>Il reçoit les constats vérifiés (sévérité, localisation, correctif) au format texte et structuré, puis peut appliquer les corrections.</p>
+    </section>
+
+    <section id="action">
+      <h2>Action GitHub</h2>
+      <p>Auditez à chaque déploiement et cassez le build sur régression.</p>
+      <pre>- uses: Chakirbader13/panoptic@main
+  with:
+    url: https://mon-site.fr
+    pages: 10
+    fail-on: high</pre>
+    </section>
+
+    <section id="slack-jira">
+      <h2>Slack &amp; Jira</h2>
+      <p>Sur l'offre continue, une régression (finding ≥ medium apparu depuis le dernier déploiement) déclenche une alerte Slack et/ou un ticket Jira — <b>uniquement les régressions</b>, pas tout l'audit. Configuration côté serveur via <code>notify</code> dans la requête d'audit, ou les variables d'environnement <code>SLACK_WEBHOOK</code> / <code>JIRA_*</code>.</p>
+    </section>
+
+    <section id="complet">
+      <h2>Audit complet (code + production)</h2>
+      <p>Connectez un dépôt Git : Panoptic le clone en <b>lecture seule</b>, l'analyse le temps de l'audit, puis le supprime. Il relie alors un symptôme en production à sa cause dans le code (fichier:ligne).</p>
+      <pre><span class="c"># via l'API (voir Référence API)</span>
+POST /api/audits
+{ "target": "https://exemple.fr", "repoUrl": "https://github.com/org/repo", "maxPages": 10 }</pre>
+      <p>Les agents supplémentaires activés avec le code : sécurité applicative (semgrep + secrets), dépendances (CVE via OSV), architecture, données.</p>
+    </section>
+
+    <section id="comptes">
+      <h2>Comptes &amp; équipe</h2>
+      <p>Le dashboard (offre payante) utilise un compte : créez-le avec un email et un mot de passe, puis vos audits et tendances y sont rattachés et isolés.</p>
+      <ul>
+        <li><b>Rôles</b> : owner (gère l'équipe et les clés), member (lance des audits), viewer (lecture seule).</li>
+        <li><b>Clés d'API</b> : un owner peut générer des clés (pour le CLI/CI) avec un rôle. Envoyées via l'en-tête <code>x-api-key</code>.</li>
+        <li><b>Session</b> : le token utilisateur voyage dans l'en-tête <code>Authorization: Bearer</code>.</li>
+      </ul>
+    </section>
+
+    <section id="api">
+      <h2>Référence API</h2>
+      <p>Base : <code>https://panoptic-audit.onrender.com</code>. Authentification : <code>Authorization: Bearer &lt;token&gt;</code> (compte) ou <code>x-api-key: &lt;clé&gt;</code> (CLI/CI).</p>
+      <table>
+        <thead><tr><th scope="col">Méthode</th><th scope="col">Route</th><th scope="col">Rôle</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag post">POST</span></td><td><code>/api/auth/signup</code> · <code>/api/auth/login</code></td><td>public</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/me</code></td><td>tous</td></tr>
+          <tr><td><span class="tag post">POST</span></td><td><code>/api/audits</code> — lance un audit <code>{target, repoUrl?, maxPages?, auth?, businessParams?}</code></td><td>member+</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/audits</code> — liste les audits du compte</td><td>tous</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/audits/:id</code> — un audit complet</td><td>tous</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/audits/:id/events</code> — progression live (SSE)</td><td>tous</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/audits/:id/report</code> — rapport HTML/PDF</td><td>tous</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/audits/:id/fixbundle</code> — correctifs (md)</td><td>tous</td></tr>
+          <tr><td><span class="tag post">POST</span></td><td><code>/api/audits/:id/pr</code> — ouvre une pull request</td><td>member+</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/trends?target=</code> — tendances par déploiement</td><td>tous</td></tr>
+          <tr><td><span class="tag get">GET</span></td><td><code>/api/team</code> · <span class="tag post">POST</span> <code>/api/team/members</code> · <code>/api/team/keys</code></td><td>owner</td></tr>
+        </tbody>
+      </table>
+      <pre><span class="c"># exemple: lancer un audit puis suivre la progression</span>
+curl -X POST https://panoptic-audit.onrender.com/api/audits \
+  -H "authorization: Bearer $TOKEN" -H "content-type: application/json" \
+  -d '{"target":"https://exemple.fr","maxPages":10}'</pre>
+    </section>
+
+    <section id="selfhost">
+      <h2>Auto-hébergement</h2>
+      <p>Le backend est un serveur Node sans framework (<code>server/server.mjs</code>), déployable via le <code>Dockerfile</code> et <code>render.yaml</code> fournis. Le scan gratuit tourne en fonction serverless (Netlify).</p>
+      <table>
+        <thead><tr><th scope="col">Variable</th><th scope="col">Rôle</th></tr></thead>
+        <tbody>
+          <tr><td><code>SUPABASE_URL</code> · <code>SUPABASE_SERVICE_KEY</code></td><td>Persistance + comptes (sinon stockage local éphémère).</td></tr>
+          <tr><td><code>PANOPTIC_BROWSER</code></td><td><code>off</code> coupe axe-core/Lighthouse/rendu JS (coupe-circuit coût).</td></tr>
+          <tr><td><code>GITHUB_TOKEN</code></td><td>Ouverture réelle des pull requests (sinon dry-run).</td></tr>
+          <tr><td><code>SLACK_WEBHOOK</code> · <code>JIRA_*</code></td><td>Alertes de régression.</td></tr>
+          <tr><td><code>AGENT_CONCURRENCY</code></td><td>Concurrence du fan-out des agents (défaut 3).</td></tr>
+        </tbody>
+      </table>
+      <div class="note">Le clone de dépôt est éphémère (git clone --depth 1, HTTPS, supprimé après l'audit). Aucun secret client n'est stocké. Voir la page <a href="/securite/">Sécurité</a>.</div>
+    </section>
+
+    <section id="agents">
+      <h2>Les 15 agents</h2>
+      <table>
+        <thead><tr><th scope="col">Famille</th><th scope="col">Agents</th></tr></thead>
+        <tbody>
+          <tr><td>Technique</td><td>Sécurité applicative · Code &amp; architecture · Infra/DevOps · Données &amp; BDD · Dépendances/supply-chain · Performance/CWV</td></tr>
+          <tr><td>Visibilité</td><td>SEO technique · GEO (visibilité IA) · Analytics · Email/délivrabilité</td></tr>
+          <tr><td>Humain</td><td>Accessibilité (WCAG) · UX/parcours · Contenu/i18n</td></tr>
+          <tr><td>Risque</td><td>Juridique/RGPD · CRO/conversion</td></tr>
+        </tbody>
+      </table>
+      <p>Sans dépôt connecté, les agents qui nécessitent le code (dépendances, architecture, données, sécurité complète) ne peuvent pas tout évaluer : ils sont marqués « non évalué » dans le rapport plutôt que notés à tort.</p>
+    </section>
+
+    <section id="constats">
+      <h2>Lire un constat</h2>
+      <p>Chaque constat porte une <b>sévérité</b> (critique, élevé, moyen, faible, info), une <b>localisation</b> (fichier:ligne ou URL), une <b>preuve</b>, un <b>correctif</b>, un <b>effort</b> et un <b>verdict</b> de vérification :</p>
+      <ul>
+        <li><b>confirmé</b> — reproduit indépendamment depuis la reconnaissance, ou observé en live avec preuve.</li>
+        <li><b>plausible</b> — affirmé mais non reproductible ici : à confirmer (priorité pondérée à la baisse).</li>
+        <li><b>rejeté</b> — la reconnaissance contredit le constat (faux positif) : exclu du score et du rapport.</li>
+      </ul>
+      <p>Les montants en euros sont des <b>estimations</b>, toujours étiquetées comme telles : fourchette par gravité, ou calibrées sur votre trafic et la valeur d'une conversion si vous les fournissez.</p>
+    </section>
+  </main>
+</div>
+
+<footer><div class="footin">
+  <span>&copy; 2026 Panoptic</span>
+  <span><a href="/">Accueil</a> &middot; <a href="/console/">Console</a> &middot; <a href="/securite/">Sécurité</a> &middot; <a href="/benchmark/">Benchmark</a></span>
+</div></footer>
+
+<script>
+// Surlignage de la section courante dans le sommaire.
+const links = [...document.querySelectorAll("aside a")];
+const map = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+const io = new IntersectionObserver((es) => {
+  es.forEach((e) => { if (e.isIntersecting) { links.forEach((l) => l.classList.remove("on")); map.get(e.target.id)?.classList.add("on"); } });
+}, { rootMargin: "-10% 0px -80% 0px" });
+document.querySelectorAll("main section[id]").forEach((s) => io.observe(s));
+</script>
+</body>
+</html>

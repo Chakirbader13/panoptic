@@ -241,7 +241,7 @@ export const T = {
     finalH2: "Votre site a des angles morts. Voyez-les tous.",
     finalLead: "Un scan gratuit en moins d'une minute, ou l'audit complet qui lit votre code. Vous choisissez la profondeur.",
     footTag: "L'audit de site complet : quinze auditeurs spécialisés sur votre code et votre production.",
-    footLinks: ["Console", "Benchmark", "Rapport d'exemple", "Sécurité"],
+    footLinks: ["Console", "Benchmark", "Rapport d'exemple", "Sécurité", "Docs"],
   },
   en: {
     metaTitle: "Panoptic - Complete site audit: 15 experts on your code and your production",
@@ -336,7 +336,7 @@ export const T = {
     finalH2: "Your site has blind spots. See them all.",
     finalLead: "A free scan in under a minute, or the full audit that reads your code. You choose the depth.",
     footTag: "The complete site audit: fifteen specialised auditors on your code and your production.",
-    footLinks: ["Console", "Benchmark", "Sample report", "Security"],
+    footLinks: ["Console", "Benchmark", "Sample report", "Security", "Docs"],
   },
   de: {
     metaTitle: "Panoptic - Vollständiges Website-Audit: 15 Experten für Ihren Code und Ihre Produktion",
@@ -431,7 +431,7 @@ export const T = {
     finalH2: "Ihre Website hat blinde Flecken. Sehen Sie alle.",
     finalLead: "Ein kostenloser Scan in unter einer Minute, oder das Vollaudit, das Ihren Code liest. Sie wählen die Tiefe.",
     footTag: "Das vollständige Website-Audit: fünfzehn spezialisierte Auditoren für Ihren Code und Ihre Produktion.",
-    footLinks: ["Konsole", "Benchmark", "Beispielbericht", "Sicherheit"],
+    footLinks: ["Konsole", "Benchmark", "Beispielbericht", "Sicherheit", "Docs"],
   },
   es: {
     metaTitle: "Panoptic - Auditoría de sitios completa: 15 expertos sobre tu código y tu producción",
@@ -526,7 +526,7 @@ export const T = {
     finalH2: "Tu sitio tiene puntos ciegos. Velos todos.",
     finalLead: "Un escaneo gratis en menos de un minuto, o la auditoría completa que lee tu código. Tú eliges la profundidad.",
     footTag: "La auditoría de sitios completa: quince auditores especializados sobre tu código y tu producción.",
-    footLinks: ["Consola", "Benchmark", "Informe de ejemplo", "Seguridad"],
+    footLinks: ["Consola", "Benchmark", "Informe de ejemplo", "Seguridad", "Docs"],
   },
   it: {
     metaTitle: "Panoptic - Audit di siti completo: 15 esperti sul tuo codice e la tua produzione",
@@ -621,7 +621,7 @@ export const T = {
     finalH2: "Il tuo sito ha punti ciechi. Vedili tutti.",
     finalLead: "Una scansione gratuita in meno di un minuto, o l'audit completo che legge il tuo codice. Scegli tu la profondità.",
     footTag: "L'audit di siti completo: quindici auditor specializzati sul tuo codice e la tua produzione.",
-    footLinks: ["Console", "Benchmark", "Report di esempio", "Sicurezza"],
+    footLinks: ["Console", "Benchmark", "Report di esempio", "Sicurezza", "Docs"],
   },
   nl: {
     metaTitle: "Panoptic - Volledige site-audit: 15 experts op je code en je productie",
@@ -716,6 +716,6 @@ export const T = {
     finalH2: "Je site heeft blinde vlekken. Zie ze allemaal.",
     finalLead: "Een gratis scan in minder dan een minuut, of de volledige audit die je code leest. Jij kiest de diepte.",
     footTag: "De volledige site-audit: vijftien gespecialiseerde auditors op je code en je productie.",
-    footLinks: ["Console", "Benchmark", "Voorbeeldrapport", "Beveiliging"],
+    footLinks: ["Console", "Benchmark", "Voorbeeldrapport", "Beveiliging", "Docs"],
   },
 };

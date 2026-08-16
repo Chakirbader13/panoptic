@@ -687,7 +687,7 @@ ${jsonLd(t, self)}
 
 <footer><div class="wrap foot">
   <div><a class="logo" href="/${self.path}"><span class="eye" aria-hidden="true"></span>Panoptic</a><p class="tag">${esc(t.footTag)}</p></div>
-  <div class="flinks"><a href="/console/">${esc(t.footLinks[0])}</a><a href="/benchmark/">${esc(t.footLinks[1])}</a><a href="/securite/">${esc(t.footLinks[3])}</a><a href="${REPORT_URL}" target="_blank" rel="noopener">${esc(t.footLinks[2])}</a></div>
+  <div class="flinks"><a href="/console/">${esc(t.footLinks[0])}</a><a href="/docs/">${esc(t.footLinks[4])}</a><a href="/benchmark/">${esc(t.footLinks[1])}</a><a href="/securite/">${esc(t.footLinks[3])}</a><a href="${REPORT_URL}" target="_blank" rel="noopener">${esc(t.footLinks[2])}</a></div>
   <div class="fbot"><span>&copy; 2026 Panoptic</span><span class="mono">code + prod</span></div>
 </div></footer>
 <script>${scannerJS(lang)}</script>
