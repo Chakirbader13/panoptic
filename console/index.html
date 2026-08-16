@@ -130,7 +130,16 @@
         <div class="kpis" id="kpis"></div>
         <div class="actions">
           <button class="btn" id="dlReport">Rapport PDF</button>
+          <button class="btn btn-g" id="share">Partager le rapport</button>
           <button class="btn btn-g" id="unlock">D&eacute;bloquer les correctifs</button>
+        </div>
+        <div id="shareOut" style="display:none;margin-top:12px;font-size:12.5px">
+          <div style="color:var(--mut);margin-bottom:6px">Lien public partageable :</div>
+          <div style="display:flex;gap:6px"><input id="shareUrl" readonly style="flex:1;font-size:12px;padding:8px 10px"><button class="btn btn-g" id="copyUrl" style="padding:8px 12px">Copier</button></div>
+          <details style="margin-top:10px"><summary style="cursor:pointer;color:var(--mut);list-style:none">Badge pour votre site &#9662;</summary>
+            <div style="margin:8px 0"><img id="badgePrev" alt="badge" height="28"></div>
+            <textarea id="badgeCode" readonly rows="2" style="width:100%;font-family:var(--mono);font-size:11px;padding:8px;background:#0b0e0c;color:var(--ink);border:1px solid var(--line);border-radius:8px"></textarea>
+          </details>
         </div>
         <div class="muted" style="margin-top:12px;font-size:12px;line-height:1.55">Le scan gratuit montre les constats et leur co&ucirc;t. Correctifs d&eacute;taill&eacute;s et r&eacute;paration par notre &eacute;quipe : <a href="/#prix">Audit complet</a>.</div>
         <div id="prOut" class="muted" style="margin-top:10px;font-size:12.5px"></div>
@@ -199,6 +208,22 @@ $("go").onclick = start;
 $("url").addEventListener("keydown", e=>{ if(e.key==="Enter") start(); });
 $("unlock").onclick = () => { location.href = "/#prix"; };
 $("dlReport").onclick = openReport;
+$("share").onclick = shareReport;
+$("copyUrl").onclick = () => { $("shareUrl").select(); navigator.clipboard?.writeText($("shareUrl").value); $("copyUrl").textContent = "Copie !"; setTimeout(()=>$("copyUrl").textContent="Copier",1500); };
+
+async function shareReport(){
+  if(!last) return;
+  const btn = $("share"), orig = btn.textContent; btn.textContent = "Publication..."; btn.disabled = true;
+  try{
+    const r = await (await fetch("/api/share", { method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({ result: last }) })).json();
+    if(r.error) throw new Error(r.error);
+    $("shareUrl").value = r.url;
+    $("badgePrev").src = r.badgeUrl;
+    $("badgeCode").value = r.badgeEmbed;
+    $("shareOut").style.display = "";
+  }catch(e){ $("prOut").innerHTML = '<span style="color:var(--crit)">Partage impossible: '+esc(e.message)+'</span>'; }
+  btn.textContent = orig; btn.disabled = false;
+}
 
 async function openReport(){
   if(!last) return;
