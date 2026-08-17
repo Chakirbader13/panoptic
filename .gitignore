@@ -12,3 +12,6 @@ bun.lock
 
 # Brouillons outbound generes (par-run, non versionnes)
 outbound/out/
+
+# PNG galerie PH (regenerables via marketing/ph-gallery/capture.mjs)
+marketing/ph-gallery/*.png
