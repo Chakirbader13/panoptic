@@ -15,3 +15,5 @@ outbound/out/
 
 # PNG galerie PH (regenerables via marketing/ph-gallery/capture.mjs)
 marketing/ph-gallery/*.png
+marketing/ph-gallery/*.gif
+marketing/ph-gallery/*.mp4
