@@ -396,6 +396,9 @@ export function renderReport(rec, opts = {}) {
   footer b{color:var(--acc)}
   /* DOWNLOAD BTN */
   .dl{position:fixed;bottom:22px;right:22px;background:var(--acc);color:#fff;border:none;border-radius:100px;padding:13px 22px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 8px 24px -6px rgba(15,157,99,.5);z-index:10}
+  /* Sur petit ecran, le FAB flottant est resserre dans le coin et on reserve de la
+     place en bas pour qu'il ne recouvre jamais la fin du contenu. */
+  @media(max-width:520px){.dl{bottom:14px;right:14px;padding:11px 18px;font-size:13px}body{padding-bottom:78px}}
   .dl:hover{background:#0c8654}
   @media print{
     body{background:#fff}.dl{display:none}
