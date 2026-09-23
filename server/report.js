@@ -310,7 +310,8 @@ export function renderReport(rec, opts = {}) {
   .lead{color:var(--mut);margin-bottom:22px;max-width:70ch}
   /* DASHBOARD */
   .dgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-  @media(max-width:820px){.dgrid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:820px){.dgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+  @media(max-width:520px){.dgrid{grid-template-columns:1fr}}
   .dcard{border:1px solid var(--line);border-radius:12px;padding:16px 16px 14px;background:#fff}
   .dtop{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
   .dlabel{font-weight:600;font-size:13.5px;line-height:1.2}
@@ -327,7 +328,9 @@ export function renderReport(rec, opts = {}) {
   .kingband p{color:var(--mut);font-size:13.5px;margin:3px 0 7px;max-width:62ch}
   .kingcov{font-family:ui-monospace,monospace;font-size:11px;color:var(--dim)}
   .kgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-  @media(max-width:820px){.kgrid{grid-template-columns:repeat(2,1fr)}.kinghead{grid-template-columns:1fr}}
+  @media(max-width:820px){.kgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.kinghead{grid-template-columns:1fr}}
+  @media(max-width:520px){.kgrid{grid-template-columns:1fr}}
+  @media(max-width:480px){.wrap{padding-left:18px;padding-right:18px}.hero-in{padding-left:18px;padding-right:18px}}
   .kcard{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:#fff}
   .ktop{display:flex;justify-content:space-between;align-items:baseline;gap:10px;font-size:12.5px;margin-bottom:8px}
   .ktop b{font-family:ui-monospace,monospace;font-size:15px}

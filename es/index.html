@@ -85,12 +85,21 @@
   .langmenu a:hover{background:var(--acc-ghost);color:var(--ink)}
   .langmenu a.on{color:var(--acc)}
   .langmenu a small{font-family:var(--mono);font-size:11px;color:var(--dim)}
-  @media(max-width:960px){.nlinks{display:none}}
+  @media(max-width:960px){.nlinks{display:none}
+    /* Sans les liens de nav, le selecteur de langue est colle au logo (a gauche):
+       le menu ancre a droite deborderait du bord gauche. On l'ouvre vers la droite. */
+    .langmenu{left:0;right:auto}}
   @media(max-width:480px){
     .nav{gap:10px}
     .logo{font-size:16px;gap:8px}
     .nav .btn{padding:9px 14px;font-size:13.5px}
     .langsel summary{padding:7px 10px;font-size:12px}
+  }
+  @media(max-width:400px){
+    .nav{gap:8px}
+    .logo{font-size:15px}
+    .nav .btn{padding:8px 12px;font-size:12.5px}
+    .langsel summary{padding:6px 9px;font-size:11.5px}
   }
 
   /* HERO */
@@ -157,6 +166,10 @@
 
   /* SECTIONS */
   section{padding:96px 0}
+  /* Marges laterales et rythme vertical fluides sur mobile (evite l'exces d'espace
+     et le debordement d'en-tete a 320px). */
+  @media(max-width:600px){:root{--pad:20px}section{padding:64px 0}}
+  @media(max-width:380px){:root{--pad:16px}section{padding:52px 0}}
   .shead{margin-bottom:48px;max-width:72ch}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:15px}
   h2{font-size:clamp(31px,4.3vw,50px);line-height:1.04;letter-spacing:-.033em;font-weight:620;max-width:21ch}
